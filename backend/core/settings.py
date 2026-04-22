@@ -44,16 +44,17 @@ load_env_file(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', get_random_secret_key())
+DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
+if DJANGO_SECRET_KEY:
+    SECRET_KEY = DJANGO_SECRET_KEY
+else:
+    SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Render sets RENDER=true for deployed services. Default DEBUG to False there.
+# Render sets RENDER=true. Default DEBUG to False on Render, True locally.
 is_render = os.environ.get('RENDER', '').lower() == 'true'
 debug_default = 'False' if is_render else 'True'
 DEBUG = os.environ.get('DJANGO_DEBUG', debug_default).lower() in ('1', 'true', 'yes')
-
-if not os.environ.get('DJANGO_SECRET_KEY') and not DEBUG:
-    raise ImproperlyConfigured('DJANGO_SECRET_KEY must be set when DEBUG is False.')
 
 allowed_hosts_raw = os.environ.get('ALLOWED_HOSTS', '.onrender.com localhost 127.0.0.1')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_raw.replace(',', ' ').split() if host.strip()]
