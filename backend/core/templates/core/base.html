@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Site{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/brand.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+        <nav class="navbar navbar-expand-lg navbar-dark glass-nav">
+            <div class="container py-1">
+                <a class="navbar-brand fw-bold" href="/">East Africa Fashion</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about/">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/catalog/">Catalog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/inventory/">Inventory</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart/">Cart</a></li>
+                    </ul>
+                    <div class="d-flex gap-2 ms-lg-3 mt-3 mt-lg-0 align-items-center">
+                        {% if request.user.is_authenticated %}
+                            <span class="small text-white-50 d-none d-lg-inline">Hi, {{ request.user.username }}</span>
+                            <form method="post" action="{% url 'logout' %}" class="m-0">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-light" type="submit">Sign Out</button>
+                            </form>
+                        {% else %}
+                            <a class="btn btn-sm btn-outline-light" href="{% url 'login' %}">Sign In</a>
+                            <a class="btn btn-sm btn-light" href="{% url 'signup' %}">Create Account</a>
+                        {% endif %}
+                        {% if request.user.is_authenticated and request.user.is_staff %}
+                            <a class="btn btn-sm btn-warning" href="/admin/">Admin Panel</a>
+                        {% else %}
+                            <a class="btn btn-sm btn-outline-light" href="/admin/login/?next=/admin/">Admin Sign In</a>
+                        {% endif %}
+                        <button id="modeToggle" class="btn btn-sm btn-outline-light" type="button" aria-label="Toggle dark mode">Dark</button>
+                        <select id="themePicker" class="form-select form-select-sm" aria-label="Theme selection">
+                            <option value="ocean">Ocean</option>
+                            <option value="cobalt">Cobalt</option>
+                            <option value="mono">Mono</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main class="site-shell">
+            {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            (function () {
+                const modeKey = 'ea-mode';
+                const themeKey = 'ea-theme';
+                const body = document.body;
+                const modeToggle = document.getElementById('modeToggle');
+                const themePicker = document.getElementById('themePicker');
+
+                const savedMode = localStorage.getItem(modeKey) || 'light';
+                const savedTheme = localStorage.getItem(themeKey) || 'ocean';
+
+                body.classList.toggle('theme-dark', savedMode === 'dark');
+                body.dataset.theme = savedTheme;
+                if (themePicker) {
+                    themePicker.value = savedTheme;
+                }
+                if (modeToggle) {
+                    modeToggle.textContent = savedMode === 'dark' ? 'Light' : 'Dark';
+                }
+
+                if (modeToggle) {
+                    modeToggle.addEventListener('click', function () {
+                        const isDark = body.classList.toggle('theme-dark');
+                        localStorage.setItem(modeKey, isDark ? 'dark' : 'light');
+                        modeToggle.textContent = isDark ? 'Light' : 'Dark';
+                    });
+                }
+
+                if (themePicker) {
+                    themePicker.addEventListener('change', function () {
+                        body.dataset.theme = themePicker.value;
+                        localStorage.setItem(themeKey, themePicker.value);
+                    });
+                }
+            })();
+        </script>
+        {% block extra_scripts %}{% endblock %}
+</body>
+</html>

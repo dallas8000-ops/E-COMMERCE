@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}About | East Africa Fashion{% endblock %}
+{% block content %}
+<div class="page-panel float-in">
+	<section class="mb-4">
+		<h1 class="page-title mb-2">About The Brand</h1>
+		<p class="text-muted mb-0">East Africa Fashion exists to elevate confident style and accessible sophistication for women-led communities and growing businesses across the region.</p>
+	</section>
+
+	<section class="row g-3 mb-4 float-in delay-1">
+		<div class="col-lg-7">
+			<article class="ethos-card h-100">
+				<h2 class="h5 page-title">The Ethos</h2>
+				<p class="mb-0 text-muted">We design for expression, resilience, and economic empowerment. Every collection champions craftsmanship, inclusive fit, and a premium experience that supports local talent.</p>
+			</article>
+		</div>
+		<div class="col-lg-5">
+			<article class="ethos-card h-100">
+				<h2 class="h5 page-title">Vision</h2>
+				<p class="mb-0 text-muted">To become East Africa's most trusted digital destination for modern fashion, built on technology, trust, and timeless design direction.</p>
+			</article>
+		</div>
+		<div class="col-12">
+			<article class="ethos-card">
+				<h2 class="h5 page-title">Mission</h2>
+				<p class="mb-0 text-muted">Provide a secure, scalable marketplace where women entrepreneurs and small businesses can showcase high-quality products while customers enjoy seamless discovery and confident checkout experiences.</p>
+			</article>
+		</div>
+	</section>
+
+	<section class="mb-4 float-in delay-2">
+		<h2 class="h5 page-title mb-3">Team & Brand Imagery</h2>
+		<div class="brand-image-grid">
+			{% for image in brand_images %}
+			<img src="{% url 'catalog_image' image.name %}" alt="Brand story look {{ forloop.counter }}">
+			{% empty %}
+			<div class="ethos-card">Add image files to the workspace <strong>images/</strong> folder to preview brand visuals here.</div>
+			{% endfor %}
+		</div>
+	</section>
+
+	<section class="row g-3 align-items-stretch">
+		<div class="col-md-8">
+			<article class="contact-card h-100">
+				<h2 class="h5 page-title">Contact & Location</h2>
+				<p class="mb-1"><strong>Email:</strong> <a href="mailto:dallas8000@gmail.com">dallas8000@gmail.com</a></p>
+				<p class="mb-1"><strong>Phone:</strong> 682-460-4048</p>
+				<p class="mb-1"><strong>Location:</strong> Wimauma, FL</p>
+				<p class="mb-0"><strong>WhatsApp:</strong> <a href="https://wa.me/16824604038" target="_blank" rel="noopener">+1 682-460-4038</a></p>
+			</article>
+		</div>
+		<div class="col-md-4 d-grid">
+			<a class="btn btn-lg btn-primary h-100 d-flex align-items-center justify-content-center" href="/catalog/">Open Fashion Catalog</a>
+		</div>
+	</section>
+</div>
+{% endblock %}

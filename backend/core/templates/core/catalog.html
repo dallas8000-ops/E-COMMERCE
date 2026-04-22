@@ -1,0 +1,98 @@
+{% extends 'core/base.html' %}
+{% block title %}Fashion Catalog | East Africa Fashion{% endblock %}
+{% block content %}
+<div class="catalog-shell float-in">
+  <div class="catalog-header">
+    <div>
+      <h1 class="h3 fw-bold mb-1">Fashion Catalog</h1>
+      <p class="mb-0">Browse catalog items with pricing and quick details view.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <span class="badge-count">{{ total_items }} items</span>
+      <a class="btn btn-sm btn-light" href="/about/">Back to About</a>
+    </div>
+  </div>
+
+  {% if catalog_items %}
+  <section class="catalog-date-section float-in delay-1">
+    <div class="catalog-grid catalog-product-grid">
+      {% for item in catalog_items %}
+      <article class="catalog-card catalog-product-card">
+        <img src="{{ item.primary_url }}" alt="{{ item.name }}">
+        <div class="catalog-product-body">
+          <h2 class="h4 fw-semibold mb-2">{{ item.name }}</h2>
+          <p class="catalog-description mb-2">{{ item.description }}</p>
+          <p class="catalog-price mb-3">
+            {% if item.price %}
+              €{{ item.price }}
+            {% else %}
+              Contact for price
+            {% endif %}
+          </p>
+          <button class="btn btn-primary w-100 view-details-btn" type="button" data-full="{{ item.detail_url }}" data-label="{{ item.name }} detail view">
+            View Details
+          </button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <section class="catalog-date-section">
+    <p class="mb-0">No catalog items found. Load products and link images, then refresh this page.</p>
+  </section>
+  {% endif %}
+</div>
+
+<div class="modal-gallery" id="galleryModal" aria-hidden="true">
+  <button class="modal-close" id="closeModal" type="button" aria-label="Close">&times;</button>
+  <div class="modal-gallery-content">
+    <img id="modalImage" src="" alt="Catalog preview">
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    const modal = document.getElementById('galleryModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.getElementById('closeModal');
+    const buttons = document.querySelectorAll('.view-details-btn');
+
+    function openModal(src, label) {
+      modalImage.src = src;
+      modalImage.alt = label;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function dismissModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      modalImage.src = '';
+      document.body.style.overflow = '';
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        openModal(button.dataset.full, button.dataset.label);
+      });
+    });
+
+    closeModal.addEventListener('click', dismissModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        dismissModal();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal.classList.contains('open')) {
+        dismissModal();
+      }
+    });
+  })();
+</script>
+{% endblock %}

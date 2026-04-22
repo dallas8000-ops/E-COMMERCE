@@ -1,0 +1,336 @@
+# Ecommerce Capstone Planning Document
+
+## Project Name
+East Africa Ecommerce Platform
+
+## Project Summary
+East Africa Ecommerce Platform is a full-stack ecommerce application focused on women's fashion, accessories, jewelry, shoes, perfume, and lingerie for the East African market. The platform combines a Django backend, admin-managed inventory, a customer shopping flow, responsive pages, and payment-ready architecture.
+
+## Problem Statement
+Small fashion businesses and women-led retail brands need a storefront that is easier to manage than social-media-only selling and more region-aware than generic ecommerce templates. This project addresses that gap by providing a product catalog, cart flow, currency-aware pricing, and an admin-managed inventory workflow that can be extended with African payment providers.
+
+## Project Goal
+Build a polished capstone ecommerce platform where shoppers can browse products, add items to cart, view totals in supported currencies, choose a payment method, and complete a scalable checkout flow while admins securely manage products and media.
+
+## Target Audience
+- Women shoppers across East Africa
+- Boutique owners and fashion entrepreneurs
+- Small businesses that need a manageable storefront and inventory workflow
+
+## Business Value
+- Gives local fashion sellers a modern digital storefront
+- Supports region-aware shopping through currency conversion and payment expansion
+- Demonstrates a realistic full-stack commerce workflow for capstone review
+
+## Core Objectives
+- Deliver a working full-stack shopping experience
+- Keep inventory and catalog data controlled through the database and admin panel
+- Provide a responsive and branded customer experience
+- Support capstone documentation, planning, and delivery tracking
+- Leave a clear path for real payment integration and customer accounts
+
+## In Scope
+- Product catalog backed by database records
+- Inventory page with size, quantity, currency, and payment method selectors
+- Cart add, update, and remove flows
+- Admin product and image management
+- Responsive user-facing pages
+- Project documentation and delivery tracking
+
+## Out Of Scope For Initial Submission
+- Marketplace multi-vendor onboarding
+- Full order history dashboard
+- Production payment settlement
+- Recommendation engine or personalization
+- Advanced analytics or reporting dashboards
+
+## Current Implementation Snapshot
+
+### Completed
+- Home, About, Catalog, Inventory, and Cart pages are implemented
+- Catalog uses database products and linked product images
+- Admin can manage categories, products, product images, carts, and cart items
+- Cart totals are calculated correctly on the server
+- Currency conversion is available for USD, EUR, KES, and UGX
+- Payment method selection is available for MTN, Airtel, and Pesapal
+- Product pricing is varied instead of a single flat price
+- Inventory sizes are standardized to XS, S, M, L, XL, XXL
+- Admin Sign In / Admin Panel access is exposed in the site navigation
+- Shopper authentication is implemented (signup/login/logout)
+- Guest cart items merge into authenticated user cart after signup/login
+- Contact inquiry communication flow is implemented (admin persistence plus SMTP email delivery)
+- README already contains capstone summary, tech stack, and page map
+
+### Remaining For Stronger Submission
+- One real payment sandbox flow end-to-end
+- Final mobile and tablet QA
+- Final GitHub repository link and submission assets
+
+## User Types
+
+### Shopper
+- Browses products
+- Adds items to cart
+- Updates quantity and size choices
+- Chooses currency and payment method
+- Completes checkout flow
+
+### Admin
+- Adds products
+- Edits products
+- Links images to products
+- Deletes outdated inventory
+- Manages categories and product metadata
+
+## Epics
+- Shopper Authentication
+- Product Browsing And Catalog
+- Cart And Checkout
+- Payment Integration
+- Admin Inventory Management
+- QA, Documentation, And Submission
+
+## User Stories
+
+### Shopper Authentication
+- As a shopper, I want to sign up so that I can create an account and keep my shopping activity.
+- As a shopper, I want to log in so that I can access my cart and future order history.
+- As a shopper, I want to log out securely so that my account stays protected on shared devices.
+
+### Product Browsing And Catalog
+- As a shopper, I want to browse products with images, prices, and descriptions so that I can compare items quickly.
+- As a shopper, I want to open product details so that I can see more than one product image before buying.
+- As a shopper, I want the catalog to only show real inventory items so that deleted products do not reappear.
+
+### Cart And Checkout
+- As a shopper, I want to add a product with quantity and size so that I can prepare an accurate order.
+- As a shopper, I want to update or remove items in my cart so that I can control my order before checkout.
+- As a shopper, I want to view totals in my preferred currency so that pricing is easier to understand.
+- As a shopper, I want to select a payment method so that checkout matches regional payment expectations.
+
+### Payment Integration
+- As a shopper, I want at least one payment method to reach a real sandbox flow so that checkout feels complete.
+- As the business owner, I want payment integration to be modular so that more providers can be added later.
+
+### Admin Inventory Management
+- As an admin, I want to add products and images so that the storefront stays current.
+- As an admin, I want to edit product details and prices so that catalog information stays accurate.
+- As an admin, I want deleted products removed from the customer catalog so that customers only see active items.
+
+### QA, Documentation, And Submission
+- As a capstone student, I want clear documentation so that reviewers understand the project scope and architecture.
+- As a capstone student, I want a task board with clear progress states so that work is easy to track and present.
+- As a capstone student, I want final QA and demo assets so that the project is ready for submission.
+
+## Functional Requirements
+- The system must display products from database records, not loose image files.
+- The system must support add-to-cart, update-cart, and remove-cart actions.
+- The system must display converted prices in USD, EUR, KES, and UGX.
+- The system must allow users to choose MTN, Airtel, or Pesapal as a checkout preference.
+- The admin panel must allow secure inventory management.
+- The project must include clear documentation and a trackable delivery workflow.
+
+## Non-Functional Requirements
+- Pages should remain responsive on desktop, tablet, and mobile layouts.
+- Pricing calculations should be consistent and server-side validated.
+- Project structure should stay maintainable across backend, frontend, and payments services.
+- User-facing flows should remain understandable and visually consistent.
+
+## Success Criteria
+- A shopper can browse, add to cart, update quantities, and view converted totals.
+- An admin can manage catalog inventory through Django admin.
+- At least one payment sandbox flow is wired and demonstrable.
+- Authentication exists for shopper accounts.
+- Documentation, Trello tracking, and final QA artifacts are complete.
+
+## Recommended Trello Board Structure
+
+### Lists
+- Backlog
+- Ready Next
+- In Progress
+- Review And QA
+- Done
+- Capstone Assets
+
+## Trello Cards And Checklists
+
+### Card: Project Setup And Environment
+Checklist:
+- Confirm backend virtual environment works
+- Confirm Django migrations run cleanly
+- Confirm frontend dependencies install
+- Confirm payments service dependencies install
+- Verify local run commands in README
+- Verify .env.example and .env usage
+
+### Card: Product Data Model And Seed Workflow
+Checklist:
+- Review product model fields
+- Review product image model relationships
+- Seed products from workspace images
+- Standardize sizes to XS through XXL
+- Confirm varied pricing logic
+- Remove obsolete legacy seed data
+
+### Card: Catalog Experience
+Checklist:
+- Show database-backed catalog cards
+- Display product description and price on each card
+- Open detail modal with second image when available
+- Ensure deleted products do not appear in catalog
+- Confirm empty-image products are skipped safely
+- QA desktop and mobile catalog layout
+
+### Card: Inventory Shopping Flow
+Checklist:
+- Display product list with price and description
+- Add size selector
+- Add quantity selector
+- Add currency selector
+- Add payment method selector
+- Auto-submit selector changes where appropriate
+- Verify add-to-cart action from inventory page
+
+### Card: Cart Calculations And Checkout Preferences
+Checklist:
+- Display cart items in table view
+- Support quantity updates
+- Support remove item action
+- Calculate line totals on server
+- Calculate grand total on server
+- Show selected currency and payment method
+- Verify live rate fallback behavior
+
+### Card: Shopper Authentication
+Checklist:
+- Create signup page and form
+- Create login page and form
+- Create logout action
+- Link auth views in main navigation
+- Attach cart behavior to authenticated user when available
+- Test invalid login and success login flows
+
+### Card: Payment Sandbox Integration
+Checklist:
+- Choose primary provider for sandbox demo
+- Confirm backend payment endpoint contract
+- Confirm payments microservice route exists
+- Implement initiation flow from checkout
+- Handle success response state
+- Handle failure response state
+- Document sandbox run instructions
+
+### Card: Communication And Notifications
+Checklist:
+- Choose communication method for submission scope
+- Add contact or confirmation email workflow
+- Configure development email backend
+- Add user-facing success message
+- Document configuration steps
+
+### Card: Admin Inventory Management
+Checklist:
+- Register product models in admin
+- Register cart models in admin
+- Confirm product image inline editing
+- Verify add product flow
+- Verify edit product flow
+- Verify delete product flow
+- Verify customer catalog updates after admin changes
+
+### Card: Responsive QA
+Checklist:
+- Test home page on mobile
+- Test about page on mobile
+- Test catalog modal on mobile
+- Test inventory controls on mobile
+- Test cart table and totals on mobile
+- Test admin sign-in path on mobile
+- Fix any spacing or overflow issues
+
+### Card: README And Project Documentation
+Checklist:
+- Confirm project description
+- Confirm industry context and target audience
+- Confirm elevator pitch
+- Confirm page and feature map
+- Add final GitHub repository link
+- Link planning document from README
+- Confirm local setup instructions are current
+
+### Card: Capstone Presentation Assets
+Checklist:
+- Capture screenshots of key pages
+- Prepare short demo walkthrough outline
+- Confirm Trello board is organized
+- Confirm README is submission-ready
+- Confirm repository is clean enough for review
+- Prepare talking points for implemented vs planned work
+
+## Suggested Initial Trello Placement
+
+### Backlog
+- Payment Sandbox Integration
+
+### Ready Next
+- Shopper Authentication (review and demo polish)
+- Communication And Notifications (review and demo polish)
+- Responsive QA
+- README And Project Documentation
+- Capstone Presentation Assets
+
+### Done
+- Project Setup And Environment
+- Product Data Model And Seed Workflow
+- Catalog Experience
+- Inventory Shopping Flow
+- Cart Calculations And Checkout Preferences
+- Admin Inventory Management
+
+## Priority Order
+1. Shopper Authentication
+2. Payment Sandbox Integration
+3. Responsive QA
+4. Communication And Notifications
+5. README And Project Documentation
+6. Capstone Presentation Assets
+
+## Definition Of Done For Each Trello Card
+- Feature works in the local environment
+- UI path is reachable from the application
+- Edge cases were manually tested
+- Any README or setup changes are documented
+- Card checklist is fully completed before moving to Done
+
+## Suggested Labels
+- Frontend
+- Backend
+- Database
+- Payments
+- Auth
+- QA
+- Documentation
+- Capstone
+
+## Weekly Tracking Format
+
+### This Week
+- Move only active implementation cards into In Progress
+- Keep documentation card updated alongside code changes
+- Capture blockers as comments on the relevant Trello card
+
+### End Of Week Review
+- Move tested items to Review And QA
+- Move approved items to Done
+- Update README and submission assets if project scope changed
+
+## How To Use This Document With Trello
+1. Create the six recommended Trello lists.
+2. Create each Trello card using the exact card titles in this document.
+3. Copy the checklist items under each card into a Trello checklist.
+4. Apply labels for Frontend, Backend, Payments, QA, or Documentation.
+5. Use the Priority Order section to decide what moves from Backlog into Ready Next and In Progress.
+
+## Short Capstone Delivery Narrative
+This capstone already demonstrates a functional ecommerce foundation: shoppers can browse real products, manage a cart, and view prices in multiple currencies while admins manage inventory through the database. The final delivery push should focus on authentication, a real payment sandbox path, communication, and formal submission polish.

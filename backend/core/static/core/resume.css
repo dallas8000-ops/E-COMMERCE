@@ -1,0 +1,82 @@
+/* Modern Resume Custom Styles */
+
+body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.resume-hero {
+    background: linear-gradient(120deg, #0a2342 60%, #e83e8c 100%);
+    color: #fff;
+    border-radius: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    padding: 3rem 2rem 2rem 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+.resume-hero .profile-img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    margin-bottom: 1.5rem;
+    background: #fff;
+}
+.resume-hero .name {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #fff;
+}
+.resume-hero .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffe6f0;
+    margin-bottom: 1rem;
+}
+.resume-hero .contact {
+    font-size: 1.1rem;
+    color: #ffe6f0;
+}
+.resume-section {
+    background: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 2rem 2rem 1.5rem 2rem;
+    margin-bottom: 2rem;
+}
+.resume-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0a2342;
+    margin-bottom: 1.2rem;
+}
+.resume-badge {
+    background: #e83e8c;
+    color: #fff;
+    border-radius: 0.7rem;
+    padding: 0.4rem 1rem;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+.resume-link {
+    color: #e83e8c;
+    font-weight: 600;
+    text-decoration: none;
+}
+.resume-link:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .resume-hero {
+        padding: 2rem 1rem 1.5rem 1rem;
+    }
+    .resume-section {
+        padding: 1.2rem 1rem 1rem 1rem;
+    }
+}

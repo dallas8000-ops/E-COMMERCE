@@ -1,0 +1,186 @@
+{% extends 'core/base.html' %}
+{% block title %}Home | East Africa Fashion{% endblock %}
+{% block content %}
+<div class="page-panel float-in">
+  <section class="hero-slab storefront-hero mb-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <span class="eyebrow-pill mb-3">East Africa Fashion Marketplace</span>
+        <h1 class="display-5 fw-bold mb-3">Curated looks, faster checkout, and a storefront built for confident women-led commerce.</h1>
+        <p class="lead mb-4">Browse admin-managed inventory, compare products visually, add items by size, and review live currency-aware totals before checkout.</p>
+        <div class="d-flex gap-2 flex-wrap mb-4">
+          <a class="btn btn-light px-4" href="/inventory/">Shop Inventory</a>
+          <a class="btn btn-outline-light px-4" href="/catalog/">View Catalog</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-card">
+            <strong>{{ product_count }}</strong>
+            <span>Products tracked</span>
+          </div>
+          <div class="hero-stat-card">
+            <strong>{{ category_count }}</strong>
+            <span>Catalog categories</span>
+          </div>
+          <div class="hero-stat-card">
+            <strong>4</strong>
+            <span>Supported currencies</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="brand-image-grid hero-image-stack">
+          {% for image in hero_images %}
+          <img src="{% url 'catalog_image' image.name %}" alt="Featured brand look {{ forloop.counter }}">
+          {% empty %}
+          <div class="service-card text-dark">Upload images in the workspace <strong>images/</strong> folder to populate this section.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-4 float-in delay-1">
+    <div class="section-heading-row mb-3">
+      <div>
+        <p class="section-kicker mb-1">Why this storefront works</p>
+        <h2 class="page-title h3 mb-0">A better demo story in under one minute</h2>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <article class="service-card h-100 feature-lift-card">
+          <h3 class="h6 fw-bold">Database-Managed Catalog</h3>
+          <p class="mb-0 text-muted">Products now appear from real inventory records and linked images, so admin changes stay consistent across the storefront.</p>
+        </article>
+      </div>
+      <div class="col-md-4">
+        <article class="service-card h-100 feature-lift-card">
+          <h3 class="h6 fw-bold">Regional Checkout Context</h3>
+          <p class="mb-0 text-muted">Shoppers can switch between USD, EUR, KES, and UGX while choosing MTN, Airtel, or Pesapal payment preferences.</p>
+        </article>
+      </div>
+      <div class="col-md-4">
+        <article class="service-card h-100 feature-lift-card">
+          <h3 class="h6 fw-bold">Admin-Ready Operations</h3>
+          <p class="mb-0 text-muted">Inventory, images, and carts are manageable through Django admin, which gives the platform a realistic business workflow.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-4 float-in delay-2">
+    <div class="section-heading-row mb-3">
+      <div>
+        <p class="section-kicker mb-1">Featured now</p>
+        <h2 class="page-title h3 mb-0">Recent inventory highlights</h2>
+      </div>
+      <a class="btn btn-outline-secondary btn-sm" href="/catalog/">See full catalog</a>
+    </div>
+    <div class="row g-3">
+      {% for product in featured_products %}
+      <div class="col-md-4">
+        <article class="service-card h-100 featured-product-card">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="featured-product-image mb-3">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <h3 class="h6 fw-bold mb-0">{{ product.name }}</h3>
+            <span class="featured-price">${{ product.price }}</span>
+          </div>
+          <p class="text-muted small mb-3">{{ product.description }}</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            {% for size in product.sizes %}
+            <span class="size-chip">{{ size }}</span>
+            {% empty %}
+            <span class="size-chip">Standard fit</span>
+            {% endfor %}
+          </div>
+          <a class="btn btn-sm btn-dark-subtle border" href="/inventory/">Add from inventory</a>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <article class="service-card">Add product images and inventory records to showcase featured items here.</article>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="row g-3 align-items-stretch float-in delay-2 mb-4">
+    <div class="col-lg-5">
+      <article class="contact-card h-100 storefront-contact-info">
+        <p class="section-kicker mb-1">Communication feature</p>
+        <h2 class="h3 page-title">Contact the storefront team</h2>
+        <p class="text-muted">Use this form to send product, partnership, or launch questions. Messages are stored in the app and forwarded through Django's email backend for follow-up.</p>
+        <div class="contact-detail-list">
+          <div>
+            <strong>Email</strong>
+            <span><a href="mailto:dallas8000@gmail.com">dallas8000@gmail.com</a></span>
+          </div>
+          <div>
+            <strong>Phone</strong>
+            <span>682-460-4048</span>
+          </div>
+          <div>
+            <strong>WhatsApp</strong>
+            <span><a href="https://wa.me/16824604038" target="_blank" rel="noopener">+1 682-460-4038</a></span>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class="col-lg-7">
+      <article class="contact-card h-100">
+        <h2 class="h4 page-title mb-3">Send a message</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="id_name" class="form-label">Name</label>
+              <input type="text" name="name" id="id_name" class="form-control{% if contact_form.name.errors %} is-invalid{% endif %}" value="{{ contact_form.name.value|default:'' }}">
+              {% for error in contact_form.name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label for="id_email" class="form-label">Email</label>
+              <input type="email" name="email" id="id_email" class="form-control{% if contact_form.email.errors %} is-invalid{% endif %}" value="{{ contact_form.email.value|default:'' }}">
+              {% for error in contact_form.email.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="col-12">
+              <label for="id_subject" class="form-label">Subject</label>
+              <input type="text" name="subject" id="id_subject" class="form-control{% if contact_form.subject.errors %} is-invalid{% endif %}" value="{{ contact_form.subject.value|default:'' }}">
+              {% for error in contact_form.subject.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="col-12">
+              <label for="id_message" class="form-label">Message</label>
+              <textarea name="message" id="id_message" rows="5" class="form-control{% if contact_form.message.errors %} is-invalid{% endif %}">{{ contact_form.message.value|default:'' }}</textarea>
+              {% for error in contact_form.message.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+            <p class="text-muted small mb-0">Messages are saved for admin follow-up and routed through the configured email backend.</p>
+            <button type="submit" class="btn btn-primary px-4">Send Inquiry</button>
+          </div>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <section class="row g-3 float-in delay-2">
+    <div class="col-md-4">
+      <article class="service-card h-100">
+        <h2 class="h6 fw-bold">Discover</h2>
+        <p class="mb-0 text-muted">Browse curated looks and compare product images in a polished, database-backed catalog.</p>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="service-card h-100">
+        <h2 class="h6 fw-bold">Customize</h2>
+        <p class="mb-0 text-muted">Choose size, quantity, preferred currency, and payment method before adding to cart.</p>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="service-card h-100">
+        <h2 class="h6 fw-bold">Operate</h2>
+        <p class="mb-0 text-muted">Manage products and inquiries through Django admin for a realistic storefront operations workflow.</p>
+      </article>
+    </div>
+  </section>
+</div>
+{% endblock %}
