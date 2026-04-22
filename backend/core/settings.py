@@ -52,7 +52,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 if not os.environ.get('DJANGO_SECRET_KEY') and not DEBUG:
     raise ImproperlyConfigured('DJANGO_SECRET_KEY must be set when DEBUG is False.')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com localhost 127.0.0.1').split()
 
 EMAIL_BACKEND = os.environ.get('DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
