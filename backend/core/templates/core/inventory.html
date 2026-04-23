@@ -31,8 +31,8 @@
 		{% with product=row.product %}
 		<div class="col-md-6 col-lg-5 mb-5">
 			<div class="card shadow-sm p-3 inventory-card" style="border-radius: 18px;">
-				{% if product.images.all %}
-					<img src="{{ product.images.all.0.image.url }}" class="card-img-top inventory-card-image" alt="{{ product.name }}" style="border-radius: 12px; max-height: 400px; object-fit: cover;">
+				{% if row.image_url %}
+					<img src="{{ row.image_url }}" class="card-img-top inventory-card-image" alt="{{ product.name }}" style="border-radius: 12px; max-height: 400px; object-fit: cover;">
 				{% endif %}
 				<div class="card-body">
 					<h4 class="card-title">{{ product.name }}</h4>

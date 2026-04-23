@@ -98,6 +98,11 @@ def _catalog_image_files():
     return files
 
 
+def _product_image_url(image_field):
+    image_name = Path(str(image_field)).name
+    return reverse('catalog_image', args=[image_name])
+
+
 def _normalize_key(value):
     return ''.join(char for char in value.lower() if char.isalnum())
 
@@ -213,7 +218,7 @@ def _featured_products(limit=3):
             'name': product.name,
             'description': (product.description or '').strip() or 'Curated premium fashion for confident everyday wear.',
             'price': _format_money(_safe_decimal(product.price, Decimal('0')), 'USD'),
-            'image_url': images[0].image.url,
+            'image_url': _product_image_url(images[0].image),
             'sizes': product.size_list(),
         })
     return featured
@@ -382,8 +387,8 @@ def catalog(request):
             'name': product.name,
             'description': description or _catalog_fallback_description(product),
             'price': product.price,
-            'primary_url': primary_image.image.url,
-            'detail_url': detail_image.image.url,
+            'primary_url': _product_image_url(primary_image.image),
+            'detail_url': _product_image_url(detail_image.image),
         })
 
     return render(request, 'core/catalog.html', {
@@ -416,9 +421,12 @@ def inventory(request):
         for product in products:
             base_price = _safe_decimal(product.price, Decimal('0'))
             converted_price = base_price * checkout['rate']
+            product_images = list(product.images.all())
+            image_url = _product_image_url(product_images[0].image) if product_images else ''
             inventory_items.append({
                 'product': product,
                 'price_display': _format_money(converted_price, checkout['currency']),
+                'image_url': image_url,
             })
 
         return render(request, 'core/inventory.html', {
@@ -438,7 +446,15 @@ def inventory(request):
         products = Product.objects.prefetch_related(
             Prefetch('images', queryset=ProductImage.objects.all())
         ).all()
-        inventory_items = [{'product': p, 'price_display': str(p.price)} for p in products]
+        inventory_items = []
+        for product in products:
+            product_images = list(product.images.all())
+            image_url = _product_image_url(product_images[0].image) if product_images else ''
+            inventory_items.append({
+                'product': product,
+                'price_display': str(product.price),
+                'image_url': image_url,
+            })
         return render(request, 'core/inventory.html', {
             'inventory_items': inventory_items,
             'currency': 'USD',
