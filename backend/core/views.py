@@ -398,16 +398,27 @@ def catalog(request):
 
 
 def catalog_image(_request, image_name):
-    base_dir = _workspace_images_dir().resolve()
-    image_path = (base_dir / image_name).resolve()
+    requested_name = Path(image_name).name
 
-    if base_dir not in image_path.parents:
-        raise Http404('Invalid image path.')
+    # Try workspace image folder first (used by legacy catalog seed flow).
+    workspace_dir = _workspace_images_dir().resolve()
+    workspace_candidate = (workspace_dir / requested_name).resolve()
+    if workspace_dir in workspace_candidate.parents and workspace_candidate.exists() and workspace_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+        return FileResponse(open(workspace_candidate, 'rb'))
 
-    if not image_path.exists() or image_path.suffix.lower() not in SUPPORTED_IMAGE_EXTENSIONS:
-        raise Http404('Image not found.')
+    # Fallback to media folder where ProductImage files are stored on most deployments.
+    media_root = Path(settings.MEDIA_ROOT).resolve()
+    media_candidate = (media_root / requested_name).resolve()
+    if media_root in media_candidate.parents and media_candidate.exists() and media_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+        return FileResponse(open(media_candidate, 'rb'))
 
-    return FileResponse(open(image_path, 'rb'))
+    # Some files are nested (for example: media/products/products/<name>).
+    for candidate in media_root.rglob(requested_name):
+        resolved = candidate.resolve()
+        if media_root in resolved.parents and resolved.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+            return FileResponse(open(resolved, 'rb'))
+
+    raise Http404('Image not found.')
 
 
 def inventory(request):
