@@ -1,0 +1,2313 @@
+[
+{
+  "model": "inventory.category",
+  "pk": 2,
+  "fields": {
+    "name": "Default",
+    "description": "Default category"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 14,
+  "fields": {
+    "name": "Abstract Brushstroke Midi Dress",
+    "description": "",
+    "price": "48.00",
+    "old_price": "58.56",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.077Z",
+    "updated_at": "2026-04-21T22:26:12.628Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 15,
+  "fields": {
+    "name": "Assorted Office Attire",
+    "description": "",
+    "price": "117.50",
+    "old_price": "143.35",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.086Z",
+    "updated_at": "2026-04-21T22:26:12.635Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 16,
+  "fields": {
+    "name": "Assorted Pant Suits",
+    "description": "",
+    "price": "125.00",
+    "old_price": "152.50",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.094Z",
+    "updated_at": "2026-04-21T22:26:12.643Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 17,
+  "fields": {
+    "name": "Black Office Suit",
+    "description": "",
+    "price": "109.50",
+    "old_price": "133.59",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.101Z",
+    "updated_at": "2026-04-21T22:26:12.650Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 18,
+  "fields": {
+    "name": "Black Stylist Suit",
+    "description": "",
+    "price": "148.50",
+    "old_price": "181.17",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.109Z",
+    "updated_at": "2026-04-21T22:26:12.660Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 19,
+  "fields": {
+    "name": "Blush One Shoulderpleated Hem Mini",
+    "description": "",
+    "price": "95.00",
+    "old_price": "115.90",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.116Z",
+    "updated_at": "2026-04-21T22:26:12.667Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 20,
+  "fields": {
+    "name": "Blush Puff Sleeve Belted Midi",
+    "description": "",
+    "price": "93.50",
+    "old_price": "114.07",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.123Z",
+    "updated_at": "2026-04-21T22:26:12.675Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 21,
+  "fields": {
+    "name": "Bubblegum Ruched Midi",
+    "description": "",
+    "price": "119.75",
+    "old_price": "146.10",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.131Z",
+    "updated_at": "2026-04-21T22:26:12.682Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 22,
+  "fields": {
+    "name": "Burgundy Flaredress",
+    "description": "",
+    "price": "63.75",
+    "old_price": "77.78",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.139Z",
+    "updated_at": "2026-04-21T22:26:12.689Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 23,
+  "fields": {
+    "name": "Burgundy Skirtsuit",
+    "description": "",
+    "price": "143.50",
+    "old_price": "175.07",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.146Z",
+    "updated_at": "2026-04-21T22:26:12.697Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 24,
+  "fields": {
+    "name": "Camel Maxi And Black Bow Blouse",
+    "description": "",
+    "price": "170.75",
+    "old_price": "208.32",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.154Z",
+    "updated_at": "2026-04-21T22:26:12.704Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 25,
+  "fields": {
+    "name": "Chartreuse Belted Lapel Shirtdress",
+    "description": "",
+    "price": "73.75",
+    "old_price": "89.98",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.160Z",
+    "updated_at": "2026-04-21T22:26:12.711Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 26,
+  "fields": {
+    "name": "Citrus Architectural Cocktail Dress",
+    "description": "",
+    "price": "49.00",
+    "old_price": "59.78",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.168Z",
+    "updated_at": "2026-04-21T22:26:12.718Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 27,
+  "fields": {
+    "name": "Creamy Blue",
+    "description": "",
+    "price": "140.25",
+    "old_price": "171.11",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.175Z",
+    "updated_at": "2026-04-21T22:26:12.726Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 28,
+  "fields": {
+    "name": "Crimson And Ivory With Hat",
+    "description": "",
+    "price": "105.00",
+    "old_price": "128.10",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.183Z",
+    "updated_at": "2026-04-21T22:26:12.734Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 29,
+  "fields": {
+    "name": "Crimson Feather Ballgown",
+    "description": "",
+    "price": "57.00",
+    "old_price": "69.54",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.190Z",
+    "updated_at": "2026-04-21T22:26:12.741Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 30,
+  "fields": {
+    "name": "Drape Peplum Cocktaildress",
+    "description": "",
+    "price": "138.50",
+    "old_price": "168.97",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.198Z",
+    "updated_at": "2026-04-21T22:26:12.748Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 31,
+  "fields": {
+    "name": "Dusty Rosemauve Suit",
+    "description": "",
+    "price": "121.25",
+    "old_price": "147.93",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.205Z",
+    "updated_at": "2026-04-21T22:26:12.757Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 32,
+  "fields": {
+    "name": "Emerald Belted Waistcoat",
+    "description": "",
+    "price": "34.25",
+    "old_price": "41.79",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.213Z",
+    "updated_at": "2026-04-21T22:26:12.763Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 33,
+  "fields": {
+    "name": "Emerald Suit",
+    "description": "",
+    "price": "121.75",
+    "old_price": "148.54",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.221Z",
+    "updated_at": "2026-04-21T22:26:12.771Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 34,
+  "fields": {
+    "name": "Emeraldfloralstatementmididress",
+    "description": "",
+    "price": "61.75",
+    "old_price": "75.34",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.228Z",
+    "updated_at": "2026-04-21T22:26:12.777Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 35,
+  "fields": {
+    "name": "Executive Office Dress",
+    "description": "",
+    "price": "122.75",
+    "old_price": "149.76",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.235Z",
+    "updated_at": "2026-04-21T22:26:12.785Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 36,
+  "fields": {
+    "name": "Fashion Floral",
+    "description": "",
+    "price": "48.00",
+    "old_price": "58.56",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.242Z",
+    "updated_at": "2026-04-21T22:26:12.793Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 37,
+  "fields": {
+    "name": "Fashion Trio",
+    "description": "",
+    "price": "128.50",
+    "old_price": "156.77",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.250Z",
+    "updated_at": "2026-04-21T22:26:12.800Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 38,
+  "fields": {
+    "name": "Fasnion Orange",
+    "description": "",
+    "price": "50.50",
+    "old_price": "61.61",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.257Z",
+    "updated_at": "2026-04-21T22:26:12.807Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 39,
+  "fields": {
+    "name": "Flashy Duo",
+    "description": "",
+    "price": "50.75",
+    "old_price": "61.92",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.265Z",
+    "updated_at": "2026-04-21T22:26:12.815Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 40,
+  "fields": {
+    "name": "Floral Applique Pantsuit",
+    "description": "",
+    "price": "98.25",
+    "old_price": "119.87",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.272Z",
+    "updated_at": "2026-04-21T22:26:12.822Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 41,
+  "fields": {
+    "name": "Formal Dress",
+    "description": "",
+    "price": "124.50",
+    "old_price": "151.89",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.279Z",
+    "updated_at": "2026-04-21T22:26:12.830Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 42,
+  "fields": {
+    "name": "Fuchsia Shaw Llapel Pantsuit",
+    "description": "",
+    "price": "127.00",
+    "old_price": "154.94",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.286Z",
+    "updated_at": "2026-04-21T22:26:12.838Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 43,
+  "fields": {
+    "name": "Grey Suit",
+    "description": "",
+    "price": "104.00",
+    "old_price": "126.88",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.294Z",
+    "updated_at": "2026-04-21T22:26:12.845Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 44,
+  "fields": {
+    "name": "Hot Pink Peplum Skirt Suit",
+    "description": "",
+    "price": "139.50",
+    "old_price": "170.19",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.302Z",
+    "updated_at": "2026-04-21T22:26:12.852Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 45,
+  "fields": {
+    "name": "Ice Blue Pleated Satin Mini",
+    "description": "",
+    "price": "141.00",
+    "old_price": "172.02",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.309Z",
+    "updated_at": "2026-04-21T22:26:12.860Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 46,
+  "fields": {
+    "name": "Ivory Blazer Midipencil Skirt",
+    "description": "",
+    "price": "114.00",
+    "old_price": "139.08",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.316Z",
+    "updated_at": "2026-04-21T22:26:12.868Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 47,
+  "fields": {
+    "name": "Lemon One Shouldertea Length Gown",
+    "description": "",
+    "price": "150.50",
+    "old_price": "183.61",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.324Z",
+    "updated_at": "2026-04-21T22:26:12.875Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 48,
+  "fields": {
+    "name": "Lilac Pleated Dress",
+    "description": "",
+    "price": "50.25",
+    "old_price": "61.31",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.331Z",
+    "updated_at": "2026-04-21T22:26:12.882Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 49,
+  "fields": {
+    "name": "Magenta Gown",
+    "description": "",
+    "price": "114.00",
+    "old_price": "139.08",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.338Z",
+    "updated_at": "2026-04-21T22:26:12.889Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 50,
+  "fields": {
+    "name": "Magenta Pleated Chainbucklebelt",
+    "description": "",
+    "price": "56.00",
+    "old_price": "68.32",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.345Z",
+    "updated_at": "2026-04-21T22:26:12.896Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 51,
+  "fields": {
+    "name": "Magenta Power Suit Pocket Blazer",
+    "description": "",
+    "price": "49.25",
+    "old_price": "60.09",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.353Z",
+    "updated_at": "2026-04-21T22:26:12.904Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 52,
+  "fields": {
+    "name": "Magenta Roseprint Cocktail",
+    "description": "",
+    "price": "141.25",
+    "old_price": "172.33",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.360Z",
+    "updated_at": "2026-04-21T22:26:12.912Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 53,
+  "fields": {
+    "name": "Marigold Off Shoulder Ballgown",
+    "description": "",
+    "price": "43.50",
+    "old_price": "53.07",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.368Z",
+    "updated_at": "2026-04-21T22:26:12.920Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 54,
+  "fields": {
+    "name": "Maroon Orange Duo Suits",
+    "description": "",
+    "price": "163.00",
+    "old_price": "198.86",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.375Z",
+    "updated_at": "2026-04-21T22:26:12.929Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 55,
+  "fields": {
+    "name": "Maroon Ruffle Hem Sheath",
+    "description": "",
+    "price": "89.75",
+    "old_price": "109.50",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.382Z",
+    "updated_at": "2026-04-21T22:26:12.936Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 56,
+  "fields": {
+    "name": "Mint Oneshoulder Floral Midi",
+    "description": "",
+    "price": "122.75",
+    "old_price": "149.76",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.389Z",
+    "updated_at": "2026-04-21T22:26:12.945Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 57,
+  "fields": {
+    "name": "Monochrome Mini Dress Duo",
+    "description": "",
+    "price": "86.25",
+    "old_price": "105.23",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.397Z",
+    "updated_at": "2026-04-21T22:26:12.953Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 58,
+  "fields": {
+    "name": "Monstera Wrap Midi Dress",
+    "description": "",
+    "price": "121.75",
+    "old_price": "148.54",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.404Z",
+    "updated_at": "2026-04-21T22:26:12.960Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 59,
+  "fields": {
+    "name": "Mustard Gold Button Belted Pantsuit",
+    "description": "",
+    "price": "116.50",
+    "old_price": "142.13",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.411Z",
+    "updated_at": "2026-04-21T22:26:12.968Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 60,
+  "fields": {
+    "name": "Navy And Colorblock Mini",
+    "description": "",
+    "price": "90.00",
+    "old_price": "109.80",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.419Z",
+    "updated_at": "2026-04-21T22:26:12.976Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 61,
+  "fields": {
+    "name": "Navy Dot Fit Flare",
+    "description": "",
+    "price": "145.50",
+    "old_price": "177.51",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.426Z",
+    "updated_at": "2026-04-21T22:26:12.984Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 62,
+  "fields": {
+    "name": "Navy Lapel Pantsuit Strapless",
+    "description": "",
+    "price": "147.25",
+    "old_price": "179.65",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.433Z",
+    "updated_at": "2026-04-21T22:26:12.990Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 63,
+  "fields": {
+    "name": "Navy Peplum Skirt Suit",
+    "description": "",
+    "price": "94.75",
+    "old_price": "115.60",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.441Z",
+    "updated_at": "2026-04-21T22:26:12.997Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 64,
+  "fields": {
+    "name": "Navy Satin Bishop Sleeve Midi",
+    "description": "",
+    "price": "128.25",
+    "old_price": "156.47",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.449Z",
+    "updated_at": "2026-04-21T22:26:13.006Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 65,
+  "fields": {
+    "name": "Navy Stripe Wrap Maxi Charm Belt",
+    "description": "",
+    "price": "85.00",
+    "old_price": "103.70",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.457Z",
+    "updated_at": "2026-04-21T22:26:13.012Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 66,
+  "fields": {
+    "name": "Noir Ruched Midi Dress",
+    "description": "",
+    "price": "155.75",
+    "old_price": "190.02",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.465Z",
+    "updated_at": "2026-04-21T22:26:13.020Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 67,
+  "fields": {
+    "name": "Noir Scroll Sleeve Sheathand",
+    "description": "",
+    "price": "114.75",
+    "old_price": "140.00",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.473Z",
+    "updated_at": "2026-04-21T22:26:13.027Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 68,
+  "fields": {
+    "name": "Oatmeal Double Breast Suit",
+    "description": "",
+    "price": "36.00",
+    "old_price": "43.92",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.479Z",
+    "updated_at": "2026-04-21T22:26:13.035Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 69,
+  "fields": {
+    "name": "Ocean Green Suit",
+    "description": "",
+    "price": "164.00",
+    "old_price": "200.08",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.488Z",
+    "updated_at": "2026-04-21T22:26:13.042Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 70,
+  "fields": {
+    "name": "Olive Abstract Ruffle Sleeve",
+    "description": "",
+    "price": "114.75",
+    "old_price": "140.00",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.496Z",
+    "updated_at": "2026-04-21T22:26:13.050Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 71,
+  "fields": {
+    "name": "Orange Green Duo",
+    "description": "",
+    "price": "157.25",
+    "old_price": "191.85",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.503Z",
+    "updated_at": "2026-04-21T22:26:13.058Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 72,
+  "fields": {
+    "name": "Peach One Shoulder Floral Midi",
+    "description": "",
+    "price": "58.00",
+    "old_price": "70.76",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.511Z",
+    "updated_at": "2026-04-21T22:26:13.065Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 73,
+  "fields": {
+    "name": "Pinkish Purple Suit",
+    "description": "",
+    "price": "128.75",
+    "old_price": "157.08",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.518Z",
+    "updated_at": "2026-04-21T22:26:13.072Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 74,
+  "fields": {
+    "name": "Polka Dot Peplum Slit Pencil Skirt",
+    "description": "",
+    "price": "40.25",
+    "old_price": "49.11",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.525Z",
+    "updated_at": "2026-04-21T22:26:13.079Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 75,
+  "fields": {
+    "name": "Powder Blue Sleevemidi",
+    "description": "",
+    "price": "123.00",
+    "old_price": "150.06",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.533Z",
+    "updated_at": "2026-04-21T22:26:13.087Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 76,
+  "fields": {
+    "name": "Purple Haze Suit",
+    "description": "",
+    "price": "68.25",
+    "old_price": "83.27",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.541Z",
+    "updated_at": "2026-04-21T22:26:13.095Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 77,
+  "fields": {
+    "name": "Purple Lovely Suit",
+    "description": "",
+    "price": "37.00",
+    "old_price": "45.14",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.549Z",
+    "updated_at": "2026-04-21T22:26:13.102Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 78,
+  "fields": {
+    "name": "Purple Pant Suit",
+    "description": "",
+    "price": "79.00",
+    "old_price": "96.38",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.556Z",
+    "updated_at": "2026-04-21T22:26:13.109Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 79,
+  "fields": {
+    "name": "Red Polka",
+    "description": "",
+    "price": "62.50",
+    "old_price": "76.25",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.564Z",
+    "updated_at": "2026-04-21T22:26:13.117Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 80,
+  "fields": {
+    "name": "Royal Blue Suit",
+    "description": "",
+    "price": "92.00",
+    "old_price": "112.24",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.572Z",
+    "updated_at": "2026-04-21T22:26:13.124Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 81,
+  "fields": {
+    "name": "Royal Purple Rhinestone Midi",
+    "description": "",
+    "price": "152.25",
+    "old_price": "185.75",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.579Z",
+    "updated_at": "2026-04-21T22:26:13.131Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 82,
+  "fields": {
+    "name": "Rust Suit",
+    "description": "",
+    "price": "127.75",
+    "old_price": "155.86",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.587Z",
+    "updated_at": "2026-04-21T22:26:13.139Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 83,
+  "fields": {
+    "name": "Satin Pleated Bandeau Mini",
+    "description": "",
+    "price": "132.75",
+    "old_price": "161.96",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.594Z",
+    "updated_at": "2026-04-21T22:26:13.147Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 84,
+  "fields": {
+    "name": "Satin Puff Sleeve Slit Midi",
+    "description": "",
+    "price": "51.75",
+    "old_price": "63.14",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.601Z",
+    "updated_at": "2026-04-21T22:26:13.154Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 85,
+  "fields": {
+    "name": "Scarlet Asymmetric Peplum Sheath",
+    "description": "",
+    "price": "152.00",
+    "old_price": "185.44",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.609Z",
+    "updated_at": "2026-04-21T22:26:13.162Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 86,
+  "fields": {
+    "name": "Scyenee",
+    "description": "",
+    "price": "97.00",
+    "old_price": "118.34",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.616Z",
+    "updated_at": "2026-04-21T22:26:13.168Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 87,
+  "fields": {
+    "name": "Sky Marble Pleated Midi",
+    "description": "",
+    "price": "103.00",
+    "old_price": "125.66",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.623Z",
+    "updated_at": "2026-04-21T22:26:13.177Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 88,
+  "fields": {
+    "name": "Tan Ropeprint Sheath",
+    "description": "",
+    "price": "71.75",
+    "old_price": "87.54",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.630Z",
+    "updated_at": "2026-04-21T22:26:13.183Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 89,
+  "fields": {
+    "name": "Taup Suit",
+    "description": "",
+    "price": "107.75",
+    "old_price": "131.46",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.639Z",
+    "updated_at": "2026-04-21T22:26:13.191Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 90,
+  "fields": {
+    "name": "Teal Suit",
+    "description": "",
+    "price": "87.75",
+    "old_price": "107.06",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.646Z",
+    "updated_at": "2026-04-21T22:26:13.199Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 91,
+  "fields": {
+    "name": "Teal Violet Tea Dress",
+    "description": "",
+    "price": "56.00",
+    "old_price": "68.32",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.653Z",
+    "updated_at": "2026-04-21T22:26:13.205Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 92,
+  "fields": {
+    "name": "Three Panel Comparison Brown, Navy, And Magenta Suits",
+    "description": "",
+    "price": "129.25",
+    "old_price": "157.69",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.661Z",
+    "updated_at": "2026-04-21T22:26:13.214Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 93,
+  "fields": {
+    "name": "Vintage Rose Belt Dot Midi",
+    "description": "",
+    "price": "65.00",
+    "old_price": "79.30",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.669Z",
+    "updated_at": "2026-04-21T22:26:13.223Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 94,
+  "fields": {
+    "name": "Violet Watercolor One Shoulder Midi",
+    "description": "",
+    "price": "106.00",
+    "old_price": "129.32",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.675Z",
+    "updated_at": "2026-04-21T22:26:13.231Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 95,
+  "fields": {
+    "name": "Watercolor Puff Sleeve",
+    "description": "",
+    "price": "146.75",
+    "old_price": "179.04",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.684Z",
+    "updated_at": "2026-04-21T22:26:13.239Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 96,
+  "fields": {
+    "name": "White Paisley Puff Midi",
+    "description": "",
+    "price": "135.00",
+    "old_price": "164.70",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.691Z",
+    "updated_at": "2026-04-21T22:26:13.246Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 97,
+  "fields": {
+    "name": "White Pleated Midi Violet Fascinator",
+    "description": "",
+    "price": "170.00",
+    "old_price": "207.40",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.699Z",
+    "updated_at": "2026-04-21T22:26:13.252Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 98,
+  "fields": {
+    "name": "White Polka",
+    "description": "",
+    "price": "155.00",
+    "old_price": "189.10",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.707Z",
+    "updated_at": "2026-04-21T22:26:13.260Z"
+  }
+},
+{
+  "model": "inventory.product",
+  "pk": 99,
+  "fields": {
+    "name": "Windowpanepeplumvestandmagentawideleg",
+    "description": "",
+    "price": "168.50",
+    "old_price": "205.57",
+    "category": 2,
+    "color": "",
+    "sizes": "XS,S,M,L,XL,XXL",
+    "in_stock": true,
+    "created_at": "2026-04-21T22:09:48.714Z",
+    "updated_at": "2026-04-21T22:26:13.267Z"
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 17,
+  "fields": {
+    "product": 14,
+    "image": "products/products/Abstract-Brushstroke-Midi-Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 18,
+  "fields": {
+    "product": 15,
+    "image": "products/products/Assorted_Office_Attire.jpeg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 19,
+  "fields": {
+    "product": 16,
+    "image": "products/products/Assorted_Pant_Suits.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 20,
+  "fields": {
+    "product": 17,
+    "image": "products/products/Black_Office_Suit_.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 21,
+  "fields": {
+    "product": 18,
+    "image": "products/products/Black_Stylist_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 22,
+  "fields": {
+    "product": 19,
+    "image": "products/products/Blush_One_ShoulderPleated_Hem_Mini.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 23,
+  "fields": {
+    "product": 20,
+    "image": "products/products/Blush_Puff_Sleeve_Belted_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 24,
+  "fields": {
+    "product": 21,
+    "image": "products/products/Bubblegum_Ruched_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 25,
+  "fields": {
+    "product": 22,
+    "image": "products/products/Burgundy_FlareDress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 26,
+  "fields": {
+    "product": 23,
+    "image": "products/products/Burgundy_SkirtSuit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 27,
+  "fields": {
+    "product": 24,
+    "image": "products/products/Camel_Maxi_and_Black_Bow_Blouse.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 28,
+  "fields": {
+    "product": 25,
+    "image": "products/products/Chartreuse_Belted_Lapel__Shirtdress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 29,
+  "fields": {
+    "product": 26,
+    "image": "products/products/Citrus_Architectural_Cocktail_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 30,
+  "fields": {
+    "product": 27,
+    "image": "products/products/Creamy_Blue.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 31,
+  "fields": {
+    "product": 28,
+    "image": "products/products/Crimson_and_Ivory_with_Hat.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 32,
+  "fields": {
+    "product": 29,
+    "image": "products/products/Crimson_Feather_Ballgown.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 33,
+  "fields": {
+    "product": 30,
+    "image": "products/products/Drape_Peplum_CocktailDress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 34,
+  "fields": {
+    "product": 31,
+    "image": "products/products/Dusty_rosemauve_suit.jpeg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 35,
+  "fields": {
+    "product": 32,
+    "image": "products/products/Emerald_Belted_Waistcoat.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 36,
+  "fields": {
+    "product": 33,
+    "image": "products/products/Emerald_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 37,
+  "fields": {
+    "product": 34,
+    "image": "products/products/EmeraldFloralStatementMidiDress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 38,
+  "fields": {
+    "product": 35,
+    "image": "products/products/Executive_Office_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 39,
+  "fields": {
+    "product": 36,
+    "image": "products/products/Fashion_Floral.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 40,
+  "fields": {
+    "product": 37,
+    "image": "products/products/Fashion_Trio.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 41,
+  "fields": {
+    "product": 38,
+    "image": "products/products/Fasnion_Orange.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 42,
+  "fields": {
+    "product": 39,
+    "image": "products/products/Flashy_Duo.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 43,
+  "fields": {
+    "product": 40,
+    "image": "products/products/Floral_Applique_Pantsuit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 44,
+  "fields": {
+    "product": 41,
+    "image": "products/products/Formal_dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 45,
+  "fields": {
+    "product": 42,
+    "image": "products/products/Fuchsia_Shaw_lLapel_Pantsuit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 46,
+  "fields": {
+    "product": 43,
+    "image": "products/products/Grey_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 47,
+  "fields": {
+    "product": 44,
+    "image": "products/products/Hot_Pink_Peplum_Skirt_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 48,
+  "fields": {
+    "product": 45,
+    "image": "products/products/Ice_Blue_Pleated_Satin_Mini.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 49,
+  "fields": {
+    "product": 46,
+    "image": "products/products/Ivory_Blazer_MidiPencil_Skirt.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 50,
+  "fields": {
+    "product": 47,
+    "image": "products/products/Lemon_One_ShoulderTea_Length_Gown.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 51,
+  "fields": {
+    "product": 48,
+    "image": "products/products/Lilac_Pleated_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 52,
+  "fields": {
+    "product": 49,
+    "image": "products/products/Magenta_Gown.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 53,
+  "fields": {
+    "product": 50,
+    "image": "products/products/Magenta_Pleated_ChainBuckleBelt.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 54,
+  "fields": {
+    "product": 51,
+    "image": "products/products/Magenta_Power_Suit_Pocket_Blazer.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 55,
+  "fields": {
+    "product": 52,
+    "image": "products/products/Magenta_RosePrint_Cocktail.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 56,
+  "fields": {
+    "product": 53,
+    "image": "products/products/Marigold_Off_Shoulder_Ballgown.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 57,
+  "fields": {
+    "product": 54,
+    "image": "products/products/Maroon_Orange_duo_Suits.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 58,
+  "fields": {
+    "product": 55,
+    "image": "products/products/Maroon_Ruffle_Hem_Sheath.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 59,
+  "fields": {
+    "product": 56,
+    "image": "products/products/Mint_OneShoulder_Floral_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 60,
+  "fields": {
+    "product": 57,
+    "image": "products/products/Monochrome_Mini_Dress_Duo.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 61,
+  "fields": {
+    "product": 58,
+    "image": "products/products/Monstera_Wrap_Midi_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 62,
+  "fields": {
+    "product": 59,
+    "image": "products/products/Mustard_Gold_Button_Belted_Pantsuit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 63,
+  "fields": {
+    "product": 60,
+    "image": "products/products/Navy_and_Colorblock_Mini.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 64,
+  "fields": {
+    "product": 61,
+    "image": "products/products/Navy_Dot_Fit_Flare_.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 65,
+  "fields": {
+    "product": 62,
+    "image": "products/products/Navy_Lapel_Pantsuit_Strapless.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 66,
+  "fields": {
+    "product": 63,
+    "image": "products/products/Navy_Peplum_Skirt_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 67,
+  "fields": {
+    "product": 64,
+    "image": "products/products/Navy_Satin_Bishop_Sleeve_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 68,
+  "fields": {
+    "product": 65,
+    "image": "products/products/Navy_Stripe_Wrap_Maxi_Charm_Belt.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 69,
+  "fields": {
+    "product": 66,
+    "image": "products/products/Noir_Ruched_Midi_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 70,
+  "fields": {
+    "product": 67,
+    "image": "products/products/Noir_Scroll_Sleeve_Sheathand.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 71,
+  "fields": {
+    "product": 68,
+    "image": "products/products/Oatmeal_Double_Breast_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 72,
+  "fields": {
+    "product": 69,
+    "image": "products/products/Ocean_Green_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 73,
+  "fields": {
+    "product": 70,
+    "image": "products/products/Olive_Abstract_Ruffle_Sleeve.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 74,
+  "fields": {
+    "product": 71,
+    "image": "products/products/Orange_Green_Duo.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 75,
+  "fields": {
+    "product": 72,
+    "image": "products/products/Peach_One_Shoulder_Floral_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 76,
+  "fields": {
+    "product": 73,
+    "image": "products/products/Pinkish_Purple_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 77,
+  "fields": {
+    "product": 74,
+    "image": "products/products/Polka_Dot_Peplum_Slit_Pencil_Skirt.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 78,
+  "fields": {
+    "product": 75,
+    "image": "products/products/Powder_Blue_SleeveMidi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 79,
+  "fields": {
+    "product": 76,
+    "image": "products/products/Purple_Haze_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 80,
+  "fields": {
+    "product": 77,
+    "image": "products/products/Purple_Lovely_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 81,
+  "fields": {
+    "product": 78,
+    "image": "products/products/Purple_Pant_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 82,
+  "fields": {
+    "product": 79,
+    "image": "products/products/Red_Polka.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 83,
+  "fields": {
+    "product": 80,
+    "image": "products/products/Royal_blue_suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 84,
+  "fields": {
+    "product": 81,
+    "image": "products/products/Royal_Purple_Rhinestone_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 85,
+  "fields": {
+    "product": 82,
+    "image": "products/products/Rust_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 86,
+  "fields": {
+    "product": 83,
+    "image": "products/products/Satin_Pleated_Bandeau_Mini.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 87,
+  "fields": {
+    "product": 84,
+    "image": "products/products/Satin_Puff_Sleeve_Slit_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 88,
+  "fields": {
+    "product": 85,
+    "image": "products/products/Scarlet_Asymmetric_Peplum_Sheath.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 89,
+  "fields": {
+    "product": 86,
+    "image": "products/products/Scyenee.jpeg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 90,
+  "fields": {
+    "product": 87,
+    "image": "products/products/Sky_Marble_Pleated_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 91,
+  "fields": {
+    "product": 88,
+    "image": "products/products/Tan_RopePrint_Sheath.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 92,
+  "fields": {
+    "product": 89,
+    "image": "products/products/Taup_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 93,
+  "fields": {
+    "product": 90,
+    "image": "products/products/Teal_Suit.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 94,
+  "fields": {
+    "product": 91,
+    "image": "products/products/Teal_Violet_Tea_Dress.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 95,
+  "fields": {
+    "product": 92,
+    "image": "products/products/Three-panel_comparison_Brown_navy_and_magenta_suits.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 96,
+  "fields": {
+    "product": 93,
+    "image": "products/products/Vintage_Rose_Belt_Dot_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 97,
+  "fields": {
+    "product": 94,
+    "image": "products/products/Violet_Watercolor_One_Shoulder_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 98,
+  "fields": {
+    "product": 95,
+    "image": "products/products/Watercolor_Puff_Sleeve_.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 99,
+  "fields": {
+    "product": 96,
+    "image": "products/products/White_Paisley_Puff_Midi.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 100,
+  "fields": {
+    "product": 97,
+    "image": "products/products/White_Pleated_Midi_Violet_Fascinator.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 101,
+  "fields": {
+    "product": 98,
+    "image": "products/products/White_Polka.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "inventory.productimage",
+  "pk": 102,
+  "fields": {
+    "product": 99,
+    "image": "products/products/WindowpanePeplumVestandMagentaWideLeg.jpg",
+    "alt_text": ""
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "session_key": "1k0h8srnwg1ajtkeywbt37wrqp5nmur7",
+    "created_at": "2026-04-12T19:54:03.399Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 2,
+  "fields": {
+    "user": null,
+    "session_key": "jlebmnbgu4vs36zrw0fr4esz25258s2f",
+    "created_at": "2026-04-21T22:12:53.569Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 3,
+  "fields": {
+    "user": null,
+    "session_key": "3hiksxik2gzxt6o9uldfa1v39i0kbocd",
+    "created_at": "2026-04-21T22:23:34.472Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 4,
+  "fields": {
+    "user": null,
+    "session_key": "uzmhjinqg5e1scic37seu6a3zns6po8s",
+    "created_at": "2026-04-21T22:40:07.644Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 5,
+  "fields": {
+    "user": null,
+    "session_key": "buk2fxpmqxcopg5sj8b6lbh3csgpywr4",
+    "created_at": "2026-04-22T02:56:46.932Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 6,
+  "fields": {
+    "user": null,
+    "session_key": "h5e6bpofa85mkr240iq7rg940snfhg48",
+    "created_at": "2026-04-22T03:01:54.841Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "shopper_demo_user"
+    ],
+    "session_key": "40f7imkfe9xufsjov5gzobuno6zq2goi",
+    "created_at": "2026-04-22T03:02:54.506Z"
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 6,
+  "fields": {
+    "cart": 3,
+    "product": 14,
+    "quantity": 1,
+    "size": "M",
+    "color": ""
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 7,
+  "fields": {
+    "cart": 4,
+    "product": 14,
+    "quantity": 1,
+    "size": "M",
+    "color": ""
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 8,
+  "fields": {
+    "cart": 5,
+    "product": 14,
+    "quantity": 1,
+    "size": "L",
+    "color": ""
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 9,
+  "fields": {
+    "cart": 6,
+    "product": 14,
+    "quantity": 1,
+    "size": "M",
+    "color": ""
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 11,
+  "fields": {
+    "cart": 8,
+    "product": 14,
+    "quantity": 1,
+    "size": "M",
+    "color": ""
+  }
+},
+{
+  "model": "pages.contactinquiry",
+  "pk": 1,
+  "fields": {
+    "name": "Capstone Demo Tester",
+    "email": "demo@example.com",
+    "subject": "Presentation inquiry test",
+    "message": "Testing the new storefront contact workflow from the home page.",
+    "created_at": "2026-04-22T02:45:50.215Z"
+  }
+},
+{
+  "model": "pages.contactinquiry",
+  "pk": 2,
+  "fields": {
+    "name": "Demo Shopper",
+    "email": "shopper@example.com",
+    "subject": "Flow verification",
+    "message": "Verifying landing contact and auth flow.",
+    "created_at": "2026-04-22T03:01:54.805Z"
+  }
+},
+{
+  "model": "pages.contactinquiry",
+  "pk": 3,
+  "fields": {
+    "name": "Demo Shopper",
+    "email": "shopper@example.com",
+    "subject": "Flow verification",
+    "message": "Verifying landing contact and auth flow.",
+    "created_at": "2026-04-22T03:02:54.032Z"
+  }
+}
+]
