@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from inventory.models import Category, Product
 
-from .models import CartItem
+from .models import CartItem, Order, OrderItem
 
 
 class CartFlowSmokeTests(TestCase):
@@ -45,4 +45,25 @@ class CartFlowSmokeTests(TestCase):
 		)
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response.url, reverse('inventory'))
+		self.assertEqual(CartItem.objects.count(), 0)
+
+	def test_checkout_creates_order_and_clears_cart(self):
+		self.client.post(
+			reverse('add_to_cart', args=[self.product.id]),
+			data={'quantity': 2, 'size': '34'},
+		)
+
+		response = self.client.post(
+			reverse('checkout'),
+			data={
+				'name': 'Barney Tester',
+				'phone': '+256700000000',
+				'country': 'Uganda',
+				'notes': 'Deliver after 5 PM',
+			},
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(Order.objects.count(), 1)
+		self.assertEqual(OrderItem.objects.count(), 1)
 		self.assertEqual(CartItem.objects.count(), 0)

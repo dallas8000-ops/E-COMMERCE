@@ -53,6 +53,7 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Home, About, Inventory, Cart pages
 - Prominent Bootstrap navbar linking all pages
 - Dynamic inventory and cart management
+- Checkout order capture with country-aware payment instructions and order reference tracking
 - Shopper authentication (signup/login/logout) with account-aware cart merge
 - Contact inquiry workflow with admin persistence and real email notification support
 - Payment method selection and provider-ready scaffolding (MTN, Airtel, Pesapal)
@@ -60,8 +61,8 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Storefront-first landing page for capstone demo presentation
 
 ## Live Demo
-- Deployed URL: *(add your Render URL here after first deploy — e.g. `https://east-africa-fashion.onrender.com`)*
-- Admin panel: `<deployed-url>/admin/login/`
+- Deployed URL: https://e-commerce-9kru.onrender.com
+- Admin panel: https://e-commerce-9kru.onrender.com/admin/login/
 - Default credentials: create a superuser on first deploy via `python manage.py createsuperuser`
 
 ## Architecture Decision — Django Templates vs React Frontend

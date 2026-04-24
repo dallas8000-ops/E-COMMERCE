@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4 text-center">Checkout</h1>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Customer Details</h2>
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-12">
+                            <label class="form-label" for="checkoutName">Full Name</label>
+                            <input id="checkoutName" type="text" name="name" class="form-control" value="{{ form_data.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="checkoutPhone">Phone Number</label>
+                            <input id="checkoutPhone" type="text" name="phone" class="form-control" value="{{ form_data.phone }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="checkoutCountry">Country</label>
+                            <input id="checkoutCountry" type="text" name="country" class="form-control" value="{{ form_data.country }}" placeholder="Uganda, Kenya, USA..." required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="checkoutNotes">Additional Notes</label>
+                            <textarea id="checkoutNotes" name="notes" class="form-control" rows="3" placeholder="Optional delivery notes">{{ form_data.notes }}</textarea>
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Order Summary</h2>
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for row in items_view %}
+                        <li class="list-group-item px-0">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ row.name }}</strong>
+                                    <div class="text-muted small">Qty {{ row.quantity }}{% if row.size %}, Size {{ row.size }}{% endif %}{% if row.color %}, {{ row.color }}{% endif %}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div>{{ currency }} {{ row.line_total_display }}</div>
+                                    <div class="text-muted small">{{ currency }} {{ row.unit_price_display }} each</div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <strong>Total</strong>
+                        <strong>{{ currency }} {{ grand_total_display }}</strong>
+                    </div>
+                    <div class="small text-muted mt-2">Payment method: {{ payment_method|upper }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

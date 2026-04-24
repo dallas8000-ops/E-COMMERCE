@@ -8,13 +8,14 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.db import transaction
 from django.db.models import Prefetch
 from django.http import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from cart.models import Cart, CartItem
+from cart.models import Cart, CartItem, Order, OrderItem
 from inventory.models import Product, ProductImage
 from pages.forms import ContactInquiryForm
 from pages.models import ContactInquiry
@@ -277,6 +278,38 @@ def _checkout_preferences(request):
         'rates_updated': rates_updated,
         'rates_source': rates_source,
     }
+
+
+def _payment_instructions(country, payment_method):
+    country_key = (country or '').strip().lower()
+    business_name = 'Kristie Store'
+    mtn_number = '+256XXXXXXXXX'
+    airtel_number = '+256XXXXXXXXX'
+
+    if country_key == 'uganda':
+        if payment_method == 'airtel':
+            number_line = f'Number: {airtel_number} (Airtel)'
+        elif payment_method == 'pesapal':
+            number_line = 'Use your Pesapal checkout prompt to complete payment.'
+        else:
+            number_line = f'Number: {mtn_number} (MTN)'
+
+        return (
+            'UGANDA PAYMENT INSTRUCTIONS\n\n'
+            f'Send payment to: {business_name}\n'
+            f'{number_line}\n\n'
+            'After payment, send your transaction screenshot/reference to confirm your order.'
+        )
+
+    return (
+        'INTERNATIONAL PAYMENT INSTRUCTIONS\n\n'
+        'Use WorldRemit (or equivalent) with the details below:\n'
+        f'Receiver Name: {business_name}\n'
+        'Country: Uganda\n'
+        f'Receiver Number: {mtn_number}\n'
+        'Network: MTN or Airtel\n\n'
+        'After transfer, send payment confirmation so we can verify and dispatch.'
+    )
 
 
 def home(request):
@@ -570,6 +603,97 @@ def cart(request):
             'rates_updated': '',
             'rate_display': '1.00',
         })
+
+
+def checkout(request):
+    cart = _current_cart(request, create=False)
+    if not cart or not cart.items.exists():
+        messages.info(request, 'Your cart is empty. Add items before checkout.')
+        return redirect('cart')
+
+    checkout_prefs = _checkout_preferences(request)
+    cart_items = list(cart.items.select_related('product'))
+
+    items_view = []
+    grand_total = Decimal('0')
+    for item in cart_items:
+        base_price = _safe_decimal(item.product.price, Decimal('0'))
+        unit_price = base_price * checkout_prefs['rate']
+        line_total = unit_price * item.quantity
+        grand_total += line_total
+        items_view.append({
+            'name': item.product.name,
+            'quantity': item.quantity,
+            'size': item.size,
+            'color': item.color,
+            'unit_price_display': _format_money(unit_price, checkout_prefs['currency']),
+            'line_total_display': _format_money(line_total, checkout_prefs['currency']),
+        })
+
+    context = {
+        'items_view': items_view,
+        'currency': checkout_prefs['currency'],
+        'payment_method': checkout_prefs['payment_method'],
+        'grand_total_display': _format_money(grand_total, checkout_prefs['currency']),
+        'form_data': {
+            'name': '',
+            'phone': '',
+            'country': '',
+            'notes': '',
+        },
+    }
+
+    if request.method == 'POST':
+        form_data = {
+            'name': (request.POST.get('name') or '').strip(),
+            'phone': (request.POST.get('phone') or '').strip(),
+            'country': (request.POST.get('country') or '').strip(),
+            'notes': (request.POST.get('notes') or '').strip(),
+        }
+        context['form_data'] = form_data
+
+        if not form_data['name'] or not form_data['phone'] or not form_data['country']:
+            messages.error(request, 'Name, phone, and country are required to place your order.')
+            return render(request, 'core/checkout.html', context)
+
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                session_key=request.session.session_key,
+                customer_name=form_data['name'],
+                phone=form_data['phone'],
+                country=form_data['country'],
+                notes=form_data['notes'],
+                payment_method=checkout_prefs['payment_method'],
+                currency=checkout_prefs['currency'],
+                total_amount=grand_total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            )
+
+            for item in cart_items:
+                unit_price = (_safe_decimal(item.product.price, Decimal('0')) * checkout_prefs['rate']).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                line_total = (unit_price * item.quantity).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                OrderItem.objects.create(
+                    order=order,
+                    product_name=item.product.name,
+                    quantity=item.quantity,
+                    size=item.size,
+                    color=item.color,
+                    unit_price=unit_price,
+                    line_total=line_total,
+                )
+
+            # Clear the cart after a successful order capture.
+            cart.items.all().delete()
+
+        return render(request, 'core/checkout_success.html', {
+            'order': order,
+            'currency': checkout_prefs['currency'],
+            'grand_total_display': _format_money(grand_total, checkout_prefs['currency']),
+            'payment_method': checkout_prefs['payment_method'],
+            'instructions': _payment_instructions(form_data['country'], checkout_prefs['payment_method']),
+        })
+
+    return render(request, 'core/checkout.html', context)
 
 
 @require_POST
