@@ -48,10 +48,10 @@
 					<form method="post" action="{% url 'add_to_cart' product.id %}" class="inventory-purchase-form">
 						{% csrf_token %}
 						<div class="mb-2 inventory-control-group">
-							<label class="fw-bold inventory-inline-label" for="size-{{ product.id }}">Size:</label>
+							<label class="fw-bold inventory-inline-label" for="size-{{ product.id }}">EU Size:</label>
 							<select id="size-{{ product.id }}" name="size" class="form-select inventory-inline-select ms-2">
 								{% for size in product.size_list %}
-									<option value="{{ size }}">{{ size }}</option>
+									<option value="{{ size }}">EU {{ size }}</option>
 								{% endfor %}
 							</select>
 						</div>

@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 
 from inventory.models import Category, Product
 
-DEFAULT_SIZE_RANGE = 'XS,S,M,L,XL,XXL'
+DEFAULT_SIZE_RANGE = '32,34,36,38,40,42,44,46,48,50,52,54'
 SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 

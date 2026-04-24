@@ -12,7 +12,6 @@ from django.db.models import Prefetch
 from django.http import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from cart.models import Cart, CartItem
@@ -478,12 +477,17 @@ def inventory(request):
         })
 
 
-@csrf_exempt
+@require_POST
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     size = request.POST.get('size', '')
     quantity = int(request.POST.get('quantity', 1))
     color = product.color
+    available_sizes = product.size_list()
+
+    if available_sizes and size not in available_sizes:
+        messages.error(request, 'Please choose one of the listed EU sizes before adding this item to cart.')
+        return redirect('inventory')
 
     cart = _current_cart(request, create=True)
     item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size, color=color)

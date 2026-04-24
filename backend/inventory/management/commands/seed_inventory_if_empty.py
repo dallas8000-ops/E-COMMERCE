@@ -6,6 +6,9 @@ from django.core.management.base import BaseCommand
 from inventory.models import Product
 
 
+DEFAULT_SIZE_RANGE = '32,34,36,38,40,42,44,46,48,50,52,54'
+
+
 class Command(BaseCommand):
     help = 'Load inventory seed data when the product table is empty.'
 
@@ -21,5 +24,6 @@ class Command(BaseCommand):
             raise SystemExit(1)
 
         call_command('loaddata', str(fixture_path))
+        Product.objects.update(sizes=DEFAULT_SIZE_RANGE)
         seeded_count = Product.objects.count()
         self.stdout.write(self.style.SUCCESS(f'Inventory seed complete; {seeded_count} products loaded.'))

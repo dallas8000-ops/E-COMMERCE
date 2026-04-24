@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -26,3 +27,28 @@ class InventoryApiSmokeTests(APITestCase):
 		response = self.client.get(reverse('category-list'))
 		self.assertEqual(response.status_code, 200)
 		self.assertGreaterEqual(len(response.data), 1)
+
+	def test_product_accepts_eu_sizes_only(self):
+		product = Product(
+			name='Tailored Dress',
+			description='Structured silhouette',
+			price=Decimal('39.99'),
+			category=self.category,
+			sizes='32, 38, EU 44, 54',
+		)
+
+		product.full_clean()
+		product.clean()
+		self.assertEqual(product.sizes, '32,38,44,54')
+
+	def test_product_rejects_non_eu_sizes(self):
+		product = Product(
+			name='Tailored Dress',
+			description='Structured silhouette',
+			price=Decimal('39.99'),
+			category=self.category,
+			sizes='S,M,L',
+		)
+
+		with self.assertRaises(ValidationError):
+			product.full_clean()

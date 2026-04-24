@@ -55,24 +55,38 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Dynamic inventory and cart management
 - Shopper authentication (signup/login/logout) with account-aware cart merge
 - Contact inquiry workflow with admin persistence and real email notification support
-- Ready for African payment providers
+- Payment method selection and provider-ready scaffolding (MTN, Airtel, Pesapal)
 - Designed for the East African market
 - Storefront-first landing page for capstone demo presentation
+
+## Live Demo
+- Deployed URL: *(add your Render URL here after first deploy — e.g. `https://east-africa-fashion.onrender.com`)*
+- Admin panel: `<deployed-url>/admin/login/`
+- Default credentials: create a superuser on first deploy via `python manage.py createsuperuser`
+
+## Architecture Decision — Django Templates vs React Frontend
+This project uses a **dual-frontend approach** intentionally:
+
+- **Django-rendered templates** (`backend/core/templates/`) are the live storefront — they handle the complete shopping flow (catalog, inventory, cart, auth, contact) with server-side rendering, CSRF protection, and session management built in. This approach was chosen for rapid, secure delivery with zero JavaScript build step for the critical customer path.
+
+- **React + Vite** (`frontend/`) is a separate workspace scaffolded for future expansion — progressive migration of individual pages as the team grows and API endpoints mature. DRF endpoints (`/api/products/`, `/api/categories/`) are already in place to support this.
+
+This pattern is common in production Django shops doing a gradual SSR-to-SPA migration. In interviews, the key point is: the Django-rendered storefront is fully functional today; React is the planned successor for individual high-interactivity pages.
 
 ## Capstone Deliverables Checklist
 - Codebase: present in this repository
 - Project documentation: partially complete in this README and should continue to be expanded
 - Planning document and Trello-ready task breakdown: see `PROJECT_PLANNING.md`
 - GitHub repository link: add the final public/private repo link here before submission
-- Trello board link: https://trello.com/b/s8Rpm9in/ecommerce
+- Trello board link: https://trello.com/b/s8Rpm9in/kristie-store
 - Industry context and target audience: documented above
 - Elevator pitch: documented above
 - List of pages and features: documented above
 - Tech stack explanation: documented above
 
 ## Remaining Work To Fully Strengthen Capstone Submission
-1. Complete one payment flow end-to-end
-- MTN, Airtel, or Pesapal sandbox implementation with a real initiation path
+1. Wire one payment provider sandbox end-to-end
+- Pesapal sandbox initiation path is the recommended next step (config scaffolding already in place)
 
 2. Final responsive QA
 - Verify mobile/tablet behavior for inventory, cart, catalog modal, and admin sign-in path
