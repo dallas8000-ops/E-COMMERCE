@@ -52,18 +52,20 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Admin can manage categories, products, product images, carts, and cart items
 - Cart totals are calculated correctly on the server
 - Currency conversion is available for USD, EUR, KES, and UGX
-- Payment method selection is available for MTN, Airtel, and Pesapal
+- Payment method selection is available for MTN, Airtel, and WorldRemit
 - Product pricing is varied instead of a single flat price
 - Inventory sizes are standardized to XS, S, M, L, XL, XXL
 - Admin Sign In / Admin Panel access is exposed in the site navigation
 - Shopper authentication is implemented (signup/login/logout)
 - Guest cart items merge into authenticated user cart after signup/login
 - Contact inquiry communication flow is implemented (admin persistence plus SMTP email delivery)
+- Checkout captures orders and shows payment-verification instructions with admin-managed payment status
 - README already contains capstone summary, tech stack, and page map
+- Phone and tablet responsive QA is already documented as completed for storefront pages
 
 ### Remaining For Stronger Submission
-- One real payment sandbox flow end-to-end
-- Final mobile and tablet QA
+- Optional: one real payment sandbox flow end-to-end
+- Optional: admin-specific small-screen spot check
 - Final GitHub repository link and submission assets
 
 ## User Types
@@ -107,6 +109,7 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - As a shopper, I want to update or remove items in my cart so that I can control my order before checkout.
 - As a shopper, I want to view totals in my preferred currency so that pricing is easier to understand.
 - As a shopper, I want to select a payment method so that checkout matches regional payment expectations.
+- As a shopper, I want checkout to generate an order reference and clear next-step payment instructions so that I know how to complete my order.
 
 ### Payment Integration
 - As a shopper, I want at least one payment method to reach a real sandbox flow so that checkout feels complete.
@@ -126,7 +129,7 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - The system must display products from database records, not loose image files.
 - The system must support add-to-cart, update-cart, and remove-cart actions.
 - The system must display converted prices in USD, EUR, KES, and UGX.
-- The system must allow users to choose MTN, Airtel, or Pesapal as a checkout preference.
+- The system must allow users to choose MTN, Airtel, or WorldRemit as a checkout preference.
 - The admin panel must allow secure inventory management.
 - The project must include clear documentation and a trackable delivery workflow.
 
@@ -139,9 +142,49 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 ## Success Criteria
 - A shopper can browse, add to cart, update quantities, and view converted totals.
 - An admin can manage catalog inventory through Django admin.
-- At least one payment sandbox flow is wired and demonstrable.
+- Checkout captures orders with a clear admin-verification payment workflow.
 - Authentication exists for shopper accounts.
 - Documentation, Trello tracking, and final QA artifacts are complete.
+
+## Recommended Trello Updates As Of 2026-04-25
+
+### Move To Done
+- Shopper Authentication
+- Communication And Notifications
+- Cart Calculations And Checkout Preferences
+- Admin Inventory Management
+- Catalog Experience
+- Inventory Shopping Flow
+
+### Keep Active Or Ready Next
+- Payment Sandbox Integration
+- Capstone Assets And Submission Links
+- Responsive QA
+
+### Add Card: Order Capture And Manual Payment Verification
+Checklist:
+- Capture checkout form into Order and OrderItem records
+- Generate order reference for shopper confirmation
+- Show payment instructions on checkout success page
+- Show initial Pending payment status to shopper
+- Confirm admin can change status to Payment confirmed
+- Document manual verification workflow in README
+
+### Add Card: Release Validation Snapshot
+Checklist:
+- Run Django system check
+- Run Django test suite
+- Build frontend production bundle
+- Note exchange-rate API fallback warning behavior
+- Record validation date in project notes
+
+### Add Card: Submission Packaging
+Checklist:
+- Confirm live Render URL in README
+- Confirm Trello board link in README
+- Confirm GitHub repository link in README
+- Prepare final screenshots or demo assets
+- Prepare final submission document or cover sheet if required
 
 ## Recommended Trello Board Structure
 

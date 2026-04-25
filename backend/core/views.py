@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import json
-import urllib.request
+import requests as _requests
 
 from django.conf import settings
 from django.contrib.auth import login, logout
@@ -262,9 +262,9 @@ def _format_money(amount, currency):
 def _fetch_live_rates():
     url = 'https://api.frankfurter.app/latest?from=USD&to=EUR,KES,UGX'
     try:
-        # Increase timeout to 8 seconds for production environments
-        with urllib.request.urlopen(url, timeout=8) as response:
-            payload = json.loads(response.read().decode('utf-8'))
+        response = _requests.get(url, timeout=8)
+        response.raise_for_status()
+        payload = response.json()
         rates = {
             'USD': Decimal('1'),
             'EUR': _safe_decimal(payload.get('rates', {}).get('EUR'), FALLBACK_RATES['EUR']),
@@ -273,7 +273,6 @@ def _fetch_live_rates():
         }
         return rates, payload.get('date', ''), 'live'
     except Exception as e:
-        # Log the error for debugging, but always fall back gracefully
         import sys
         print(f'Warning: Failed to fetch live exchange rates: {e}', file=sys.stderr)
         return FALLBACK_RATES, '', 'fallback'
