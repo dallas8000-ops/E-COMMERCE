@@ -2,6 +2,7 @@ services:
   - type: web
     name: kristie-store
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt && python backend/manage.py collectstatic --noinput
     startCommand: python backend/manage.py migrate && python backend/manage.py seed_inventory_if_empty && gunicorn --chdir backend core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
@@ -38,4 +39,3 @@ databases:
   - name: kristie-store-db
     databaseName: kristie_store
     user: kristie_store_user
-    plan: free
