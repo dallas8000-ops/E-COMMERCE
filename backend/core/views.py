@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import json
+import logging
 import requests as _requests
 
 from django.conf import settings
@@ -21,6 +22,9 @@ from cart.models import Cart, CartItem, Order, OrderItem
 from inventory.models import Product, ProductImage
 from pages.forms import ContactInquiryForm
 from pages.models import ContactInquiry
+
+
+logger = logging.getLogger(__name__)
 
 
 SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
@@ -342,18 +346,25 @@ def home(request):
         contact_form = ContactInquiryForm(request.POST)
         if contact_form.is_valid():
             inquiry = ContactInquiry.objects.create(**contact_form.cleaned_data)
-            send_mail(
-                subject=f"New storefront inquiry: {inquiry.subject}",
-                message=(
-                    f"Name: {inquiry.name}\n"
-                    f"Email: {inquiry.email}\n\n"
-                    f"Message:\n{inquiry.message}"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.CONTACT_RECIPIENT_EMAIL],
-                fail_silently=True,
-            )
-            messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
+            try:
+                send_mail(
+                    subject=f"New storefront inquiry: {inquiry.subject}",
+                    message=(
+                        f"Name: {inquiry.name}\n"
+                        f"Email: {inquiry.email}\n\n"
+                        f"Message:\n{inquiry.message}"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.CONTACT_RECIPIENT_EMAIL],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
+            except Exception:
+                logger.exception('Failed to send contact inquiry email')
+                messages.warning(
+                    request,
+                    'Inquiry saved, but email delivery failed. Please verify SMTP settings in production.'
+                )
             return redirect('home')
         messages.error(request, 'Please correct the highlighted fields and try again.')
     else:
