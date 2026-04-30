@@ -448,6 +448,7 @@ def logout_view(request):
 
 
 def catalog(request):
+    checkout = _checkout_preferences(request)
     products = Product.objects.prefetch_related(
         Prefetch('images', queryset=ProductImage.objects.order_by('id'))
     ).all().order_by('-created_at')
@@ -464,10 +465,12 @@ def catalog(request):
         if description.lower() == 'auto-created from uploaded catalog image.':
             description = ''
 
+        base_price = _safe_decimal(product.price, Decimal('0'))
+        converted_price = base_price * checkout['rate']
         catalog_items.append({
             'name': product.name,
             'description': description or _catalog_fallback_description(product),
-            'price': product.price,
+            'price_display': _format_money(converted_price, checkout['currency']),
             'primary_url': _product_image_url(primary_image.image),
             'detail_url': _product_image_url(detail_image.image),
         })
@@ -475,6 +478,8 @@ def catalog(request):
     return render(request, 'core/catalog.html', {
         'catalog_items': catalog_items,
         'total_items': len(catalog_items),
+        'currency': checkout['currency'],
+        'supported_currencies': SUPPORTED_CURRENCIES,
     })
 
 

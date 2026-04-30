@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchProducts } from './api';
 
 function Inventory() {
@@ -12,7 +12,7 @@ function Inventory() {
         setProducts(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Failed to load products');
         setLoading(false);
       });

@@ -7,7 +7,15 @@
       <h1 class="h3 fw-bold mb-1">Fashion Catalog</h1>
       <p class="mb-0">Browse catalog items with pricing and quick details view.</p>
     </div>
-    <div class="d-flex gap-2 align-items-center">
+    <div class="d-flex gap-2 align-items-center flex-wrap justify-content-end">
+      <form method="get" id="catalogCurrencyForm" class="d-flex align-items-center gap-2">
+        <label for="catalogCurrency" class="small text-light-emphasis mb-0">Currency</label>
+        <select id="catalogCurrency" name="currency" class="form-select form-select-sm">
+          {% for code in supported_currencies %}
+            <option value="{{ code }}" {% if code == currency %}selected{% endif %}>{{ code }}</option>
+          {% endfor %}
+        </select>
+      </form>
       <span class="badge-count">{{ total_items }} items</span>
       <a class="btn btn-sm btn-light" href="/about/">Back to About</a>
     </div>
@@ -23,8 +31,8 @@
           <h2 class="h4 fw-semibold mb-2">{{ item.name }}</h2>
           <p class="catalog-description mb-2">{{ item.description }}</p>
           <p class="catalog-price mb-3">
-            {% if item.price %}
-              €{{ item.price }}
+            {% if item.price_display %}
+              {{ currency }} {{ item.price_display }}
             {% else %}
               Contact for price
             {% endif %}
@@ -59,6 +67,8 @@
     const modalImage = document.getElementById('modalImage');
     const closeModal = document.getElementById('closeModal');
     const buttons = document.querySelectorAll('.view-details-btn');
+    const currencyForm = document.getElementById('catalogCurrencyForm');
+    const currencySelect = document.getElementById('catalogCurrency');
 
     function openModal(src, label) {
       modalImage.src = src;
@@ -93,6 +103,12 @@
         dismissModal();
       }
     });
+
+    if (currencyForm && currencySelect) {
+      currencySelect.addEventListener('change', () => {
+        currencyForm.submit();
+      });
+    }
   })();
 </script>
 {% endblock %}

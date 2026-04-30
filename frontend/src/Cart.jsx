@@ -1,12 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const BASE_CURRENCY = 'USD';
 const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'KES', 'UGX'];
 const PAYMENT_METHODS = [
   { value: 'mtn', label: 'MTN Mobile Money' },
   { value: 'airtel', label: 'Airtel Money' },
-  { value: 'pesapal', label: 'Pesapal' },
+  { value: 'worldremit', label: 'WorldRemit' },
 ];
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+  || (import.meta.env.DEV
+    ? 'http://127.0.0.1:8000/api/inventory'
+    : '/api/inventory');
+const CART_STORAGE_KEY = 'eaf_cart_items';
 
 const FALLBACK_RATES = {
   USD: 1,
@@ -23,23 +28,48 @@ function formatAmount(amount, currency) {
   }).format(amount);
 }
 
+function normalizeCartPayload(rawItems) {
+  if (!Array.isArray(rawItems)) {
+    return [];
+  }
+
+  return rawItems
+    .map((item) => ({
+      id: item.id ?? `${item.product_id ?? 'item'}-${item.size ?? ''}-${item.color ?? ''}`,
+      name: item.name ?? item.product_name ?? item.product?.name ?? 'Item',
+      price: Number(item.price ?? item.price_usd ?? item.unit_price ?? 0),
+      quantity: Math.max(1, Number(item.quantity ?? 1)),
+      size: item.size ?? '',
+      color: item.color ?? '',
+    }))
+    .filter((item) => Number.isFinite(item.price) && Number.isFinite(item.quantity));
+}
+
+function readCartFromStorage() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+    const parsed = JSON.parse(raw);
+    return normalizeCartPayload(parsed);
+  } catch {
+    return [];
+  }
+}
+
 function Cart() {
   const [currency, setCurrency] = useState('KES');
   const [paymentMethod, setPaymentMethod] = useState('mtn');
   const [rates, setRates] = useState(FALLBACK_RATES);
   const [ratesSource, setRatesSource] = useState('fallback');
   const [ratesUpdatedAt, setRatesUpdatedAt] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartSource, setCartSource] = useState('loading');
+  const [cartError, setCartError] = useState('');
+  const [loadingCart, setLoadingCart] = useState(true);
   const [paying, setPaying] = useState(false);
   const [result, setResult] = useState(null);
-
-  // Example cart data - replace with real cart state when connected
-  const cart = {
-    items: [
-      { id: 1, name: 'African Print Dress', price: 45, quantity: 1 },
-      { id: 3, name: 'Gold Jewelry Set', price: 120, quantity: 1 },
-    ],
-    total: 165,
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -79,43 +109,103 @@ function Cart() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchCart() {
+      setLoadingCart(true);
+      setCartError('');
+      try {
+        const response = await fetch(`${API_BASE}/cart/`, {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Cart endpoint unavailable');
+        }
+
+        const data = await response.json();
+        if (cancelled) {
+          return;
+        }
+
+        const normalized = normalizeCartPayload(data?.items);
+        setCartItems(normalized);
+        setCartSource('api');
+      } catch {
+        if (cancelled) {
+          return;
+        }
+
+        const storedItems = readCartFromStorage();
+        setCartItems(storedItems);
+        setCartSource('local');
+        if (storedItems.length === 0) {
+          setCartError('No synced cart API yet. Showing local cart if available.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingCart(false);
+        }
+      }
+    }
+
+    fetchCart();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const cartTotal = useMemo(
+    () => cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+    [cartItems],
+  );
+
   const convertedItems = useMemo(() => {
     const rate = rates[currency] || 1;
-    return cart.items.map((item) => ({
+    return cartItems.map((item) => ({
       ...item,
       convertedUnitPrice: item.price * rate,
       convertedLineTotal: item.price * item.quantity * rate,
     }));
-  }, [cart.items, currency, rates]);
+  }, [cartItems, currency, rates]);
 
   const convertedTotal = useMemo(() => {
     const rate = rates[currency] || 1;
-    return cart.total * rate;
-  }, [cart.total, currency, rates]);
+    return cartTotal * rate;
+  }, [cartTotal, currency, rates]);
 
   const selectedMethodLabel = PAYMENT_METHODS.find((method) => method.value === paymentMethod)?.label || paymentMethod;
 
   const handlePay = async () => {
+    if (cartItems.length === 0) {
+      setResult({ error: 'Your cart is empty.' });
+      return;
+    }
+
     setPaying(true);
     setResult(null);
     try {
-      const res = await fetch('http://localhost:8000/api/inventory/pay/flutterwave/', {
+      const res = await fetch(`${API_BASE}/pay/flutterwave/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           amount: Number(convertedTotal.toFixed(2)),
           currency,
           exchange_rate: rates[currency] || 1,
           base_currency: BASE_CURRENCY,
           payment_method: paymentMethod,
-          customer: { email: 'customer@example.com', name: 'Jane Doe' },
+          customer: { email: 'customer@example.com', name: 'Store Customer' },
           items: convertedItems,
           order_summary: {
-            item_count: cart.items.length,
-            total_quantity: cart.items.reduce((sum, item) => sum + item.quantity, 0),
+            item_count: cartItems.length,
+            total_quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
           },
         }),
       });
+      if (!res.ok) {
+        throw new Error('Payment request failed');
+      }
       const data = await res.json();
       setResult({
         ...data,
@@ -130,7 +220,9 @@ function Cart() {
   return (
     <div className="text-center">
       <h2>Your Cart</h2>
-      {cart.items.length === 0 ? (
+      {loadingCart ? (
+        <p>Loading your cart...</p>
+      ) : cartItems.length === 0 ? (
         <p>Your cart is empty. Start shopping!</p>
       ) : (
         <>
@@ -157,6 +249,7 @@ function Cart() {
                 <small className="text-muted d-block">Rate Source: {ratesSource === 'live' ? 'Live API' : 'Fallback'}</small>
                 <small className="text-muted d-block">Updated: {ratesUpdatedAt || 'loading...'}</small>
                 <small className="text-muted d-block">1 USD = {rates[currency]?.toFixed(currency === 'UGX' ? 0 : 4)} {currency}</small>
+                <small className="text-muted d-block">Cart Source: {cartSource === 'api' ? 'API' : 'Local Storage'}</small>
               </div>
             </div>
           </div>
@@ -172,8 +265,8 @@ function Cart() {
 
           <div className="card p-3 mb-3 text-start shadow-sm">
             <h5 className="mb-2">Order Summary</h5>
-            <div className="d-flex justify-content-between"><span>Items</span><span>{cart.items.length}</span></div>
-            <div className="d-flex justify-content-between"><span>Quantity</span><span>{cart.items.reduce((sum, item) => sum + item.quantity, 0)}</span></div>
+            <div className="d-flex justify-content-between"><span>Items</span><span>{cartItems.length}</span></div>
+            <div className="d-flex justify-content-between"><span>Quantity</span><span>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span></div>
             <div className="d-flex justify-content-between"><span>Method</span><span>{selectedMethodLabel}</span></div>
             <hr className="my-2" />
             <h4 className="mb-0">Total: {formatAmount(convertedTotal, currency)}</h4>
@@ -188,6 +281,11 @@ function Cart() {
             </div>
           )}
         </>
+      )}
+      {!loadingCart && cartError && (
+        <div className="mt-3 alert alert-warning">
+          {cartError}
+        </div>
       )}
     </div>
   );
