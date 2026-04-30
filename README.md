@@ -73,8 +73,8 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Storefront-first landing page for capstone demo presentation
 
 ## Live Demo
-- Deployed URL: https://kristie-store.onrender.com
-- Django admin on production: **disabled** by default (`DJANGO_ENABLE_ADMIN=False` in `render.yaml`) so the public site does not expose `/admin/`. To manage inventory on Render, temporarily set `DJANGO_ENABLE_ADMIN=true` in the Render dashboard, redeploy, use admin, then turn it off again—or run inventory changes locally and push data via fixtures/migrations as you prefer.
+- Deployed URL: https://kistie-store.onrender.com
+- Production admin is disabled by default through `DJANGO_ENABLE_ADMIN=False` in `render.yaml`. To temporarily expose `/admin/` on Render for inventory management, set `DJANGO_ENABLE_ADMIN=true` in the Render dashboard and redeploy.
 - Local admin: `http://127.0.0.1:8000/admin/` after `python manage.py createsuperuser`
 
 ## Architecture Decision — Django Templates vs React Frontend
@@ -82,7 +82,7 @@ This project uses a **dual-frontend approach** intentionally:
 
 - **Django-rendered templates** (`backend/core/templates/`) are the live storefront — they handle the complete shopping flow (catalog, inventory, cart, auth, contact) with server-side rendering, CSRF protection, and session management built in. This approach was chosen for rapid, secure delivery with zero JavaScript build step for the critical customer path.
 
-- **React + Vite** (`frontend/`) is a separate workspace scaffolded for future expansion — progressive migration of individual pages as the team grows and API endpoints mature. DRF endpoints (`/api/products/`, `/api/categories/`) are already in place to support this.
+- **React + Vite** (`frontend/`) is a separate workspace scaffolded for future expansion — progressive migration of individual pages as the team grows and API endpoints mature. DRF endpoints (`/api/inventory/products/`, `/api/inventory/categories/`) are already in place to support this.
 
 This pattern is common in production Django shops doing a gradual SSR-to-SPA migration. In interviews, the key point is: the Django-rendered storefront is fully functional today; React is the planned successor for individual high-interactivity pages.
 
@@ -140,7 +140,7 @@ Notes:
 ### Cart (`/cart`)
 - Review all items currently in your order (name, unit price, quantity, line total).
 - Choose your preferred **currency** from the dropdown: USD, EUR, KES, or UGX — totals update automatically using live exchange rates.
-- Select a **payment method**: MTN Mobile Money, Airtel Money, or Pesapal.
+- Select a **payment method**: MTN Mobile Money, Airtel Money, or WorldRemit.
 - Click **Pay Now** to submit the order and receive a payment confirmation or reference number.
 
 ### Django Admin (`http://127.0.0.1:8000/admin/`)
@@ -156,15 +156,16 @@ Notes:
 
 1. Backend API (Django)
 	- `cd backend`
-	- `c:/Ecommerce/env/Scripts/python.exe manage.py migrate`
-	- `c:/Ecommerce/env/Scripts/python.exe manage.py load_sample_inventory`
-	- `c:/Ecommerce/env/Scripts/python.exe manage.py runserver`
+	- `python manage.py migrate`
+	- `python manage.py seed_inventory_if_empty`
+	- `python manage.py link_static_images_to_products`
+	- `python manage.py runserver`
 
 2. Link uploaded catalog images to products
 	- Put product images in `images/` at the workspace root.
 	- Use filenames that match product names (for example, `Classic Blouse.jpg`).
 	- Run: `cd backend`
-	- Run: `c:/Ecommerce/env/Scripts/python.exe manage.py link_static_images_to_products`
+	- Run: `python manage.py link_static_images_to_products`
 
 3. Frontend (React + Vite)
 	- `cd frontend`
@@ -181,7 +182,7 @@ Notes:
 ## Admin Access (Secure Inventory Management)
 1. Create an admin account (superuser):
 	- `cd backend`
-	- `c:/Ecommerce/env/Scripts/python.exe manage.py createsuperuser`
+	- `python manage.py createsuperuser`
 2. Open Django admin sign-in:
 	- `http://127.0.0.1:8000/admin/login/`
 3. Manage inventory safely in Django Admin:

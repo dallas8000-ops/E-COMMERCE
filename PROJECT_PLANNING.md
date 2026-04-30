@@ -54,7 +54,7 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Currency conversion is available for USD, EUR, KES, and UGX
 - Payment method selection is available for MTN, Airtel, and WorldRemit
 - Product pricing is varied instead of a single flat price
-- Inventory sizes are standardized to XS, S, M, L, XL, XXL
+- Inventory sizes are standardized to EU sizes 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, and 54
 - Admin Sign In / Admin Panel access is exposed in the site navigation
 - Shopper authentication is implemented (signup/login/logout)
 - Guest cart items merge into authenticated user cart after signup/login

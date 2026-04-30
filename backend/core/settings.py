@@ -56,6 +56,8 @@ else:
 is_render = os.environ.get('RENDER', '').lower() == 'true'
 debug_default = 'False' if is_render else 'True'
 DEBUG = os.environ.get('DJANGO_DEBUG', debug_default).lower() in ('1', 'true', 'yes')
+enable_admin_default = 'False' if is_render else 'True'
+ENABLE_ADMIN = os.environ.get('DJANGO_ENABLE_ADMIN', enable_admin_default).lower() in ('1', 'true', 'yes')
 
 allowed_hosts_raw = os.environ.get('ALLOWED_HOSTS', '.onrender.com localhost 127.0.0.1')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_raw.replace(',', ' ').split() if host.strip()]
