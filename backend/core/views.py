@@ -456,23 +456,23 @@ def catalog(request):
     catalog_items = []
     for product in products:
         images = list(product.images.all())
-        if not images:
-            continue
-
-        primary_image = images[0]
-        detail_image = images[1] if len(images) > 1 else primary_image
         description = (product.description or '').strip()
         if description.lower() == 'auto-created from uploaded catalog image.':
             description = ''
 
         base_price = _safe_decimal(product.price, Decimal('0'))
         converted_price = base_price * checkout['rate']
+
+        primary_url = _product_image_url(images[0].image) if images else ''
+        detail_url = _product_image_url(images[1].image) if len(images) > 1 else primary_url
+
         catalog_items.append({
             'name': product.name,
             'description': description or _catalog_fallback_description(product),
             'price_display': _format_money(converted_price, checkout['currency']),
-            'primary_url': _product_image_url(primary_image.image),
-            'detail_url': _product_image_url(detail_image.image),
+            'primary_url': primary_url,
+            'detail_url': detail_url,
+            'has_image': bool(images),
         })
 
     return render(request, 'core/catalog.html', {

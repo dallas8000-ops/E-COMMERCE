@@ -26,7 +26,11 @@
     <div class="catalog-grid catalog-product-grid">
       {% for item in catalog_items %}
       <article class="catalog-card catalog-product-card">
+        {% if item.has_image %}
         <img src="{{ item.primary_url }}" alt="{{ item.name }}">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center bg-secondary text-white" style="height:200px;">No Image</div>
+        {% endif %}
         <div class="catalog-product-body">
           <h2 class="h4 fw-semibold mb-2">{{ item.name }}</h2>
           <p class="catalog-description mb-2">{{ item.description }}</p>
@@ -37,9 +41,13 @@
               Contact for price
             {% endif %}
           </p>
+          {% if item.has_image %}
           <button class="btn btn-primary w-100 view-details-btn" type="button" data-full="{{ item.detail_url }}" data-label="{{ item.name }} detail view">
             View Details
           </button>
+          {% else %}
+          <button class="btn btn-secondary w-100" type="button" disabled>No Image Available</button>
+          {% endif %}
         </div>
       </article>
       {% endfor %}

@@ -10,12 +10,18 @@ venv/
 *.sqlite3
 # media/  # Temporarily enabled to deploy product images to Render
 backend/staticfiles/
+staticfiles/
 
 # Node
 node_modules/
+frontend/node_modules/
+payments/node_modules/
 
 # React
 build/
+dist/
+frontend/dist/
+payments/dist/
 
 # General
 .DS_Store
