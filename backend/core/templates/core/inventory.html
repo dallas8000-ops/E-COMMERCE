@@ -72,6 +72,10 @@
 			</div>
 		</div>
 		{% endwith %}
+		{% empty %}
+		<div class="col-12">
+			<div class="alert alert-info text-center mb-0">No inventory items are available right now. Please check back soon.</div>
+		</div>
 		{% endfor %}
 	</div>
 </div>
