@@ -119,7 +119,41 @@ Notes:
 - `.env` is local-only and ignored by git.
 - `.env.example` is safe to commit and share.
 
-## Local Run Guide
+## Screen Guide — What You Can Do on Each Page
+
+### Home (`/`)
+- Get an overview of the store and its product categories.
+- Use the top navigation bar to jump to any section of the site.
+- Click **Inventory** in the navbar to start browsing products.
+- Click **About** to read the brand story and mission.
+
+### About (`/about`)
+- Read about the company mission, values, and product focus.
+- Use the navbar to navigate to **Inventory** to start shopping or **Cart** to continue an order.
+
+### Inventory (`/inventory`)
+- Browse the full product catalog loaded from the backend.
+- View product images, names, and prices on each card.
+- Click **Add to Cart** on any product card to add that item to your current order.
+- Navigate to **Cart** in the navbar when ready to review and pay.
+
+### Cart (`/cart`)
+- Review all items currently in your order (name, unit price, quantity, line total).
+- Choose your preferred **currency** from the dropdown: USD, EUR, KES, or UGX — totals update automatically using live exchange rates.
+- Select a **payment method**: MTN Mobile Money, Airtel Money, or Pesapal.
+- Click **Pay Now** to submit the order and receive a payment confirmation or reference number.
+
+### Django Admin (`http://127.0.0.1:8000/admin/`)
+- Log in with your superuser credentials.
+- **Products** — Add, edit, or delete products (name, price, category, stock, images).
+- **Categories** — Create and manage product categories.
+- **Carts / Orders** — View all customer carts and placed orders; update order status (e.g. Pending → Payment confirmed).
+- **Contact Inquiries** — Read messages submitted via the contact form.
+- **Users / Groups** — Manage shopper accounts and staff permissions.
+
+---
+
+
 1. Backend API (Django)
 	- `cd backend`
 	- `c:/Ecommerce/env/Scripts/python.exe manage.py migrate`

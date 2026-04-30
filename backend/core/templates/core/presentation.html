@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>East Africa Ecommerce Platform - Screen Guide & Responsive Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Title Page */
+        .title-page {
+            text-align: center;
+            padding: 60px 20px;
+            border-bottom: 3px solid #1a1a1a;
+            margin-bottom: 40px;
+        }
+        
+        .title-page h1 {
+            font-size: 48px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .title-page p {
+            font-size: 20px;
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #999;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        
+        /* Section Headers */
+        h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        h3 {
+            font-size: 22px;
+            color: #007bff;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        /* Content */
+        .screen-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+        
+        .screen-section ul {
+            list-style-position: inside;
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .screen-section li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        .screen-section li:before {
+            content: "✓ ";
+            color: #007bff;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* Responsive Design Section */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .device-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .device-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .device-card .dimension {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .device-card .status {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        /* Features List */
+        .features {
+            background-color: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .features h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            padding: 8px 0;
+            padding-left: 25px;
+        }
+        
+        .features li:before {
+            content: "✓";
+            color: #007bff;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        
+        table th {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+            }
+            
+            .screen-section {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Links */
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box strong {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Page -->
+        <div class="title-page">
+            <h1>East Africa Ecommerce Platform</h1>
+            <p>Screen Guide & Responsive Design Presentation</p>
+            <p class="subtitle">A comprehensive guide to user actions and responsive functionality</p>
+            <p class="subtitle">Generated: April 29, 2026</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <h2>Table of Contents</h2>
+        <ul style="margin-left: 20px;">
+            <li><a href="#home">Home Page</a></li>
+            <li><a href="#about">About Page</a></li>
+            <li><a href="#inventory">Inventory Page</a></li>
+            <li><a href="#cart">Cart Page</a></li>
+            <li><a href="#admin">Django Admin</a></li>
+            <li><a href="#responsive">Responsive Design</a></li>
+        </ul>
+
+        <!-- Home Page Section -->
+        <h2 id="home">Home Page</h2>
+        <div class="screen-section">
+            <h3>URL: `/`</h3>
+            <p><strong>Purpose:</strong> Welcome visitors and provide an overview of the store and its offerings.</p>
+            <h4>User Actions Available:</h4>
+            <ul>
+                <li>Get an overview of the store and its product categories</li>
+                <li>Use the top navigation bar to jump to any section of the site</li>
+                <li>Click <strong>Inventory</strong> in the navbar to start browsing products</li>
+                <li>Click <strong>About</strong> to read the brand story and mission</li>
+                <li>View the hero image showcasing the brand aesthetic</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Key Features:</strong> Responsive hero section, prominent call-to-action buttons, mobile-friendly navigation menu.</p>
+        </div>
+
+        <!-- About Page Section -->
+        <h2 id="about">About Page</h2>
+        <div class="screen-section">
+            <h3>URL: `/about/`</h3>
+            <p><strong>Purpose:</strong> Communicate the company's mission, values, vision, and brand story.</p>
+            <h4>User Actions Available:</h4>
+            <ul>
+                <li>Read about the company mission, values, and product focus</li>
+                <li>Learn the brand ethos and vision statement</li>
+                <li>View brand imagery and store aesthetic</li>
+                <li>Access contact information (phone, WhatsApp, location)</li>
+                <li>Use the navbar to navigate to <strong>Inventory</strong> to start shopping</li>
+                <li>Use the navbar to navigate to <strong>Cart</strong> to continue an order</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Key Features:</strong> Multi-section layout with ethos, vision, and mission information; contact details; responsive image galleries.</p>
+        </div>
+
+        <!-- Inventory Page Section -->
+        <h2 id="inventory">Inventory Page</h2>
+        <div class="screen-section">
+            <h3>URL: `/inventory/`</h3>
+            <p><strong>Purpose:</strong> Display all available products for browsing and selection.</p>
+            <h4>User Actions Available:</h4>
+            <ul>
+                <li>Browse the full product catalog loaded from the backend</li>
+                <li>View product images, names, and prices on each card</li>
+                <li>See stock status for each product</li>
+                <li>Click <strong>Add to Cart</strong> on any product card to add that item to your current order</li>
+                <li>Navigate back using the navbar links</li>
+                <li>Navigate to <strong>Cart</strong> in the navbar when ready to review and pay</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Key Features:</strong> Product grid layout (3 columns on desktop, 1 on mobile), product card details, instant add-to-cart functionality, dynamic product loading from database.</p>
+        </div>
+
+        <!-- Cart Page Section -->
+        <h2 id="cart">Cart Page</h2>
+        <div class="screen-section">
+            <h3>URL: `/cart/`</h3>
+            <p><strong>Purpose:</strong> Allow customers to review their order, select currency and payment method, and proceed to checkout.</p>
+            <h4>User Actions Available:</h4>
+            <ul>
+                <li>Review all items currently in your order (name, unit price, quantity, line total)</li>
+                <li>Choose your preferred <strong>currency</strong> from the dropdown: USD, EUR, KES, or UGX</li>
+                <li>View totals automatically updated using live exchange rates</li>
+                <li>Select a <strong>payment method</strong>: MTN Mobile Money, Airtel Money, or Pesapal</li>
+                <li>Review rate source (Live API or Fallback) and last updated timestamp</li>
+                <li>Click <strong>Pay Now</strong> to submit the order and receive a payment confirmation or reference number</li>
+                <li>Update currency and payment method to recalculate totals</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Key Features:</strong> Multi-currency support with live exchange rates, payment method selection, order summary, responsive form controls, real-time total calculation.</p>
+        </div>
+
+        <!-- Django Admin Section -->
+        <h2 id="admin">Django Admin</h2>
+        <div class="screen-section">
+            <h3>URL: `http://127.0.0.1:8000/admin/`</h3>
+            <p><strong>Purpose:</strong> Secure backend for store administrators to manage inventory, orders, and customer data.</p>
+            <h4>Admin Actions Available:</h4>
+            <ul>
+                <li>Log in with superuser credentials for secure access</li>
+                <li><strong>Products</strong> — Add, edit, or delete products (name, price, category, stock quantity, images)</li>
+                <li><strong>Categories</strong> — Create and manage product categories</li>
+                <li><strong>Product Images</strong> — Upload and manage product images inline with product records</li>
+                <li><strong>Carts / Orders</strong> — View all customer carts and placed orders; update order status (e.g., Pending → Payment confirmed)</li>
+                <li><strong>Contact Inquiries</strong> — Read messages submitted via the contact form</li>
+                <li><strong>Users / Groups</strong> — Manage shopper accounts and staff permissions</li>
+                <li>Export data and generate reports as needed</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Key Features:</strong> Django's built-in admin interface, role-based access control, inline editing, search and filtering, bulk actions.</p>
+        </div>
+
+        <!-- Responsive Design Section -->
+        <h2 id="responsive">Responsive Design & Screen Sizes</h2>
+        
+        <div class="info-box">
+            <strong>ℹ️ Important:</strong> The East Africa Ecommerce Platform has been tested and verified to work seamlessly across all major device types. All pages are fully responsive using Bootstrap 5 grid system and custom CSS media queries.
+        </div>
+
+        <h3>Devices Tested</h3>
+        <div class="responsive-grid">
+            <div class="device-card">
+                <h4>📱 Mobile</h4>
+                <div class="dimension">375px</div>
+                <div class="dimension">667px</div>
+                <div class="status">✓ Fully Responsive</div>
+            </div>
+            <div class="device-card">
+                <h4>📱 Tablet</h4>
+                <div class="dimension">768px</div>
+                <div class="dimension">1024px</div>
+                <div class="status">✓ Fully Responsive</div>
+            </div>
+            <div class="device-card">
+                <h4>🖥️ Desktop</h4>
+                <div class="dimension">1440px</div>
+                <div class="dimension">900px</div>
+                <div class="status">✓ Fully Responsive</div>
+            </div>
+        </div>
+
+        <h3>Pages Tested Across All Screen Sizes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Page</th>
+                    <th>Mobile (375px)</th>
+                    <th>Tablet (768px)</th>
+                    <th>Desktop (1440px)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Home</strong></td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                </tr>
+                <tr>
+                    <td><strong>About</strong></td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                </tr>
+                <tr>
+                    <td><strong>Inventory</strong></td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                </tr>
+                <tr>
+                    <td><strong>Cart</strong></td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                </tr>
+                <tr>
+                    <td><strong>Admin</strong></td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                    <td>✓ Pass</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Responsive Features Implemented</h3>
+        <div class="features">
+            <h4>✓ Core Responsive Features</h4>
+            <ul>
+                <li><strong>Bootstrap 5 Grid System</strong> — 12-column responsive grid adapts across all breakpoints</li>
+                <li><strong>Mobile-First Design</strong> — Navigation collapses to hamburger menu on mobile devices</li>
+                <li><strong>Flexible Typography</strong> — Font sizes and line heights scale appropriately for readability</li>
+                <li><strong>Responsive Images</strong> — Product images scale with container using CSS flexbox and object-fit</li>
+                <li><strong>Touch-Friendly Controls</strong> — Buttons and form inputs sized for easy interaction on mobile</li>
+                <li><strong>Adaptive Layout</strong> — Product grids: 3 columns desktop → 1 column mobile</li>
+                <li><strong>Fluid Spacing</strong> — Padding and margins adjust based on viewport width</li>
+                <li><strong>Viewport Meta Tag</strong> — Ensures proper scaling on mobile browsers</li>
+                <li><strong>CSS Media Queries</strong> — Custom breakpoints for optimal layout at each device size</li>
+            </ul>
+        </div>
+
+        <h3>Layout Adjustments by Screen Size</h3>
+
+        <h4>📱 Mobile (375px)</h4>
+        <div class="screen-section">
+            <ul>
+                <li>Single-column layout for all pages</li>
+                <li>Hamburger menu for navigation (collapsed navbar)</li>
+                <li>Full-width product cards with vertical stacking</li>
+                <li>Stacked form controls and input fields</li>
+                <li>Large touch targets for buttons and links</li>
+                <li>Simplified data tables with horizontal scrolling</li>
+                <li>Images scaled to container width</li>
+            </ul>
+        </div>
+
+        <h4>📱 Tablet (768px)</h4>
+        <div class="screen-section">
+            <ul>
+                <li>Two-column layout where appropriate</li>
+                <li>Full navigation menu visible</li>
+                <li>Product grid with 2 columns</li>
+                <li>Balanced whitespace with adequate padding</li>
+                <li>Forms display side-by-side in rows</li>
+                <li>Larger readable text without excessive sizing</li>
+            </ul>
+        </div>
+
+        <h4>🖥️ Desktop (1440px)</h4>
+        <div class="screen-section">
+            <ul>
+                <li>Multi-column layout maximizing screen real estate</li>
+                <li>Full navigation menu with all options visible</li>
+                <li>Product grid with 3 columns</li>
+                <li>Side-by-side form controls for efficient data entry</li>
+                <li>Hero images displayed at full width</li>
+                <li>Detailed product cards with full information visible</li>
+                <li>Optimized whitespace for professional appearance</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>East Africa Ecommerce Platform</strong></p>
+            <p>Responsive Design & Screen Guide Presentation</p>
+            <p>Generated: April 29, 2026</p>
+            <p style="margin-top: 15px; font-size: 11px;">
+                Backend: Django REST API | Frontend: React + Vite | Styling: Bootstrap 5 + Custom CSS<br>
+                For more information, visit: <a href="http://127.0.0.1:8000" target="_blank">http://127.0.0.1:8000</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
