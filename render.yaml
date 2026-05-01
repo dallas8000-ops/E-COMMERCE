@@ -5,7 +5,8 @@ services:
     plan: free
     healthCheckPath: /health/
     buildCommand: pip install -r requirements.txt && python backend/manage.py collectstatic --noinput
-    startCommand: python backend/manage.py migrate && python backend/manage.py seed_inventory_if_empty && python backend/manage.py link_static_images_to_products && gunicorn --chdir backend core.wsgi:application --bind 0.0.0.0:$PORT
+    preDeployCommand: python backend/manage.py migrate && python backend/manage.py seed_inventory_if_empty && python backend/manage.py link_static_images_to_products
+    startCommand: gunicorn --chdir backend core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
       - key: DJANGO_SECRET_KEY
         generateValue: true
@@ -17,7 +18,7 @@ services:
         value: ".onrender.com localhost 127.0.0.1"
       - key: DATABASE_URL
         fromDatabase:
-          name: kristie-store-db
+          name: kistie-store-db
           property: connectionString
       - key: DJANGO_EMAIL_BACKEND
         value: "django.core.mail.backends.smtp.EmailBackend"
@@ -37,6 +38,6 @@ services:
         value: "dallas8000@gmail.com"
 
 databases:
-  - name: kristie-store-db
-    databaseName: kristie_store
-    user: kristie_store_user
+  - name: kistie-store-db
+    databaseName: kistie_store
+    user: kistie_store_user
