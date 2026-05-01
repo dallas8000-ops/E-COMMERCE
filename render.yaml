@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: kistie-store
+    name: Kistie-Store
     runtime: python
     plan: free
     healthCheckPath: /health/
