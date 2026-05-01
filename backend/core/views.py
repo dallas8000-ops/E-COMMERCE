@@ -3,6 +3,7 @@ from datetime import timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import json
 import logging
+import re
 import requests as _requests
 
 from django.conf import settings
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+DJANGO_IMAGE_SUFFIX_RE = re.compile(r'^(?P<stem>.+)_[A-Za-z0-9]{7}$')
 SUPPORTED_CURRENCIES = ('USD', 'EUR', 'KES', 'UGX')
 PAYMENT_METHODS = ('mtn', 'airtel', 'worldremit')
 FALLBACK_RATES = {
@@ -127,6 +129,19 @@ def _catalog_image_files():
 def _product_image_url(image_field):
     image_name = Path(str(image_field)).name
     return reverse('catalog_image', args=[image_name])
+
+
+def _candidate_image_names(image_name):
+    requested_name = Path(image_name).name
+    candidates = [requested_name]
+
+    stem = Path(requested_name).stem
+    suffix = Path(requested_name).suffix
+    match = DJANGO_IMAGE_SUFFIX_RE.match(stem)
+    if match:
+        candidates.append(f"{match.group('stem')}{suffix}")
+
+    return candidates
 
 
 def _normalize_key(value):
@@ -484,25 +499,28 @@ def catalog(request):
 
 
 def catalog_image(_request, image_name):
-    requested_name = Path(image_name).name
+    requested_names = _candidate_image_names(image_name)
 
     # Try workspace image folder first (used by legacy catalog seed flow).
     workspace_dir = _workspace_images_dir().resolve()
-    workspace_candidate = (workspace_dir / requested_name).resolve()
-    if workspace_dir in workspace_candidate.parents and workspace_candidate.exists() and workspace_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
-        return FileResponse(open(workspace_candidate, 'rb'))
+    for requested_name in requested_names:
+        workspace_candidate = (workspace_dir / requested_name).resolve()
+        if workspace_dir in workspace_candidate.parents and workspace_candidate.exists() and workspace_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+            return FileResponse(open(workspace_candidate, 'rb'))
 
     # Fallback to media folder where ProductImage files are stored on most deployments.
     media_root = Path(settings.MEDIA_ROOT).resolve()
-    media_candidate = (media_root / requested_name).resolve()
-    if media_root in media_candidate.parents and media_candidate.exists() and media_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
-        return FileResponse(open(media_candidate, 'rb'))
+    for requested_name in requested_names:
+        media_candidate = (media_root / requested_name).resolve()
+        if media_root in media_candidate.parents and media_candidate.exists() and media_candidate.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+            return FileResponse(open(media_candidate, 'rb'))
 
     # Some files are nested (for example: media/products/products/<name>).
-    for candidate in media_root.rglob(requested_name):
-        resolved = candidate.resolve()
-        if media_root in resolved.parents and resolved.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
-            return FileResponse(open(resolved, 'rb'))
+    for requested_name in requested_names:
+        for candidate in media_root.rglob(requested_name):
+            resolved = candidate.resolve()
+            if media_root in resolved.parents and resolved.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+                return FileResponse(open(resolved, 'rb'))
 
     raise Http404('Image not found.')
 
