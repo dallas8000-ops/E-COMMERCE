@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kistie-Store — Platform demo</title>
+  <style>
+    :root {
+      --bg: #140d08;
+      --surface: #1e1410;
+      --text: #f5ede5;
+      --muted: #b89e8a;
+      --accent: #c9971a;
+      --card: #271a12;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: 'Georgia', 'Segoe UI', system-ui, serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem 5rem;
+    }
+
+    .slide {
+      display: none;
+      max-width: 960px;
+      width: 100%;
+      text-align: center;
+      animation: enter 0.55s ease both;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 0 0 0.75rem;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 1rem;
+    }
+
+    p.lead {
+      font-size: clamp(1rem, 2.2vw, 1.15rem);
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 38rem;
+      margin: 0 auto 1.25rem;
+    }
+
+    .slide img {
+      max-width: 100%;
+      max-height: min(52vh, 420px);
+      width: auto;
+      border-radius: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(201, 151, 26, 0.22);
+    }
+
+    .caption {
+      margin-top: 0.85rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .mock-dashboard {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .mock-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mock-card {
+      background: var(--card);
+      border: 1px solid rgba(201, 151, 26, 0.15);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+    }
+
+    .mock-card .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .mock-card .value {
+      font-size: 1.65rem;
+      font-weight: 700;
+    }
+
+    ul.features {
+      text-align: left;
+      max-width: 32rem;
+      margin: 1rem auto 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .toolbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.85rem 1rem 1.1rem;
+      background: linear-gradient(to top, rgba(20, 13, 8, 0.98), transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .dots {
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .dots button {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(245, 237, 229, 0.22);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .dots button.active {
+      background: var(--accent);
+      width: 22px;
+      border-radius: 6px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .controls button {
+      background: var(--surface);
+      border: 1px solid rgba(201, 151, 26, 0.28);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .controls button:hover {
+      border-color: var(--accent);
+    }
+
+    .timer {
+      font-size: 0.78rem;
+      color: var(--muted);
+      min-width: 7rem;
+      text-align: center;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      opacity: 0.85;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+    <!-- 0 -->
+    <div class="slide active" data-slide="0">
+      <p class="kicker">Live commerce · Django · Render</p>
+      <h1>Kistie-Store</h1>
+      <p class="lead">
+        Fashion ecommerce with catalog, multi-currency checkout, Django admin back office, secured REST API,
+        and CI-tested deploys—built for a real retail operation.
+      </p>
+    </div>
+
+    <!-- 1 -->
+    <div class="slide" data-slide="1">
+      <p class="kicker">Storefront</p>
+      <h1>Catalog &amp; inventory</h1>
+      <p class="lead">Filtered catalog, EU sizing, live FX at checkout.</p>
+      <img src="../images/screenshots/Catalog.png" alt="Kistie-Store catalog and inventory" onerror="this.style.display='none'" />
+      <p class="caption">Screenshot from <code>images/screenshots/Catalog.png</code></p>
+    </div>
+
+    <!-- 2 -->
+    <div class="slide" data-slide="2">
+      <p class="kicker">Back office</p>
+      <h1>Django admin — store operations</h1>
+      <p class="lead">Custom-themed admin: auth, carts, orders, inventory, reviews, contact leads.</p>
+      <img src="../images/screenshots/admin-dashboard.png" alt="Kistie-Store Django admin dashboard" />
+      <p class="caption"><code>images/screenshots/admin-dashboard.png</code></p>
+    </div>
+
+    <!-- 3 -->
+    <div class="slide" data-slide="3">
+      <p class="kicker">Inventory</p>
+      <h1>Products &amp; multi-currency</h1>
+      <p class="lead">USD + UGX pricing, stock, filters — full CRUD from the admin.</p>
+      <img src="../images/screenshots/admin-products.png" alt="Kistie-Store product list in Django admin" />
+      <p class="caption"><code>images/screenshots/admin-products.png</code></p>
+    </div>
+
+    <!-- 4 -->
+    <div class="slide" data-slide="4">
+      <p class="kicker">Engineering</p>
+      <h1>API &amp; delivery</h1>
+      <ul class="features">
+        <li>Django REST Framework — public reads; staff-only writes on inventory endpoints.</li>
+        <li>GitHub Actions CI — tests on every push to <code>main</code>.</li>
+        <li>PostgreSQL on Render; Gunicorn + WhiteNoise in production.</li>
+      </ul>
+    </div>
+
+    <!-- 5 -->
+    <div class="slide" data-slide="5">
+      <p class="kicker">See it live</p>
+      <h1>kistie-store.onrender.com</h1>
+      <p class="lead">
+        Full-stack Python ecommerce—responsive UI, auth, cart, checkout, and staff workflows.
+      </p>
+      <p class="caption">Use ← → or Space · Pause/resume with the button below</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="controls">
+      <button type="button" id="prev" aria-label="Previous slide">← Prev</button>
+      <button type="button" id="toggle" aria-label="Pause or resume autoplay">Pause</button>
+      <button type="button" id="next" aria-label="Next slide">Next →</button>
+    </div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="timer" id="timer"></div>
+    <div class="hint">Tip: open this file from the repo so images load (or use a local static server).</div>
+  </div>
+
+  <script>
+    (function () {
+      var slides = [].slice.call(document.querySelectorAll('.slide'));
+      var idx = 0;
+      var duration = 5500;
+      var timerId = null;
+      var remaining = duration;
+      var lastTick = Date.now();
+      var playing = true;
+
+      var dotsEl = document.getElementById('dots');
+      var timerEl = document.getElementById('timer');
+
+      slides.forEach(function (_, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.addEventListener('click', function () {
+          go(i);
+        });
+        dotsEl.appendChild(b);
+      });
+
+      function updateDots() {
+        var buttons = dotsEl.querySelectorAll('button');
+        buttons.forEach(function (btn, i) {
+          btn.classList.toggle('active', i === idx);
+        });
+      }
+
+      function show(i) {
+        idx = (i + slides.length) % slides.length;
+        slides.forEach(function (s, j) {
+          s.classList.toggle('active', j === idx);
+        });
+        updateDots();
+      }
+
+      function go(i) {
+        show(i);
+        resetTimer();
+      }
+
+      function resetTimer() {
+        remaining = duration;
+        lastTick = Date.now();
+      }
+
+      function tick() {
+        if (!playing) return;
+        var now = Date.now();
+        remaining -= now - lastTick;
+        lastTick = now;
+        if (remaining <= 0) {
+          show(idx + 1);
+          remaining = duration;
+        }
+        var sec = Math.ceil(remaining / 1000);
+        timerEl.textContent = playing ? 'Next in ' + sec + 's' : 'Paused';
+      }
+
+      function startTimer() {
+        stopTimer();
+        lastTick = Date.now();
+        timerId = setInterval(tick, 200);
+      }
+
+      function stopTimer() {
+        if (timerId) clearInterval(timerId);
+        timerId = null;
+      }
+
+      document.getElementById('prev').addEventListener('click', function () {
+        go(idx - 1);
+      });
+      document.getElementById('next').addEventListener('click', function () {
+        go(idx + 1);
+      });
+
+      document.getElementById('toggle').addEventListener('click', function () {
+        playing = !playing;
+        document.getElementById('toggle').textContent = playing ? 'Pause' : 'Play';
+        if (playing) {
+          lastTick = Date.now();
+          startTimer();
+        } else {
+          stopTimer();
+          timerEl.textContent = 'Paused';
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          go(idx + 1);
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          go(idx - 1);
+        }
+      });
+
+      updateDots();
+      startTimer();
+      tick();
+    })();
+  </script>
+</body>
+</html>
