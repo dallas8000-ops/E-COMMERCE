@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -18,6 +19,11 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _django_tests_running():
+    """True when `manage.py test` runs (HTTP client must not hit SECURE_SSL_REDIRECT)."""
+    return len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
@@ -248,7 +254,7 @@ REST_FRAMEWORK = {
 }
 
 # --- Production TLS / cookies (Render, Railway, etc. terminate TLS and set X-Forwarded-Proto) ---
-if not DEBUG:
+if not DEBUG and not _django_tests_running():
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True
     SESSION_COOKIE_SECURE = True
