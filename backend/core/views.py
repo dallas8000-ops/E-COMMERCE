@@ -16,7 +16,7 @@ from django.core.cache import cache
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Avg, Count, Prefetch, Q, Sum
-from django.http import FileResponse, Http404, HttpResponseRedirect
+from django.http import FileResponse, Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -455,6 +455,12 @@ def _handle_contact_inquiry(request):
 
 
 def health(request):
+    wants_json = (
+        request.GET.get('format') == 'json'
+        or 'application/json' in (request.headers.get('Accept') or '')
+    )
+    if wants_json:
+        return JsonResponse({'status': 'ok', 'service': 'kistie-store'}, status=200)
     return render(request, 'core/health.html', status=200)
 
 

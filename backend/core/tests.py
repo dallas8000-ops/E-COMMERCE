@@ -23,3 +23,11 @@ class AuthRouteSmokeTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(get_user_model().objects.filter(username='newuser').count(), 1)
+
+
+class HealthEndpointTests(TestCase):
+    def test_health_json(self):
+        response = self.client.get(f"{reverse('health')}?format=json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'ok')
+        self.assertEqual(response.json()['service'], 'kistie-store')
