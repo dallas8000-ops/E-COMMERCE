@@ -1,8 +1,18 @@
 # East Africa Ecommerce Platform
 
-A professional ecommerce platform for East Africa, focused on women’s clothing, accessories, jewelry, shoes, rings, perfume, and lingerie. Built with Django (backend), React + Bootstrap (frontend), and optional Node.js payment stubs (MTN, Airtel, WorldRemit, etc.); checkout is **manually verified in admin** unless you wire a gateway.
+[![CI](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml)
+
+A full-stack fashion ecommerce platform for East Africa, focused on women’s clothing, accessories, jewelry, shoes, rings, perfume, and lingerie. The **live storefront** is **Django + server-rendered templates** (catalog, inventory, cart, checkout, auth, contact). A **Django REST Framework** layer exposes product and category JSON for future SPAs and integrations. **React + Vite** and a small **Node** payments workspace are included for expansion. Order payment is **confirmed manually in Django admin** (MTN, Airtel, WorldRemit, bank, etc.) unless you later connect a payment gateway.
 
 **GitHub repository:** https://github.com/dallas8000-ops/Kistie-Store
+
+## Complete platform description
+
+Kistie Store is a **production-style boutique marketplace**: shoppers browse a filtered **catalog**, open product detail, add EU-sized items to a **session or account cart**, and complete **checkout** with live **FX rates** (Frankfurter API) and country-aware **payment instructions**. **Staff** use **Django admin** (when enabled) for products, categories, images, orders, and contact leads; **staff users** also get a **dashboard** (order counts, revenue by currency, low stock, recent inquiries), and **superusers** can open an **admin audit log** of `LogEntry` actions. The UI is **responsive**, **themed** (light/dark + palette options on the storefront), and **branded** (custom CSS, optional custom Django admin skin).
+
+**Data & hosting:** Local development uses **SQLite**; **Render** production uses **PostgreSQL** via `DATABASE_URL` (see `render.yaml`). User uploads live under `media/`; see deployment notes for **ephemeral disk** on free tiers (recommend persistent disk or object storage for long-term media).
+
+**API & quality bar:** Public clients may **read** `/api/inventory/categories/` and `/api/inventory/products/` without credentials. **Creating, editing, or deleting** categories or products through the API requires a **Django staff** account (session or basic auth). Default DRF **throttles** apply. **GitHub Actions** runs `python manage.py test` on every push/PR to `main` (or `master`).
 
 ## Capstone Alignment
 This project is being developed as a full-stack capstone application and is aligned to the following core capstone expectations:
@@ -27,8 +37,9 @@ The following items are **intentional** so nothing in the repo reads as an undoc
 - **This README** — The capstone section states that **updating payment status in admin is by design** (manual verification, full audit trail). It describes **commerce-style interaction** (catalog, cart, checkout, contact) where course materials often use social examples (likes, follows). The section **“Optional Future Enhancements”** is only for stretch goals; it is **not** a list of required fixes before the project is “complete.”
 - **Outside this repository** — If the syllabus requires a specific **Google Doc** template or cover sheet, that is a **submission-format** rule from the instructor, not something the code can satisfy. If the syllabus asks whether “interaction features” apply to a **store**, point graders to the interaction bullet under **Current capstone fit** above.
 
-## Project Description
-East Africa Ecommerce Platform is a fashion-focused ecommerce experience designed for women-led commerce and modern retail across East Africa. The application combines a Django backend, database-managed inventory, and customer-facing shopping pages with dynamic currency conversion, cart management, catalog browsing, and protected admin editing. The goal is to provide a scalable marketplace foundation that can support premium fashion listings, mobile-first browsing, and region-aware payment expansion.
+## Project Description (short)
+
+East Africa Ecommerce Platform is a fashion-focused ecommerce experience for women-led commerce and modern retail across East Africa. It combines Django, database-managed inventory, responsive storefront pages, dynamic currency conversion, cart/checkout, and protected staff tooling—as **detailed in “Complete platform description”** above.
 
 ## Industry Context And Target Audience
 - Industry: Fashion ecommerce / digital retail marketplace
@@ -53,28 +64,47 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - `images/` — Product images and media
 
 ## Tech Stack
-- Backend: Django, Django REST Framework, SQLite
-- Frontend UI: Django templates for the current shopping flow, React + Vite workspace for frontend expansion
-- Styling: Bootstrap 5 plus custom CSS
-- Payments: Node.js + Express microservice stubs (Pesapal, Daraja, Airtel, MTN, etc.); production orders use manual confirmation in Django admin unless you integrate a provider
-- Media/Data: SQLite database with admin-managed products and linked product images
-- Tooling: VS Code, GitHub Copilot, npm, Python virtual environment
+- **Backend:** Django 5.x, **Django REST Framework**, Gunicorn, WhiteNoise
+- **Database:** SQLite (local dev); **PostgreSQL** on Render via `DATABASE_URL` / `dj-database-url`
+- **Storefront UI:** Django templates, Bootstrap 5, custom `brand.css` / design system–style components
+- **Optional SPA:** React 19 + Vite (`frontend/`) calling DRF where needed
+- **Payments scaffolding:** Node + Express stubs (`payments/`); live flow uses **manual confirmation** in admin unless you wire a provider
+- **Media:** Pillow; product images via `ProductImage` and `catalog_image` resolution (workspace `images/` optional for seeding)
+- **CI:** GitHub Actions — install `requirements.txt`, run `manage.py test` from `backend/`
+- **Tooling:** Python venv, npm, Render blueprint (`render.yaml`)
 
-## Features
-- Modern, mobile-friendly UI/UX
-- Home, About, Inventory, Cart pages
-- Prominent Bootstrap navbar linking all pages
-- Dynamic inventory and cart management
-- Checkout order capture with country-aware payment instructions and order reference tracking
-- Shopper authentication (signup/login/logout) with account-aware cart merge
-- Contact inquiry workflow with admin persistence and real email notification support
-- Payment method selection and provider-ready scaffolding (MTN, Airtel, WorldRemit)
-- Designed for the East African market
-- Storefront-first landing page for capstone demo presentation
-- **Staff dashboard** (`/staff/dashboard/`, staff users): order counts, revenue by currency, low-stock list, recent contact inquiries
-- **Admin audit log** (`/staff/audit-log/`, superusers): recent Django admin `LogEntry` actions
-- **Shopper order history** (`/account/orders/`, signed-in users): past orders linked to the account
-- **Catalog filters**: category, USD price band, EU size; approved **product reviews** show average rating on catalog cards (moderated in Django admin)
+## Features (complete list)
+
+### Storefront & discovery
+- **Home** — Hero and featured products (product images), stats, category tiles, conversion-focused layout
+- **Catalog** (`/catalog/`) — Product cards, filters (**category**, **USD price band**, **EU size**), modal/detail imagery, **approved review averages** on cards
+- **Inventory** (`/inventory/`) — Full list, EU sizes, quantity, **currency selector**, payment method preference, add to cart
+- **About & contact** — Brand story; **contact form** persisted and emailed (SMTP configurable)
+- **Theming** — Dark/light toggle and theme picker on the main navbar (session/local persistence)
+
+### Cart, checkout & orders
+- Session and **logged-in** carts with **merge on login**
+- Cart line updates, stock validation, stale guest-cart cleanup
+- **Checkout** — Customer details, live **exchange rates**, order reference, **Pending payment** until staff confirms in admin
+- **Order history** (`/account/orders/`) for authenticated shoppers
+
+### Staff & administration
+- **Django admin** — Categories, products, **inline product images**, orders, carts, inquiries, reviews (when `DJANGO_ENABLE_ADMIN=true`)
+- **Custom admin branding** — `kistie_admin.css` + `base_site.html` (dark header, accent buttons)
+- **Staff dashboard** (`/staff/dashboard/`) — Order totals, revenue by currency, low-stock alerts, recent contact inquiries
+- **Audit log** (`/staff/audit-log/`, superusers) — Recent Django admin actions (`LogEntry`)
+
+### API & integrations
+- **GET** `/api/inventory/categories/`, `/api/inventory/products/` — **Public read** (throttled)
+- **Writes** (POST/PUT/PATCH/DELETE) on those routes — **`is_staff` required** (session or HTTP basic to DRF)
+- **POST** `/api/inventory/pay/checkout/` — Stub response for gateway experiments (**AllowAny**; production checkout is template POST + admin verification)
+- **FX** — Frankfurter rates with sensible fallbacks
+
+### Security & reliability (current)
+- CSRF on storefront forms; **stable dev `SECRET_KEY`** option to avoid CSRF surprises during local admin use
+- **`CSRF_TRUSTED_ORIGINS`** for Render hostname + env overrides + local dev origins when `DEBUG`
+- **Login brute-force throttling** (cache-backed counters per IP)
+- **DRF global throttles** (anonymous vs authenticated rates)
 
 ## Screenshots & GIFs (portfolio polish)
 
@@ -113,7 +143,7 @@ This project uses a **dual-frontend approach** intentionally:
 
 - **Django-rendered templates** (`backend/core/templates/`) are the live storefront — they handle the complete shopping flow (catalog, inventory, cart, auth, contact) with server-side rendering, CSRF protection, and session management built in. This approach was chosen for rapid, secure delivery with zero JavaScript build step for the critical customer path.
 
-- **React + Vite** (`frontend/`) is a separate workspace scaffolded for future expansion — progressive migration of individual pages as the team grows and API endpoints mature. DRF endpoints (`/api/inventory/products/`, `/api/inventory/categories/`) are already in place to support this.
+- **React + Vite** (`frontend/`) is a separate workspace scaffolded for future expansion — progressive migration of individual pages as the team grows and API endpoints mature. DRF endpoints (`GET /api/inventory/products/`, `GET /api/inventory/categories/` — public; **writes staff-only**) are in place to support this.
 
 This pattern is common in production Django shops doing a gradual SSR-to-SPA migration. In interviews, the key point is: the Django-rendered storefront is fully functional today; React is the planned successor for individual high-interactivity pages.
 
@@ -147,15 +177,29 @@ This pattern is common in production Django shops doing a gradual SSR-to-SPA mig
 
 **Security & operations**
 
-- Expand rate limiting (e.g. `django-ratelimit` for API and admin) beyond login throttling
+- **Done:** DRF **staff-only writes** on inventory API; global **anon/user throttles**; **GitHub Actions CI**
+- Expand rate limiting (e.g. `django-ratelimit` for HTML routes and admin) beyond login + DRF throttles
 - Optional **django-axes** or similar for account lockout policies
 - Custom domain audit events (e.g. who changed order status) in addition to built-in `LogEntry`
 - Fine-grained **roles** (e.g. “fulfillment staff” vs superuser) via Groups & permissions
+- **`SECURE_*` / HSTS** tuned for your domain when not relying solely on Render TLS termination
+
+## Continuous integration
+
+On every **push** or **pull request** to **`main`** or **`master`**, [`.github/workflows/ci.yml`](.github/workflows/ci.yml) installs `requirements.txt` and runs:
+
+```bash
+cd backend && python manage.py test
+```
+
+Use this as the baseline “green build” before merging or deploying.
 
 ## Recently Completed Milestones
+- **API hardening:** inventory DRF viewsets use **staff-only** create/update/delete; public read remains open; global throttles configured in settings
+- **CI pipeline:** GitHub Actions workflow runs the Django test suite on each push/PR to main
 - Shopper authentication implemented: signup/login/logout routes plus account-aware cart merge
 - Communication feature implemented: contact inquiries save in admin and send real SMTP email notifications
-- Storefront landing update completed: portfolio-style home replaced by ecommerce-first hero and conversion-focused sections
+- Storefront landing update completed: ecommerce-first hero and conversion-focused sections
 - Responsive QA on real devices: phone and tablet verified for storefront pages and customer interactions
 
 ## Environment Setup (Backend)

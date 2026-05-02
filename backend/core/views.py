@@ -7,12 +7,15 @@ import re
 import requests as _requests
 
 from django.conf import settings
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Avg, Count, Prefetch, Q, Sum
 from django.http import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -20,7 +23,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from cart.models import Cart, CartItem, Order, OrderItem
-from inventory.models import Product, ProductImage
+from inventory.models import Category, Product, ProductImage
 from pages.forms import ContactInquiryForm
 from pages.models import ContactInquiry
 
@@ -41,6 +44,43 @@ FALLBACK_RATES = {
 
 
 STALE_EMPTY_CART_DAYS = 7
+
+# Login brute-force throttling (per client IP, uses LocMem cache).
+LOGIN_FAIL_WINDOW_SEC = 900
+LOGIN_FAIL_MAX_ATTEMPTS = 8
+
+
+def _client_ip(request):
+    forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+    if forwarded:
+        return forwarded.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'unknown')
+
+
+def _login_rate_keys(request):
+    ip = _client_ip(request)
+    return f'login_fail_{ip}', f'login_lock_{ip}'
+
+
+def _login_is_locked(request):
+    _, lock_key = _login_rate_keys(request)
+    return bool(cache.get(lock_key))
+
+
+def _login_clear_attempts(request):
+    fail_key, lock_key = _login_rate_keys(request)
+    cache.delete(fail_key)
+    cache.delete(lock_key)
+
+
+def _login_register_failure(request):
+    fail_key, lock_key = _login_rate_keys(request)
+    n = cache.get(fail_key, 0) + 1
+    cache.set(fail_key, n, LOGIN_FAIL_WINDOW_SEC)
+    if n >= LOGIN_FAIL_MAX_ATTEMPTS:
+        cache.set(lock_key, True, LOGIN_FAIL_WINDOW_SEC)
+        return True
+    return False
 
 
 def _workspace_images_dir():
@@ -241,6 +281,36 @@ def _catalog_fallback_description(product):
 
 
 def _recent_images(limit=3):
+    """
+    Images for home hero + About strip.
+
+    Uses the same ProductImage records as catalog/inventory (under MEDIA_ROOT, typically
+    ``media/products/…``). Falls back to loose files in ``kistie-store/images/`` when no
+    product images exist (legacy seed flow).
+    """
+    qs = (
+        ProductImage.objects.exclude(image='')
+        .select_related('product')
+        .order_by('-product__created_at', 'id')
+    )
+
+    paths = []
+    seen_names = set()
+    scan_cap = max(limit * 12, 48)
+    for pi in qs[:scan_cap]:
+        raw = str(pi.image).strip()
+        if not raw:
+            continue
+        fname = Path(raw).name
+        if not fname or fname in seen_names:
+            continue
+        seen_names.add(fname)
+        paths.append(Path(fname))
+        if len(paths) >= limit:
+            break
+
+    if paths:
+        return paths[:limit]
     return _catalog_image_files()[:limit]
 
 
@@ -441,16 +511,37 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
 
+    if request.method == 'GET' and _login_is_locked(request):
+        messages.error(
+            request,
+            'Too many sign-in attempts from this address. Please wait a few minutes and try again.',
+        )
+
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == 'POST':
+        if _login_is_locked(request):
+            messages.error(
+                request,
+                'Too many sign-in attempts. Please try again in a few minutes.',
+            )
+            return render(request, 'core/auth_login.html', {'form': form})
+
         if form.is_valid():
+            _login_clear_attempts(request)
             pre_login_session_key = request.session.session_key
             user = form.get_user()
             login(request, user)
             _merge_guest_cart_into_user(request, user, session_key=pre_login_session_key)
             messages.success(request, f'Welcome back, {user.username}.')
             return redirect('home')
-        messages.error(request, 'Invalid username or password.')
+
+        if _login_register_failure(request):
+            messages.error(
+                request,
+                'Too many failed attempts. This address is temporarily limited. Try again later.',
+            )
+        else:
+            messages.error(request, 'Invalid username or password.')
 
     return render(request, 'core/auth_login.html', {'form': form})
 
@@ -462,11 +553,110 @@ def logout_view(request):
     return redirect('home')
 
 
+@login_required
+def order_history(request):
+    orders = (
+        Order.objects.filter(user=request.user)
+        .prefetch_related('items')
+        .order_by('-created_at')
+    )
+    return render(request, 'core/order_history.html', {
+        'orders': orders,
+    })
+
+
+@user_passes_test(lambda u: u.is_staff)
+def staff_dashboard(request):
+    low_stock_threshold = 5
+    order_counts = Order.objects.aggregate(
+        total=Count('id'),
+        pending=Count('id', filter=Q(status=Order.STATUS_PENDING)),
+        confirmed=Count('id', filter=Q(status=Order.STATUS_CONFIRMED)),
+    )
+    revenue_rows = (
+        Order.objects.filter(status=Order.STATUS_CONFIRMED)
+        .values('currency')
+        .annotate(total=Sum('total_amount'))
+        .order_by('currency')
+    )
+    low_stock_products = (
+        Product.objects.filter(
+            in_stock=True,
+            stock_quantity__gt=0,
+            stock_quantity__lte=low_stock_threshold,
+        )
+        .select_related('category')
+        .order_by('stock_quantity', 'name')[:20]
+    )
+    recent_inquiries = ContactInquiry.objects.all()[:10]
+
+    return render(request, 'core/staff_dashboard.html', {
+        'order_counts': order_counts,
+        'revenue_rows': revenue_rows,
+        'low_stock_products': low_stock_products,
+        'low_stock_threshold': low_stock_threshold,
+        'recent_inquiries': recent_inquiries,
+    })
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_audit_log(request):
+    """Recent Django admin actions (LogEntry). Superusers only — staff use /staff/dashboard/."""
+    entries = (
+        LogEntry.objects.select_related('user', 'content_type')
+        .order_by('-action_time')[:150]
+    )
+    return render(request, 'core/admin_audit_log.html', {
+        'entries': entries,
+    })
+
+
 def catalog(request):
     checkout = _checkout_preferences(request)
-    products = Product.objects.prefetch_related(
-        Prefetch('images', queryset=ProductImage.objects.order_by('id'))
-    ).all().order_by('-created_at')
+
+    products = (
+        Product.objects.select_related('category')
+        .annotate(
+            review_avg=Avg(
+                'reviews__rating',
+                filter=Q(reviews__is_approved=True),
+            ),
+            review_count=Count(
+                'reviews',
+                filter=Q(reviews__is_approved=True),
+            ),
+        )
+        .prefetch_related(
+            Prefetch('images', queryset=ProductImage.objects.order_by('id'))
+        )
+    )
+
+    category_raw = request.GET.get('category')
+    if category_raw:
+        try:
+            cid = int(category_raw)
+            products = products.filter(category_id=cid)
+        except (TypeError, ValueError):
+            pass
+
+    price_min = request.GET.get('price_min')
+    price_max = request.GET.get('price_max')
+    if price_min:
+        try:
+            products = products.filter(price_usd__gte=Decimal(str(price_min).strip()))
+        except (InvalidOperation, ValueError, TypeError):
+            pass
+    if price_max:
+        try:
+            products = products.filter(price_usd__lte=Decimal(str(price_max).strip()))
+        except (InvalidOperation, ValueError, TypeError):
+            pass
+
+    size_q = (request.GET.get('size') or '').strip()
+    if size_q:
+        products = products.filter(sizes__icontains=size_q)
+
+    products = products.order_by('-created_at')
 
     catalog_items = []
     for product in products:
@@ -481,6 +671,10 @@ def catalog(request):
         primary_url = _product_image_url(images[0].image) if images else ''
         detail_url = _product_image_url(images[1].image) if len(images) > 1 else primary_url
 
+        review_label = ''
+        if product.review_count and product.review_avg is not None:
+            review_label = f'{product.review_avg:.1f} ★ ({product.review_count})'
+
         catalog_items.append({
             'name': product.name,
             'description': description or _catalog_fallback_description(product),
@@ -488,6 +682,8 @@ def catalog(request):
             'primary_url': primary_url,
             'detail_url': detail_url,
             'has_image': bool(images),
+            'review_label': review_label,
+            'category_name': product.category.name if product.category_id else '',
         })
 
     return render(request, 'core/catalog.html', {
@@ -495,6 +691,11 @@ def catalog(request):
         'total_items': len(catalog_items),
         'currency': checkout['currency'],
         'supported_currencies': SUPPORTED_CURRENCIES,
+        'categories': Category.objects.all().order_by('name'),
+        'filter_category': category_raw or '',
+        'filter_price_min': (price_min or '').strip(),
+        'filter_price_max': (price_max or '').strip(),
+        'filter_size': size_q,
     })
 
 

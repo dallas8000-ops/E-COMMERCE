@@ -1,5 +1,3 @@
-# Redirect admin logout to home page
-LOGOUT_REDIRECT_URL = '/'
 """
 Django settings for core project.
 
@@ -16,11 +14,14 @@ import os
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
-from django.core.management.utils import get_random_secret_key
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 
 def load_env_file(env_path):
@@ -44,18 +45,27 @@ load_env_file(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
-if DJANGO_SECRET_KEY:
-    SECRET_KEY = DJANGO_SECRET_KEY
-else:
-    SECRET_KEY = get_random_secret_key()
-
 # SECURITY WARNING: don't run with debug turned on in production!
 # Render sets RENDER=true. Default DEBUG to False on Render, True locally.
 is_render = os.environ.get('RENDER', '').lower() == 'true'
 debug_default = 'False' if is_render else 'True'
 DEBUG = os.environ.get('DJANGO_DEBUG', debug_default).lower() in ('1', 'true', 'yes')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
+if DJANGO_SECRET_KEY:
+    SECRET_KEY = DJANGO_SECRET_KEY
+elif DEBUG:
+    # Stable key in dev so CSRF/session survive runserver restarts (avoids admin logout CSRF 403).
+    # Optionally set DJANGO_DEV_SECRET_KEY in .env if multiple developers share a machine.
+    SECRET_KEY = os.environ.get(
+        'DJANGO_DEV_SECRET_KEY',
+        'django-insecure-kistie-dev-only-rotate-for-shared-machines',
+    )
+else:
+    raise ImproperlyConfigured(
+        'Set DJANGO_SECRET_KEY when DEBUG=False (production / staging). Render supplies this automatically.'
+    )
 enable_admin_default = 'False' if is_render else 'True'
 ENABLE_ADMIN = os.environ.get('DJANGO_ENABLE_ADMIN', enable_admin_default).lower() in ('1', 'true', 'yes')
 
@@ -70,6 +80,14 @@ if render_external_hostname and render_external_hostname not in ALLOWED_HOSTS:
 CSRF_TRUSTED_ORIGINS = []
 if render_external_hostname:
     CSRF_TRUSTED_ORIGINS.append(f'https://{render_external_hostname}')
+for _raw in os.environ.get('CSRF_TRUSTED_ORIGINS', '').replace(',', ' ').split():
+    _origin = _raw.strip()
+    if _origin and _origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_origin)
+if DEBUG:
+    for _local in ('http://127.0.0.1:8000', 'http://localhost:8000'):
+        if _local not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_local)
 
 EMAIL_BACKEND = os.environ.get('DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
@@ -183,6 +201,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# LocMem cache used for login attempt throttling (no extra services required).
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'kistie-store',
+    }
+}
 
 
 # Static files (CSS, JavaScript, Images)
@@ -200,3 +225,22 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django REST Framework — secure defaults; inventory viewsets use StaffOrReadOnly for writes.
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',
+        'user': '2000/hour',
+    },
+}

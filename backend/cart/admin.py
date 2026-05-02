@@ -1,6 +1,5 @@
-
-
 from django.contrib import admin
+
 from .models import Cart, CartItem, Order, OrderItem
 
 class CartItemInline(admin.TabularInline):
@@ -9,7 +8,14 @@ class CartItemInline(admin.TabularInline):
 
 class CartAdmin(admin.ModelAdmin):
 	inlines = [CartItemInline]
-	list_display = ('id', 'user', 'session_key', 'created_at')
+	list_display = ('id', 'user', 'session_key', 'item_count', 'created_at')
+	list_filter = ('created_at',)
+	search_fields = ('session_key', 'user__username', 'user__email')
+	ordering = ('-created_at',)
+
+	@admin.display(description='Items')
+	def item_count(self, obj):
+		return obj.items.count()
 
 
 class OrderItemInline(admin.TabularInline):

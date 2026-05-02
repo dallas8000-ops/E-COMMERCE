@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% block title %}My orders | Kistie Store{% endblock %}
+{% block content %}
+<div class="container py-4 float-in">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1">My orders</h1>
+      <p class="text-muted mb-0">Orders placed while signed in to your account.</p>
+    </div>
+    <a class="btn btn-outline-light btn-sm" href="{% url 'catalog' %}">Continue shopping</a>
+  </div>
+
+  {% if orders %}
+  {% for order in orders %}
+  <div class="card shadow-sm border-0 mb-3" style="border-radius: 14px;">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+        <div>
+          <span class="fw-semibold">{{ order.order_ref }}</span>
+          <span class="text-muted small ms-2">{{ order.created_at }}</span>
+        </div>
+        <div>
+          {% if order.status == 'pending_payment' %}
+          <span class="badge text-bg-warning">Pending payment</span>
+          {% elif order.status == 'payment_confirmed' %}
+          <span class="badge text-bg-success">Payment confirmed</span>
+          {% elif order.status == 'payment_failed' %}
+          <span class="badge text-bg-danger">Payment failed</span>
+          {% else %}
+          <span class="badge text-bg-secondary">{{ order.get_status_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <p class="small mb-2">
+        {{ order.customer_name }} · {{ order.country }} · {{ order.payment_method }} ·
+        <strong>{{ order.currency }} {{ order.total_amount }}</strong>
+      </p>
+      {% if order.items.all %}
+      <ul class="small mb-0 ps-3">
+        {% for line in order.items.all %}
+        <li>{{ line.quantity }} × {{ line.product_name }} {% if line.size %}({{ line.size }}){% endif %} — {{ order.currency }} {{ line.line_total }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="alert alert-info border-0 shadow-sm" style="border-radius: 14px;">
+    You have no orders yet. Browse the <a href="{% url 'inventory' %}" class="alert-link">inventory</a> and check out from the cart.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

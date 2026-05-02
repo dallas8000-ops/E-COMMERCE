@@ -7,18 +7,45 @@
       <h1 class="h3 fw-bold mb-1">Fashion Catalog</h1>
       <p class="mb-0">Browse catalog items with pricing and quick details view.</p>
     </div>
-    <div class="d-flex gap-2 align-items-center flex-wrap justify-content-end">
-      <form method="get" id="catalogCurrencyForm" class="d-flex align-items-center gap-2">
-        <label for="catalogCurrency" class="small text-light-emphasis mb-0">Currency</label>
-        <select id="catalogCurrency" name="currency" class="form-select form-select-sm">
-          {% for code in supported_currencies %}
+    <form method="get" id="catalogFiltersForm" class="catalog-filters w-100">
+      <div class="row g-2 align-items-end justify-content-end">
+        <div class="col-auto">
+          <label for="catalogCategory" class="small text-light-emphasis mb-0 d-block">Category</label>
+          <select id="catalogCategory" name="category" class="form-select form-select-sm">
+            <option value="">All</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}" {% if filter_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="priceMin" class="small text-light-emphasis mb-0 d-block">Min $</label>
+          <input id="priceMin" type="text" name="price_min" class="form-control form-control-sm" placeholder="0" value="{{ filter_price_min }}" inputmode="decimal">
+        </div>
+        <div class="col-auto">
+          <label for="priceMax" class="small text-light-emphasis mb-0 d-block">Max $</label>
+          <input id="priceMax" type="text" name="price_max" class="form-control form-control-sm" placeholder="∞" value="{{ filter_price_max }}" inputmode="decimal">
+        </div>
+        <div class="col-auto">
+          <label for="sizeFilter" class="small text-light-emphasis mb-0 d-block">EU size</label>
+          <input id="sizeFilter" type="text" name="size" class="form-control form-control-sm" placeholder="e.g. 38" value="{{ filter_size }}" maxlength="10">
+        </div>
+        <div class="col-auto">
+          <label for="catalogCurrency" class="small text-light-emphasis mb-0 d-block">Currency</label>
+          <select id="catalogCurrency" name="currency" class="form-select form-select-sm">
+            {% for code in supported_currencies %}
             <option value="{{ code }}" {% if code == currency %}selected{% endif %}>{{ code }}</option>
-          {% endfor %}
-        </select>
-      </form>
-      <span class="badge-count">{{ total_items }} items</span>
-      <a class="btn btn-sm btn-light" href="/">Back to Home</a>
-    </div>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto d-flex gap-2 align-items-center flex-wrap">
+          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+          <a class="btn btn-sm btn-outline-light" href="{% url 'catalog' %}">Reset</a>
+          <span class="badge-count">{{ total_items }} items</span>
+          <a class="btn btn-sm btn-light" href="/">Home</a>
+        </div>
+      </div>
+    </form>
   </div>
 
   {% if catalog_items %}
@@ -34,13 +61,20 @@
         <div class="catalog-product-body">
           <h2 class="h4 fw-semibold mb-2">{{ item.name }}</h2>
           <p class="catalog-description mb-2">{{ item.description }}</p>
-          <p class="catalog-price mb-3">
+          <p class="catalog-price mb-1">
             {% if item.price_display %}
               {{ currency }} {{ item.price_display }}
             {% else %}
               Contact for price
             {% endif %}
           </p>
+          {% if item.review_label or item.category_name %}
+          <p class="small text-muted mb-3">
+            {% if item.review_label %}<span class="text-warning">{{ item.review_label }}</span>{% endif %}
+            {% if item.review_label and item.category_name %} · {% endif %}
+            {% if item.category_name %}{{ item.category_name }}{% endif %}
+          </p>
+          {% endif %}
           {% if item.has_image %}
           <button class="btn btn-primary w-100 view-details-btn" type="button" data-full="{{ item.detail_url }}" data-label="{{ item.name }} detail view">
             View Details
@@ -75,7 +109,6 @@
     const modalImage = document.getElementById('modalImage');
     const closeModal = document.getElementById('closeModal');
     const buttons = document.querySelectorAll('.view-details-btn');
-    const currencyForm = document.getElementById('catalogCurrencyForm');
     const currencySelect = document.getElementById('catalogCurrency');
 
     function openModal(src, label) {
@@ -112,9 +145,10 @@
       }
     });
 
-    if (currencyForm && currencySelect) {
+    if (currencySelect) {
       currencySelect.addEventListener('change', () => {
-        currencyForm.submit();
+        const form = document.getElementById('catalogFiltersForm');
+        if (form) form.submit();
       });
     }
   })();

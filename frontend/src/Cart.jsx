@@ -185,7 +185,7 @@ function Cart() {
     setPaying(true);
     setResult(null);
     try {
-      const res = await fetch(`${API_BASE}/pay/flutterwave/`, {
+      const res = await fetch(`${API_BASE}/pay/checkout/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

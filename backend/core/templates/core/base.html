@@ -32,6 +32,13 @@
                     <div class="nav-utility-group d-flex gap-2 ms-lg-3 mt-3 mt-lg-0 align-items-center flex-wrap">
                         {% if request.user.is_authenticated %}
                             <span class="small text-white-50 d-none d-lg-inline">Hi, {{ request.user.username }}</span>
+                            <a class="btn btn-sm btn-outline-light" href="{% url 'order_history' %}">My orders</a>
+                            {% if request.user.is_staff %}
+                            <a class="btn btn-sm btn-outline-warning" href="{% url 'staff_dashboard' %}">Staff</a>
+                            {% endif %}
+                            {% if request.user.is_superuser %}
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'admin_audit_log' %}">Audit</a>
+                            {% endif %}
                             <form method="post" action="{% url 'logout' %}" class="m-0">
                                 {% csrf_token %}
                                 <button class="btn btn-sm btn-outline-light" type="submit">Sign Out</button>

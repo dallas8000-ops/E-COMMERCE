@@ -20,14 +20,11 @@ app.post('/api/pay/daraja', (req, res) => {
 });
 
 
-// Flutterwave payment endpoint
-// Handles M-Pesa, Airtel, MTN, cards, and more via a single hosted checkout page.
-// When ready, configure your Flutterwave account and use their API to initiate payments.
-app.post('/api/pay/flutterwave', (req, res) => {
-  // Example: Call Flutterwave API to generate a hosted checkout link
-  // See https://developer.flutterwave.com/docs/collecting-payments/hosted-payment/
+// Generic placeholder — the Django site uses manual payment confirmation in admin by default.
+app.post('/api/pay/checkout', (req, res) => {
   res.json({
-    message: 'Flutterwave integration: call this endpoint to initiate payments for M-Pesa, Airtel, MTN, cards, etc. Configure your account and API keys when ready.'
+    message:
+      'Placeholder: add a third-party gateway here if required. Live flow uses MoMo / bank / WorldRemit with staff verification in Django admin.',
   });
 });
 

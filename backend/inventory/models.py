@@ -1,5 +1,7 @@
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -88,3 +90,39 @@ class ProductImage(models.Model):
 
 	def __str__(self):
 		return f"Image for {self.product.name}"
+
+
+class ProductReview(models.Model):
+	"""Approved reviews surface on the catalog; staff moderate via Django admin."""
+
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+	user = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.CASCADE,
+		related_name='product_reviews',
+	)
+	rating = models.PositiveSmallIntegerField(
+		validators=[MinValueValidator(1), MaxValueValidator(5)],
+		help_text='1–5 stars',
+	)
+	title = models.CharField(max_length=120, blank=True)
+	comment = models.TextField(blank=True)
+	is_approved = models.BooleanField(
+		default=False,
+		help_text='Only approved reviews count toward catalog averages.',
+	)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ['-created_at']
+		constraints = [
+			models.UniqueConstraint(
+				fields=('product', 'user'),
+				name='inventory_productreview_unique_per_user',
+			),
+		]
+		verbose_name = 'Product review'
+		verbose_name_plural = 'Product reviews'
+
+	def __str__(self):
+		return f'{self.rating}★ — {self.product.name} ({self.user})'

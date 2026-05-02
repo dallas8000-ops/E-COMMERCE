@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from rest_framework.test import APITestCase
@@ -28,6 +29,41 @@ class InventoryApiSmokeTests(APITestCase):
 		response = self.client.get(reverse('category-list'))
 		self.assertEqual(response.status_code, 200)
 		self.assertGreaterEqual(len(response.data), 1)
+
+	def test_anonymous_cannot_create_category(self):
+		response = self.client.post(
+			reverse('category-list'),
+			data={'name': 'Unauthorized', 'description': 'x'},
+			format='json',
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_authenticated_shopper_cannot_create_category(self):
+		User = get_user_model()
+		user = User.objects.create_user('shopper', password='StrongShopperPass123!')
+		self.client.force_login(user)
+		response = self.client.post(
+			reverse('category-list'),
+			data={'name': 'HackerCat', 'description': 'x'},
+			format='json',
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_staff_can_create_category(self):
+		User = get_user_model()
+		staff = User.objects.create_user(
+			'staff_api',
+			password='StrongStaffPass123!',
+			is_staff=True,
+		)
+		self.client.force_login(staff)
+		response = self.client.post(
+			reverse('category-list'),
+			data={'name': 'Staff Category', 'description': 'Created via API'},
+			format='json',
+		)
+		self.assertEqual(response.status_code, 201)
+		self.assertEqual(Category.objects.filter(name='Staff Category').count(), 1)
 
 	def test_product_accepts_eu_sizes_only(self):
 		product = Product(

@@ -1,7 +1,9 @@
 
 
 from django.contrib import admin
-from .models import Category, Product, ProductImage
+from django.utils.html import format_html
+
+from .models import Category, Product, ProductImage, ProductReview
 from .pricing import apply_price_suggestion, suggest_price_for_product
 
 
@@ -94,9 +96,16 @@ class ProductImageInline(admin.TabularInline):
 	extra = 1
 
 class ProductAdmin(admin.ModelAdmin):
-	list_display = ('name', 'category', 'price_usd', 'price_ugx', 'stock_quantity', 'in_stock')
-	list_filter = ('category', 'in_stock')
-	search_fields = ('name', 'description')
+	list_display = (
+		'name', 'category', 'price_usd', 'price_ugx', 'stock_quantity', 'in_stock', 'created_at',
+	)
+	list_filter = ('category', 'in_stock', 'created_at')
+	search_fields = ('name', 'description', 'color', 'sizes')
+	list_editable = ('stock_quantity', 'in_stock')
+	list_display_links = ('name',)
+	date_hierarchy = 'created_at'
+	ordering = ('-created_at',)
+	autocomplete_fields = ('category',)
 	fieldsets = (
 		('Product Information', {
 			'fields': ('name', 'category', 'description', 'color', 'stock_quantity', 'in_stock')
@@ -158,5 +167,45 @@ class ProductAdmin(admin.ModelAdmin):
 				f'Updated prices for {updated} product(s). Skipped {skipped} product(s).'
 			)
 
-admin.site.register(Category)
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+	list_display = ('name', 'product_count', 'id')
+	search_fields = ('name', 'description')
+	ordering = ('name',)
+
+	@admin.display(description='Products')
+	def product_count(self, obj):
+		return obj.products.count()
+
+
+@admin.register(ProductReview)
+class ProductReviewAdmin(admin.ModelAdmin):
+	list_display = (
+		'product', 'user', 'rating_stars', 'is_approved', 'title', 'created_at',
+	)
+	list_display_links = ('product', 'user')
+	list_filter = ('is_approved', 'rating', 'created_at')
+	search_fields = ('title', 'comment', 'product__name', 'user__username')
+	list_editable = ('is_approved',)
+	raw_id_fields = ('product', 'user')
+	readonly_fields = ('created_at',)
+	ordering = ('-created_at',)
+	fieldsets = (
+		(None, {
+			'fields': ('product', 'user', 'rating', 'is_approved'),
+		}),
+		('Content', {
+			'fields': ('title', 'comment'),
+		}),
+		('Meta', {
+			'fields': ('created_at',),
+		}),
+	)
+
+	@admin.display(description='Rating')
+	def rating_stars(self, obj):
+		return format_html('{} <span class="text-muted">/ 5</span>', obj.rating)
+
+
 admin.site.register(Product, ProductAdmin)

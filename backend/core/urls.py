@@ -8,6 +8,11 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from . import views
 
+if settings.ENABLE_ADMIN:
+    admin.site.site_header = 'Kistie Store'
+    admin.site.site_title = 'Kistie Admin'
+    admin.site.index_title = 'Store operations'
+
 urlpatterns = [
     path('health/', views.health, name='health'),
     path('', views.home, name='home'),
@@ -17,6 +22,9 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('about/', views.about, name='about'),
     path('catalog/', views.catalog, name='catalog'),
+    path('account/orders/', views.order_history, name='order_history'),
+    path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
+    path('staff/audit-log/', views.admin_audit_log, name='admin_audit_log'),
     path('catalog/image/<path:image_name>/', views.catalog_image, name='catalog_image'),
     path('inventory/', views.inventory, name='inventory'),
     path('cart/', views.cart, name='cart'),

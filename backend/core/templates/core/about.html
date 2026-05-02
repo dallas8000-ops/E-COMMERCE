@@ -34,7 +34,7 @@
 			{% for image in brand_images %}
 			<img src="{% url 'catalog_image' image.name %}" alt="Brand story look {{ forloop.counter }}">
 			{% empty %}
-			<div class="ethos-card">Add image files to the workspace <strong>images/</strong> folder to preview brand visuals here.</div>
+			<div class="ethos-card">Add product photos in admin (same images as catalog) or place files in <strong>kistie-store/images/</strong>.</div>
 			{% endfor %}
 		</div>
 	</section>

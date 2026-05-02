@@ -1,17 +1,26 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-class FlutterwavePaymentInit(APIView):
+
+class PaymentCheckoutStub(APIView):
     """
-    Initiate a payment via Flutterwave (handles M-Pesa, Airtel, MTN, cards, etc.)
-    This is a stub. Integrate with Flutterwave API and add authentication as needed.
+    Placeholder for a future card/mobile-money gateway.
+    The live storefront completes orders via checkout + manual payment verification (MTN, Airtel, WorldRemit, etc.).
     """
+
+    permission_classes = [AllowAny]
+
     def post(self, request):
-        # Example: Accept amount, currency, customer info, etc.
         data = request.data
-        # Here you would call the payments microservice or Flutterwave API
-        return Response({
-            'message': 'Flutterwave payment initiation endpoint. Integrate with Flutterwave API here.',
-            'data_received': data
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                'message': (
+                    'No third-party gateway is configured. Complete payment using the instructions '
+                    'shown at checkout; staff confirms receipt in Django admin.'
+                ),
+                'data_received': data,
+            },
+            status=status.HTTP_200_OK,
+        )
