@@ -1,6 +1,6 @@
 # East Africa Ecommerce Platform
 
-A professional ecommerce platform for East Africa, focused on women’s clothing, accessories, jewelry, shoes, rings, perfume, and lingerie. Built with Django (backend), React + Bootstrap (frontend), and Node.js microservices for payment integrations (WorldRemit, Daraja, Flutterwave, etc.).
+A professional ecommerce platform for East Africa, focused on women’s clothing, accessories, jewelry, shoes, rings, perfume, and lingerie. Built with Django (backend), React + Bootstrap (frontend), and optional Node.js payment stubs (MTN, Airtel, WorldRemit, etc.); checkout is **manually verified in admin** unless you wire a gateway.
 
 **GitHub repository:** https://github.com/dallas8000-ops/Kistie-Store
 
@@ -56,7 +56,7 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Backend: Django, Django REST Framework, SQLite
 - Frontend UI: Django templates for the current shopping flow, React + Vite workspace for frontend expansion
 - Styling: Bootstrap 5 plus custom CSS
-- Payments: Node.js + Express microservice stubs for WorldRemit, Daraja, Flutterwave, Airtel, and MTN expansion
+- Payments: Node.js + Express microservice stubs (Pesapal, Daraja, Airtel, MTN, etc.); production orders use manual confirmation in Django admin unless you integrate a provider
 - Media/Data: SQLite database with admin-managed products and linked product images
 - Tooling: VS Code, GitHub Copilot, npm, Python virtual environment
 
@@ -71,6 +71,37 @@ East Africa Ecommerce Platform is a full-stack fashion marketplace built to help
 - Payment method selection and provider-ready scaffolding (MTN, Airtel, WorldRemit)
 - Designed for the East African market
 - Storefront-first landing page for capstone demo presentation
+- **Staff dashboard** (`/staff/dashboard/`, staff users): order counts, revenue by currency, low-stock list, recent contact inquiries
+- **Admin audit log** (`/staff/audit-log/`, superusers): recent Django admin `LogEntry` actions
+- **Shopper order history** (`/account/orders/`, signed-in users): past orders linked to the account
+- **Catalog filters**: category, USD price band, EU size; approved **product reviews** show average rating on catalog cards (moderated in Django admin)
+
+## Screenshots & GIFs (portfolio polish)
+
+Visuals live under `images/screenshots/`. GitHub renders paths with spaces when encoded as `%20`:
+
+| Preview | File |
+|--------|------|
+| Catalog & inventory | [`Catalog.png`](images/screenshots/Catalog.png) — storefront **`/catalog/`** (filters, cards, ratings) and **`/inventory/`** (sizes, currency, add to cart) |
+| Central Kampala | [`Central Kampala.png`](images/screenshots/Central%20Kampala.png) |
+| Downtown Night | [`Downtown Night.png`](images/screenshots/Downtown%20Night.png) |
+| Pearl of Africa | [`Pearl of Africa.png`](images/screenshots/Pearl%20of%20Africa.png) |
+
+### Catalog & inventory
+
+![Catalog and inventory — storefront](images/screenshots/Catalog.png)
+
+**Tip:** For dedicated ops demos, add captures of Django admin (orders/products), `/staff/dashboard/`, and checkout; name files without spaces (e.g. `admin-orders.png`) and embed them the same way.
+
+![Central Kampala — brand imagery](images/screenshots/Central%20Kampala.png)
+
+![Downtown Night — brand imagery](images/screenshots/Downtown%20Night.png)
+
+![Pearl of Africa — brand imagery](images/screenshots/Pearl%20of%20Africa.png)
+
+### Django Admin branding (this repo)
+
+Staff see a **custom admin overlay**: dark gradient header, warm accent buttons, and tightened modules — implemented via `backend/core/templates/admin/base_site.html` and `backend/core/static/admin/css/kistie_admin.css` (loaded automatically when `/admin/` is enabled).
 
 ## Live Demo
 - Deployed URL: https://kistie-store.onrender.com
@@ -100,6 +131,26 @@ This pattern is common in production Django shops doing a gradual SSR-to-SPA mig
 ## Optional Future Enhancements (beyond current capstone scope)
 1. Payment-provider sandbox end-to-end (e.g. WorldRemit) so order status could update automatically instead of only via admin
 2. Spot-check admin on very small screens if graders review orders on mobile
+
+### Roadmap — tiers (portfolio “top tier” goals)
+
+**Presentation / polish**
+
+- README screenshots: portfolio images in `images/screenshots/` are embedded (including `Catalog.png` for `/catalog/` and `/inventory/`); optional: add admin / staff dashboard / checkout GIFs
+- Custom Django Admin CSS overlay (`core/static/admin/css/kistie_admin.css`) — extend variables there for your palette
+
+**Product & UX**
+
+- Public product review submit form (today: `ProductReview` is staff-moderated in admin; approved reviews affect catalog averages)
+- Richer order history (filters, re-order, PDF)
+- DRF-powered **React** catalog page (use existing `/api/inventory/` endpoints; migrate one page at a time)
+
+**Security & operations**
+
+- Expand rate limiting (e.g. `django-ratelimit` for API and admin) beyond login throttling
+- Optional **django-axes** or similar for account lockout policies
+- Custom domain audit events (e.g. who changed order status) in addition to built-in `LogEntry`
+- Fine-grained **roles** (e.g. “fulfillment staff” vs superuser) via Groups & permissions
 
 ## Recently Completed Milestones
 - Shopper authentication implemented: signup/login/logout routes plus account-aware cart merge
