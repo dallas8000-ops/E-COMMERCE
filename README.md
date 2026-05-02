@@ -6,7 +6,7 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 
 | | |
 |--|--|
-| **Live** | https://kistie-store.onrender.com |
+| **Live** | https://kristie-store.onrender.com |
 | **Code** | https://github.com/dallas8000-ops/Kistie-Store |
 
 ---
@@ -61,7 +61,7 @@ Optional: `frontend/` and `payments/` for React/Node experiments. `render.yaml` 
 
 When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded-Proto`), **secure session + CSRF cookies**, **SSL redirect**, **`X-Frame-Options: DENY`**, structured **logging** to stdout (level via `DJANGO_LOG_LEVEL`). Optional **HSTS**: set `DJANGO_HSTS_SECONDS` (e.g. `31536000`), optionally `DJANGO_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD`. **Dev CORS** for Vite runs **only when `DEBUG=True`**.
 
-**Health checks:** `GET /health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
+**Health checks:** `GET https://kristie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
 
 ---
 
