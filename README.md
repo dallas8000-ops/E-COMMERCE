@@ -8,6 +8,8 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 |--|--|
 | **Live** | https://kristie-store.onrender.com |
 | **Code** | https://github.com/dallas8000-ops/Kistie-Store |
+| **Trello** | https://trello.com/b/s8Rpm9in/kistie-store |
+| **Planning** | [PROJECT_PLANNING.md](PROJECT_PLANNING.md) |
 
 ---
 
@@ -18,6 +20,25 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 **Operations:** custom-theme **Django admin**, **staff dashboard** (`/staff/dashboard/`), **audit log** for superusers, CSRF + login throttling, **public read / staff-only write** on inventory API.
 
 **Why this stack:** Django **SSR** for the live path (SEO, sessions, security); **React + Vite** in `frontend/` for future pages; DRF already exposes JSON for that migration.
+
+---
+
+## Pages & Features
+
+| Page | URL | What it does |
+|------|-----|--------------|
+| Home | `/` | Brand landing, hero section |
+| About | `/about/` | Brand story and market context |
+| Catalog | `/catalog/` | Database-backed product grid with detail modal |
+| Inventory | `/inventory/` | EU sizes, quantity, currency & payment method selectors |
+| Cart | `/cart/` | Line items, server-side totals, currency conversion |
+| Checkout | `/checkout/` | Order capture, payment instructions, order reference |
+| Auth | `/signup/` `/login/` `/logout/` | Shopper accounts; guest cart merges on login |
+| Contact | `/contact/` | Inquiry form → admin persistence + SMTP email |
+| Staff Dashboard | `/staff/dashboard/` | Inventory & order management for staff |
+| Admin | `/admin/` | Full Django admin: products, images, orders, users |
+| Health | `/health/` | Uptime monitor endpoint → `{"status":"ok"}` |
+| API | `/api/` | DRF JSON API (public read / staff write) |
 
 ---
 
