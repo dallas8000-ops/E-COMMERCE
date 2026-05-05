@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 DJANGO_IMAGE_SUFFIX_RE = re.compile(r'^(?P<stem>.+)_[A-Za-z0-9]{7}$')
 SUPPORTED_CURRENCIES = ('USD', 'EUR', 'KES', 'UGX')
-PAYMENT_METHODS = ('mtn', 'airtel', 'worldremit')
+PAYMENT_METHODS = ('mtn', 'airtel', 'worldremit', 'pesapal')
 FALLBACK_RATES = {
     'USD': Decimal('1'),
     'EUR': Decimal('0.92'),
@@ -1031,6 +1031,36 @@ def checkout(request):
             # Clear the cart after a successful order capture.
             cart.items.all().delete()
 
+        # Pesapal: hand off to the Node payments service and redirect the user.
+        if checkout_prefs['payment_method'] == 'pesapal':
+            import urllib.request as _url_req, json as _pay_json, os as _os
+            try:
+                payload = _pay_json.dumps({
+                    'order_ref': order.order_ref,
+                    'amount': str(order.total_amount),
+                    'currency': order.currency,
+                    'customer': {
+                        'name': order.customer_name,
+                        'phone': order.phone,
+                    },
+                }).encode()
+                _req = _url_req.Request(
+                    'http://localhost:5000/api/pay/pesapal',
+                    data=payload,
+                    headers={'Content-Type': 'application/json'},
+                )
+                with _url_req.urlopen(_req, timeout=10) as _resp:
+                    _result = _pay_json.loads(_resp.read())
+                if _result.get('redirect_url'):
+                    return redirect(_result['redirect_url'])
+            except Exception as _e:
+                logger.warning('Pesapal redirect failed: %s', _e)
+                messages.warning(
+                    request,
+                    f'Pesapal is temporarily unavailable ({_e}). '
+                    'Your order is saved — please contact us to complete payment.',
+                )
+
         return render(request, 'core/checkout_success.html', {
             'order': order,
             'currency': checkout_prefs['currency'],
@@ -1074,3 +1104,49 @@ def remove_cart_item(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart=cart)
     item.delete()
     return redirect('cart')
+
+
+# ── Pesapal payment views ──────────────────────────────────────────────────────
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
+@require_POST
+def pesapal_ipn_callback(request):
+    """Internal webhook: the Node payments service calls this after a Pesapal IPN."""
+    import os
+    expected_key = os.environ.get('INTERNAL_WEBHOOK_KEY', 'dev-internal-key')
+    key = request.headers.get('X-Internal-Key', '')
+    if key != expected_key:
+        return JsonResponse({'error': 'Forbidden'}, status=403)
+    try:
+        data = json.loads(request.body)
+        order_ref  = data.get('order_ref')
+        new_status = data.get('status')
+        valid_statuses = (
+            Order.STATUS_PENDING,
+            Order.STATUS_CONFIRMED,
+            Order.STATUS_FAILED,
+        )
+        if order_ref and new_status in valid_statuses:
+            Order.objects.filter(order_ref=order_ref).update(status=new_status)
+        return JsonResponse({'ok': True})
+    except Exception as exc:
+        return JsonResponse({'error': str(exc)}, status=400)
+
+
+def pesapal_callback(request):
+    """Pesapal redirects the customer here after the payment flow."""
+    order_ref = request.GET.get('order_ref', '')
+    order = Order.objects.filter(order_ref=order_ref).first()
+    if not order:
+        messages.error(request, 'Order not found.')
+        return redirect('cart')
+    return render(request, 'core/checkout_success.html', {
+        'order': order,
+        'currency': order.currency,
+        'grand_total_display': str(order.total_amount),
+        'payment_method': order.payment_method,
+        'instructions': 'Your Pesapal payment is being verified. Your order status will update shortly.',
+    })
