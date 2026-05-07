@@ -34,9 +34,12 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 | Cart | `/cart/` | Line items, server-side totals, currency conversion |
 | Checkout | `/checkout/` | Order capture, payment instructions, order reference |
 | Auth | `/signup/` `/login/` `/logout/` | Shopper accounts; guest cart merges on login |
+| Staff sign in | `/staff/login/` | Dedicated entry for portal staff → redirects to staff dashboard |
 | Contact | `/contact/` | Inquiry form → admin persistence + SMTP email |
-| Staff Dashboard | `/staff/dashboard/` | Inventory & order management for staff |
-| Admin | `/admin/` | Full Django admin: products, images, orders, users |
+| Terms | `/terms/` | Terms of Service |
+| Staff Dashboard | `/staff/dashboard/` | Orders snapshot, low-stock alerts, recent inquiries (permission-gated) |
+| Order history | `/account/orders/` | Signed-in shopper order list |
+| Admin | `/admin/` | Full Django admin: products, images, orders, users (superusers) |
 | Health | `/health/` | Uptime monitor endpoint → `{"status":"ok"}` |
 | API | `/api/` | DRF JSON API (public read / staff write) |
 
@@ -50,7 +53,7 @@ Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQL
 
 ## Proof — screenshots
 
-**In-repo gallery:** everything under [`images/screenshots/`](images/screenshots/) (storefront, brand shots, full **admin** set: login, dashboard, products, users, groups, carts, reviews, inquiries).
+**In-repo gallery:** everything under [`images/screenshots/`](images/screenshots/) (storefront, brand shots, full **admin** set: login, dashboard, products, users, groups, carts, reviews, inquiries). The same images are **embedded in the capstone submission document** (PDF/report) for reviewers who use that packet.
 
 **Highlights:**
 
@@ -61,6 +64,14 @@ Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQL
 ![Products in admin](images/screenshots/admin-products.png)
 
 **Auto-play slide deck** (storefront + admin + API summary): open [`docs/demo-presentation.html`](docs/demo-presentation.html) after `python -m http.server 8080` from repo root → `http://127.0.0.1:8080/docs/demo-presentation.html` (or use [ScreenToGif](https://www.screentogif.com/) to record a short GIF for LinkedIn).
+
+---
+
+## Reviewer / demo access (capstone)
+
+- **Live site:** same URL as in the table above (`/`, `/inventory/`, `/staff/login/`, etc.).
+- **Django admin:** `/admin/` — **demo username and password** are provided in the **official submitted capstone package** (not duplicated in this public README).
+- **No packet?** Email [dallas8000@gmail.com](mailto:dallas8000@gmail.com).
 
 ---
 

@@ -1,103 +1,149 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Inventory{% endblock %}
+{% block title %}Shop | Kistie Store{% endblock %}
 {% block content %}
-<div class="container py-4">
-	<h1 class="mb-4 text-center">Inventory</h1>
-	<form method="get" class="row g-2 align-items-end mb-4" id="inventoryCheckoutForm">
-		<div class="col-md-4">
-			<label for="inventoryCurrency" class="form-label">Purchase Currency</label>
-			<select id="inventoryCurrency" name="currency" class="form-select">
-				{% for code in supported_currencies %}
-					<option value="{{ code }}" {% if code == currency %}selected{% endif %}>{{ code }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<div class="col-md-4">
-			<label for="inventoryMethod" class="form-label">Payment Method</label>
-			<select id="inventoryMethod" name="payment_method" class="form-select">
-				{% for method in payment_methods %}
-					<option value="{{ method }}" {% if method == payment_method %}selected{% endif %}>{{ method|upper }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<div class="col-md-4 text-muted small">Prices refresh automatically when you change currency or payment method.</div>
-		<div class="col-12 text-muted small">
-			Rate source: {{ rates_source }} {% if rates_updated %}| Updated: {{ rates_updated }}{% endif %}
-		</div>
-	</form>
-	<div class="row justify-content-center">
-		{% for row in inventory_items %}
-		{% with product=row.product %}
-		<div class="col-md-6 col-lg-5 mb-5">
-			<div class="card shadow-sm p-3 inventory-card" style="border-radius: 18px;">
-				{% if row.image_url %}
-					<img src="{{ row.image_url }}" class="card-img-top inventory-card-image" alt="{{ product.name }}" style="border-radius: 12px; max-height: 400px; object-fit: cover;">
-				{% endif %}
-				<div class="card-body">
-					<h4 class="card-title">{{ product.name }}</h4>
-					<div class="mb-2">
-						{% if product.in_stock and product.stock_quantity > 0 %}
-							<span class="badge text-bg-success">In stock: {{ product.stock_quantity }}</span>
-						{% else %}
-							<span class="badge text-bg-danger">Out of stock</span>
-						{% endif %}
-					</div>
-					<div class="mb-2">
-						<span class="fw-bold" style="font-size: 1.5rem; color: #e83e8c;">{{ currency }} {{ row.price_display }}</span>
-						{% if product.old_price %}
-							<span class="text-muted text-decoration-line-through ms-2">USD {{ product.old_price }}</span>
-						{% endif %}
-					</div>
-					<div class="mb-2">
-						<span class="fw-bold">Color:</span> {{ product.color }}
-					</div>
-					<form method="post" action="{% url 'add_to_cart' product.id %}" class="inventory-purchase-form">
-						{% csrf_token %}
-						<div class="mb-2 inventory-control-group">
-							<label class="fw-bold inventory-inline-label" for="size-{{ product.id }}">EU Size:</label>
-							<select id="size-{{ product.id }}" name="size" class="form-select inventory-inline-select ms-2">
-								{% for size in product.size_list %}
-									<option value="{{ size }}">EU {{ size }}</option>
-								{% endfor %}
-							</select>
-						</div>
-						<div class="d-flex align-items-center mb-3 inventory-control-group">
-							<label class="fw-bold me-2 inventory-inline-label" for="quantity-{{ product.id }}">Quantity:</label>
-							<input id="quantity-{{ product.id }}" type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control inventory-quantity-input">
-						</div>
-						<button type="submit" class="btn btn-lg w-100" style="background: #a31252; color: #fff; font-weight: 600;" {% if not product.in_stock or product.stock_quantity == 0 %}disabled{% endif %}>Add to Cart</button>
-					</form>
-				</div>
-			</div>
-		</div>
-		{% endwith %}
-		{% empty %}
-		<div class="col-12">
-			<div class="alert alert-info text-center mb-0">No inventory items are available right now. Please check back soon.</div>
-		</div>
-		{% endfor %}
-	</div>
+<div class="catalog-shell float-in shop-shell">
+  <div class="catalog-header shop-catalog-header">
+    <h1 class="h3 fw-bold mb-0 shop-page-title">Shop</h1>
+    <form method="get" id="shopFiltersForm" class="catalog-filters w-100">
+      <div class="row g-2 align-items-end justify-content-end">
+        <div class="col-auto">
+          <label for="catalogCategory" class="small text-light-emphasis mb-0 d-block">Category</label>
+          <select id="catalogCategory" name="category" class="form-select form-select-sm">
+            <option value="">All</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}" {% if filter_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="priceMin" class="small text-light-emphasis mb-0 d-block">Min price (USD)</label>
+          <input id="priceMin" type="text" name="price_min" class="form-control form-control-sm" placeholder="e.g. 50 or 1,500" value="{{ filter_price_min }}" inputmode="decimal" title="USD amounts only — commas are OK">
+        </div>
+        <div class="col-auto">
+          <label for="priceMax" class="small text-light-emphasis mb-0 d-block">Max price (USD)</label>
+          <input id="priceMax" type="text" name="price_max" class="form-control form-control-sm" placeholder="e.g. 300 — blank or ∞ = no limit" value="{{ filter_price_max }}" inputmode="decimal" title="USD amounts only — commas OK — leave blank for no upper limit">
+        </div>
+        <div class="col-auto">
+          <label for="sizeFilter" class="small text-light-emphasis mb-0 d-block">EU size</label>
+          <input id="sizeFilter" type="text" name="size" class="form-control form-control-sm" placeholder="e.g. 38" value="{{ filter_size }}" maxlength="10">
+        </div>
+        <div class="col-auto">
+          <label for="inventoryCurrency" class="small text-light-emphasis mb-0 d-block">Currency</label>
+          <select id="inventoryCurrency" name="currency" class="form-select form-select-sm">
+            {% for code in supported_currencies %}
+            <option value="{{ code }}" {% if code == currency %}selected{% endif %}>{{ code }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="inventoryMethod" class="small text-light-emphasis mb-0 d-block">Payment</label>
+          <select id="inventoryMethod" name="payment_method" class="form-select form-select-sm">
+            {% for method in payment_methods %}
+            <option value="{{ method }}" {% if method == payment_method %}selected{% endif %}>{{ method|upper }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto d-flex gap-2 align-items-center flex-wrap">
+          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+          <a class="btn btn-sm btn-outline-light" href="{% url 'inventory' %}">Reset</a>
+          <span class="badge-count">{{ total_items }} items</span>
+          <a class="btn btn-sm btn-light" href="/">Home</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if inventory_items %}
+  <section class="catalog-date-section float-in delay-1">
+    <div class="catalog-grid catalog-product-grid">
+      {% for row in inventory_items %}
+      {% with product=row.product %}
+      <article class="catalog-card catalog-product-card inventory-shop-card">
+        <div class="shop-card-layout">
+        {% if row.has_image %}
+        <div class="shop-product-media">
+          <img src="{{ row.detail_url }}" alt="{{ product.name }}" loading="lazy" class="shop-product-image">
+        </div>
+        {% else %}
+        <div class="shop-product-media d-flex align-items-center justify-content-center bg-secondary text-white shop-product-media--empty">No Image</div>
+        {% endif %}
+        <div class="catalog-product-body shop-card-copy">
+          <h2 class="h5 fw-semibold mb-2">{{ product.name }}</h2>
+          <p class="catalog-description mb-2">{{ row.description }}</p>
+          <p class="catalog-price mb-1">
+            {{ currency }} {{ row.price_display }}
+            {% if product.old_price %}
+            <span class="text-muted text-decoration-line-through ms-2 small">USD {{ product.old_price }}</span>
+            {% endif %}
+          </p>
+          {% if row.review_label or row.category_name %}
+          <p class="small text-muted mb-2">
+            {% if row.review_label %}<span class="text-warning">{{ row.review_label }}</span>{% endif %}
+            {% if row.review_label and row.category_name %} · {% endif %}
+            {% if row.category_name %}{{ row.category_name }}{% endif %}
+          </p>
+          {% endif %}
+          <div class="mb-2">
+            {% if product.stock_quantity > 0 %}
+            <span class="badge text-bg-success">In stock: {{ product.stock_quantity }}</span>
+            {% else %}
+            <span class="badge text-bg-danger">Out of stock</span>
+            {% endif %}
+            {% if product.color %}
+            <span class="badge text-bg-secondary ms-1">{{ product.color }}</span>
+            {% endif %}
+          </div>
+          <form method="post" action="{% url 'add_to_cart' product.id %}" class="inventory-purchase-form border-top pt-3 mt-1">
+            {% csrf_token %}
+            <div class="mb-2 inventory-control-group">
+              <label class="fw-bold inventory-inline-label" for="size-{{ product.id }}">EU Size:</label>
+              <select id="size-{{ product.id }}" name="size" class="form-select inventory-inline-select ms-2">
+                {% for size in product.size_list %}
+                <option value="{{ size }}">EU {{ size }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="d-flex align-items-center mb-3 inventory-control-group">
+              <label class="fw-bold me-2 inventory-inline-label" for="quantity-{{ product.id }}">Quantity:</label>
+              <input id="quantity-{{ product.id }}" type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control inventory-quantity-input">
+            </div>
+            <button type="submit" class="btn btn-lg w-100 inventory-add-btn" {% if product.stock_quantity == 0 %}disabled{% endif %}>Add to Cart</button>
+          </form>
+        </div>
+        </div>
+      </article>
+      {% endwith %}
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <section class="catalog-date-section">
+    <p class="mb-0">No products match these filters. Try adjusting category or price, or <a href="{% url 'inventory' %}">reset</a>.</p>
+  </section>
+  {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-	(function () {
-		const form = document.getElementById('inventoryCheckoutForm');
-		const currency = document.getElementById('inventoryCurrency');
-		const method = document.getElementById('inventoryMethod');
+  (function () {
+    const form = document.getElementById('shopFiltersForm');
+    const currencySelect = document.getElementById('inventoryCurrency');
+    const methodSelect = document.getElementById('inventoryMethod');
 
-		if (!form || !currency || !method) {
-			return;
-		}
+    function submitFilters() {
+      if (form) {
+        form.submit();
+      }
+    }
 
-		function applySettings() {
-			form.submit();
-		}
-
-		currency.addEventListener('change', applySettings);
-		method.addEventListener('change', applySettings);
-	})();
+    if (currencySelect) {
+      currencySelect.addEventListener('change', submitFilters);
+    }
+    if (methodSelect) {
+      methodSelect.addEventListener('change', submitFilters);
+    }
+  })();
 </script>
 {% endblock %}

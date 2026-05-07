@@ -30,12 +30,16 @@
 - The table is fully responsive — collapses cleanly on mobile.
 - "Proceed to Checkout" leads to the payment flow.
 
-### 4. Authentication — `/accounts/signup/`, `/accounts/login/` (45 sec)
-**Show:** Sign up form, login form, redirect back to previous page.  
+### 4. Authentication — `/signup/`, `/login/`, `/logout/` (45 sec)
+**Show:** Sign up form, customer sign-in, sign out; optional **Staff sign in** at `/staff/login/` (portal users land on `/staff/dashboard/`).  
 **Say:**
-- Django's built-in auth extended with a custom user model.
-- After login, users are redirected to the page they came from.
-- Passwords are hashed with Django's default PBKDF2/SHA256.
+- Storefront uses Django’s session auth; guest carts merge when a shopper logs in.
+- **Staff dashboard** uses a custom permission (`access_staff_dashboard`); superusers can still open everything.
+- Passwords are hashed with Django’s default PBKDF2/SHA256.
+
+### 4b. Terms of Service — `/terms/` (15 sec)
+**Show:** Legal / policy copy for the storefront.  
+**Say:** Published Terms page for capstone and real-customer readiness.
 
 ### 5. About Page — `/about/` (30 sec)
 **Show:** Brand story, team photo area, trust badges.  
@@ -49,21 +53,18 @@
 - Form submissions are stored in the database and visible in the admin panel.
 - Admin can review all customer enquiries from the Django admin.
 
-### 7. Inventory Management — `/inventory/` (90 sec)
-**Show:** Product list table, add/edit/delete product, stock update, CSV import/export.  
+### 7. Shop / Inventory — `/inventory/` (primary catalog) (90 sec)
+**Show:** Product grid with EU sizes, filters, currency, add to cart; `/catalog/` redirects here.  
 **Say:**
-- Staff-only view (login required + permission check).
-- Managers can bulk-import new stock via CSV — saves hours of manual data entry.
-- CSV export lets the owner reconcile stock with their physical store in Kampala.
-- Image upload stores files in `/media/` locally and on cloud storage in production.
+- Main shopping UX is server-rendered Django; inventory API backs data and staff workflows.
+- Stock and product edits for production happen in **Django admin** (and staff dashboard for snapshots); CSV flows may live in admin or API depending on deployment.
 
-### 8. Django Admin Panel — `/admin/` (60 sec)
+### 8. Django Admin Panel — `/admin/` (superuser) (60 sec)
 **Show:** Dashboard, Products, Cart sessions, Contact Inquiries, Users, Groups.  
 **Say:**
 - Standard Django admin extended with custom list displays and filters.
-- Cart sessions visible so staff can see what customers have abandoned.
-- Contact inquiries section lets staff follow up on customer questions.
-- User/Group management for role-based access (staff vs superuser).
+- Portal-only staff use `/staff/login/` and **do not** rely on Django admin; superusers manage users and assign the staff-dashboard permission.
+- Contact inquiries and orders are reviewable here for operations.
 
 ### 9. Responsive Design — Quick demo (30 sec)
 **Show:** Resize browser or open DevTools mobile view on Home or Catalog.  
@@ -100,8 +101,8 @@
 |------|------------------------|
 | **Live payment processing** | Requires Pesapal/MTN Mobile Money merchant account (real business requirement) |
 | **Email order confirmations** | Needs SMTP/SendGrid configuration — WhatsApp is the primary channel for this market |
-| **Customer order history** | Partially implemented; full order model with status tracking is next sprint |
-| **Product reviews & ratings** | DB model exists; UI not wired up yet |
+| **Order history** | Shoppers signed in can use `/account/orders/`; admin manages order status |
+| **Product reviews** | Model + admin exist; storefront depth varies by sprint |
 | **Wishlist** | Planned in backlog |
 | **Advanced search (Elasticsearch)** | Database ILIKE search is sufficient at current scale |
 
@@ -144,6 +145,6 @@ A: The CSV import/export for inventory — parsing user-uploaded files, validati
 - [x] GitHub repo: https://github.com/dallas8000-ops/Kistie-Store
 - [x] Trello board: https://trello.com/b/s8Rpm9in/kistie-store
 - [x] Planning doc: PROJECT_PLANNING.md
-- [x] Screenshots: `images/screenshots/`
-- [x] README: Pages & Features table, quick-links, setup instructions
+- [x] Screenshots: `images/screenshots/` (and **embedded in the submitted capstone document**)
+- [x] README: Pages & Features table, quick-links, setup instructions, reviewer access note
 - [ ] Final cover sheet / submission form (per instructor requirements)

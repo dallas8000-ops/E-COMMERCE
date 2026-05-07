@@ -79,8 +79,15 @@ class Product(models.Model):
 		if self.sizes:
 			self.sizes = ','.join(normalize_eu_sizes(self.sizes))
 
-		if self.stock_quantity == 0:
-			self.in_stock = False
+	def save(self, *args, **kwargs):
+		# Always derive availability from quantity (single source of truth).
+		self.in_stock = self.stock_quantity > 0
+		# Admin/list saves often use save(update_fields=['stock_quantity']) — without merging,
+		# "in_stock" would never be written and the storefront still sees out-of-stock.
+		update_fields = kwargs.get('update_fields')
+		if update_fields is not None:
+			kwargs['update_fields'] = tuple(dict.fromkeys(tuple(update_fields) + ('in_stock',)))
+		super().save(*args, **kwargs)
 
 	def __str__(self):
 		return self.name

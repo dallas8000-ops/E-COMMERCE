@@ -91,3 +91,21 @@ class InventoryApiSmokeTests(APITestCase):
 
 		with self.assertRaises(ValidationError):
 			product.full_clean()
+
+	def test_partial_save_writes_in_stock_when_only_stock_quantity_updated(self):
+		p = Product.objects.create(
+			name='Qty Sync Shirt',
+			description='Stock flag sync test',
+			price_usd=Decimal('12.00'),
+			price_ugx=Decimal('44400.00'),
+			category=self.category,
+			sizes='32,34',
+			stock_quantity=0,
+		)
+		p.refresh_from_db()
+		self.assertFalse(p.in_stock)
+		p.stock_quantity = 4
+		p.save(update_fields=['stock_quantity'])
+		p.refresh_from_db()
+		self.assertTrue(p.in_stock)
+		self.assertEqual(p.stock_quantity, 4)

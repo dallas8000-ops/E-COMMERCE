@@ -9,7 +9,7 @@ import requests as _requests
 from django.conf import settings
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
 from django.core.cache import cache
@@ -317,7 +317,7 @@ def _recent_images(limit=3):
 def _featured_products(limit=3):
     products = Product.objects.prefetch_related(
         Prefetch('images', queryset=ProductImage.objects.order_by('id'))
-    ).filter(in_stock=True).order_by('-created_at')[:limit]
+    ).filter(stock_quantity__gt=0).order_by('-created_at')[:limit]
 
     featured = []
     for product in products:
@@ -346,6 +346,24 @@ def _format_money(amount, currency):
     decimals = Decimal('1') if currency == 'UGX' else Decimal('0.01')
     rounded = amount.quantize(decimals, rounding=ROUND_HALF_UP)
     return f'{rounded:,.0f}' if currency == 'UGX' else f'{rounded:,.2f}'
+
+
+def _parse_shop_price_filter(raw):
+    """Parse shop GET filters price_min / price_max: strip commas, currency symbols; skip empty/infinity."""
+    if raw is None:
+        return None
+    s = str(raw).strip()
+    if not s:
+        return None
+    if s in ('∞', '\u221e') or s.lower() in ('infinity', 'inf'):
+        return None
+    normalized = s.replace(',', '').replace('$', '').replace('\u00a0', '').strip()
+    if not normalized:
+        return None
+    try:
+        return Decimal(normalized)
+    except (InvalidOperation, ValueError, TypeError):
+        return None
 
 
 def _fetch_live_rates():
@@ -493,6 +511,10 @@ def about(request):
     return render(request, 'core/about.html', {'brand_images': brand_images})
 
 
+def terms_of_service(request):
+    return render(request, 'core/terms.html')
+
+
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -552,6 +574,59 @@ def login_view(request):
     return render(request, 'core/auth_login.html', {'form': form})
 
 
+def staff_login_view(request):
+    """Dedicated entry for shop staff (permission ``access_staff_dashboard``); redirects to staff dashboard."""
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.has_perm('core.access_staff_dashboard'):
+            return redirect('staff_dashboard')
+        messages.info(
+            request,
+            'You are already signed in with a shopper account. Staff dashboard requires staff access.',
+        )
+        return redirect('home')
+
+    if request.method == 'GET' and _login_is_locked(request):
+        messages.error(
+            request,
+            'Too many sign-in attempts from this address. Please wait a few minutes and try again.',
+        )
+
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == 'POST':
+        if _login_is_locked(request):
+            messages.error(
+                request,
+                'Too many sign-in attempts. Please try again in a few minutes.',
+            )
+            return render(request, 'core/auth_staff_login.html', {'form': form})
+
+        if form.is_valid():
+            user = form.get_user()
+            if not (user.is_superuser or user.has_perm('core.access_staff_dashboard')):
+                messages.error(
+                    request,
+                    'This account does not have staff dashboard access. Ask your manager for the correct staff login.',
+                )
+                return render(request, 'core/auth_staff_login.html', {'form': AuthenticationForm(request)})
+
+            _login_clear_attempts(request)
+            pre_login_session_key = request.session.session_key
+            login(request, user)
+            _merge_guest_cart_into_user(request, user, session_key=pre_login_session_key)
+            messages.success(request, f'Welcome, {user.username}.')
+            return redirect('staff_dashboard')
+
+        if _login_register_failure(request):
+            messages.error(
+                request,
+                'Too many failed attempts. This address is temporarily limited. Try again later.',
+            )
+        else:
+            messages.error(request, 'Invalid username or password.')
+
+    return render(request, 'core/auth_staff_login.html', {'form': form})
+
+
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
@@ -571,7 +646,8 @@ def order_history(request):
     })
 
 
-@user_passes_test(lambda u: u.is_staff)
+@login_required
+@permission_required('core.access_staff_dashboard', raise_exception=True)
 def staff_dashboard(request):
     low_stock_threshold = 5
     order_counts = Order.objects.aggregate(
@@ -587,7 +663,6 @@ def staff_dashboard(request):
     )
     low_stock_products = (
         Product.objects.filter(
-            in_stock=True,
             stock_quantity__gt=0,
             stock_quantity__lte=low_stock_threshold,
         )
@@ -617,8 +692,11 @@ def admin_audit_log(request):
     })
 
 
-def catalog(request):
-    checkout = _checkout_preferences(request)
+def _shop_filtered_products_queryset(request):
+    category_raw = request.GET.get('category')
+    price_min = request.GET.get('price_min')
+    price_max = request.GET.get('price_max')
+    size_q = (request.GET.get('size') or '').strip()
 
     products = (
         Product.objects.select_related('category')
@@ -637,7 +715,6 @@ def catalog(request):
         )
     )
 
-    category_raw = request.GET.get('category')
     if category_raw:
         try:
             cid = int(category_raw)
@@ -645,26 +722,29 @@ def catalog(request):
         except (TypeError, ValueError):
             pass
 
-    price_min = request.GET.get('price_min')
-    price_max = request.GET.get('price_max')
-    if price_min:
-        try:
-            products = products.filter(price_usd__gte=Decimal(str(price_min).strip()))
-        except (InvalidOperation, ValueError, TypeError):
-            pass
-    if price_max:
-        try:
-            products = products.filter(price_usd__lte=Decimal(str(price_max).strip()))
-        except (InvalidOperation, ValueError, TypeError):
-            pass
+    parsed_min = _parse_shop_price_filter(price_min)
+    if parsed_min is not None:
+        products = products.filter(price_usd__gte=parsed_min)
+    parsed_max = _parse_shop_price_filter(price_max)
+    if parsed_max is not None:
+        products = products.filter(price_usd__lte=parsed_max)
 
-    size_q = (request.GET.get('size') or '').strip()
     if size_q:
         products = products.filter(sizes__icontains=size_q)
 
     products = products.order_by('-created_at')
 
-    catalog_items = []
+    filter_ctx = {
+        'filter_category': category_raw or '',
+        'filter_price_min': (price_min or '').strip(),
+        'filter_price_max': (price_max or '').strip(),
+        'filter_size': size_q,
+    }
+    return products, filter_ctx
+
+
+def _shop_inventory_rows(products, checkout):
+    rows = []
     for product in products:
         images = list(product.images.all())
         description = (product.description or '').strip()
@@ -681,28 +761,26 @@ def catalog(request):
         if product.review_count and product.review_avg is not None:
             review_label = f'{product.review_avg:.1f} ★ ({product.review_count})'
 
-        catalog_items.append({
-            'name': product.name,
-            'description': description or _catalog_fallback_description(product),
+        rows.append({
+            'product': product,
             'price_display': _format_money(converted_price, checkout['currency']),
+            'image_url': primary_url,
             'primary_url': primary_url,
             'detail_url': detail_url,
-            'has_image': bool(images),
+            'description': description or _catalog_fallback_description(product),
             'review_label': review_label,
             'category_name': product.category.name if product.category_id else '',
+            'has_image': bool(images),
         })
+    return rows
 
-    return render(request, 'core/catalog.html', {
-        'catalog_items': catalog_items,
-        'total_items': len(catalog_items),
-        'currency': checkout['currency'],
-        'supported_currencies': SUPPORTED_CURRENCIES,
-        'categories': Category.objects.all().order_by('name'),
-        'filter_category': category_raw or '',
-        'filter_price_min': (price_min or '').strip(),
-        'filter_price_max': (price_max or '').strip(),
-        'filter_size': size_q,
-    })
+
+def catalog(request):
+    path = reverse('inventory')
+    qs = request.GET.urlencode()
+    if qs:
+        return HttpResponseRedirect(f'{path}?{qs}')
+    return HttpResponseRedirect(path)
 
 
 def catalog_image(_request, image_name):
@@ -735,21 +813,8 @@ def catalog_image(_request, image_name):
 def inventory(request):
     try:
         checkout = _checkout_preferences(request)
-        products = Product.objects.prefetch_related(
-            Prefetch('images', queryset=ProductImage.objects.all())
-        ).all()
-
-        inventory_items = []
-        for product in products:
-            base_price = _safe_decimal(product.price, Decimal('0'))
-            converted_price = base_price * checkout['rate']
-            product_images = list(product.images.all())
-            image_url = _product_image_url(product_images[0].image) if product_images else ''
-            inventory_items.append({
-                'product': product,
-                'price_display': _format_money(converted_price, checkout['currency']),
-                'image_url': image_url,
-            })
+        products, filter_ctx = _shop_filtered_products_queryset(request)
+        inventory_items = _shop_inventory_rows(products, checkout)
 
         return render(request, 'core/inventory.html', {
             'inventory_items': inventory_items,
@@ -760,32 +825,29 @@ def inventory(request):
             'rates_source': checkout['rates_source'],
             'rates_updated': checkout['rates_updated'],
             'rate_display': _format_money(checkout['rate'], checkout['currency']),
+            'categories': Category.objects.all().order_by('name'),
+            'total_items': len(inventory_items),
+            **filter_ctx,
         })
-    except Exception as e:
-        import sys
-        print(f'Error loading inventory: {e}', file=sys.stderr)
-        # Fall back to basic inventory view with default currency
-        products = Product.objects.prefetch_related(
-            Prefetch('images', queryset=ProductImage.objects.all())
-        ).all()
-        inventory_items = []
-        for product in products:
-            product_images = list(product.images.all())
-            image_url = _product_image_url(product_images[0].image) if product_images else ''
-            inventory_items.append({
-                'product': product,
-                'price_display': str(product.price),
-                'image_url': image_url,
-            })
+    except Exception:
+        logger.exception('inventory shop failed; using fallback rates')
+        products, filter_ctx = _shop_filtered_products_queryset(request)
+        fallback_checkout = {'currency': 'USD', 'rate': Decimal('1')}
+        inventory_items = _shop_inventory_rows(products, fallback_checkout)
         return render(request, 'core/inventory.html', {
             'inventory_items': inventory_items,
             'currency': 'USD',
             'supported_currencies': SUPPORTED_CURRENCIES,
-            'payment_method': 'mtn',
+            'payment_method': (
+                pm if (pm := request.session.get('payment_method', 'mtn')) in PAYMENT_METHODS else 'mtn'
+            ),
             'payment_methods': PAYMENT_METHODS,
             'rates_source': 'fallback',
             'rates_updated': '',
             'rate_display': '1.00',
+            'categories': Category.objects.all().order_by('name'),
+            'total_items': len(inventory_items),
+            **filter_ctx,
         })
 
 
@@ -806,7 +868,7 @@ def add_to_cart(request, product_id):
         messages.error(request, 'Please choose one of the listed EU sizes before adding this item to cart.')
         return redirect('inventory')
 
-    if not product.in_stock or product.stock_quantity == 0:
+    if product.stock_quantity <= 0:
         messages.error(request, 'This item is currently out of stock.')
         return redirect('inventory')
 
@@ -900,7 +962,7 @@ def cart(request):
 def _validate_cart_stock(cart_items):
     for item in cart_items:
         product = item.product
-        if not product.in_stock or product.stock_quantity == 0:
+        if product.stock_quantity <= 0:
             return f'{product.name} is out of stock. Please update your cart.'
         if item.quantity > product.stock_quantity:
             return f'{product.name} has only {product.stock_quantity} unit(s) available.'
@@ -937,7 +999,7 @@ def _lock_products_for_cart(cart_items):
 def _validate_locked_stock(cart_items, product_map):
     for item in cart_items:
         product = product_map.get(item.product_id)
-        if product is None or not product.in_stock or product.stock_quantity == 0:
+        if product is None or product.stock_quantity <= 0:
             return f'{item.product.name} is now out of stock. Please review your cart.'
         if item.quantity > product.stock_quantity:
             return f'{item.product.name} now has only {product.stock_quantity} unit(s) left.'
@@ -960,9 +1022,7 @@ def _create_order_items_and_reduce_stock(order, cart_items, checkout_prefs, prod
 
         product = product_map[item.product_id]
         product.stock_quantity -= item.quantity
-        if product.stock_quantity == 0:
-            product.in_stock = False
-        product.save(update_fields=['stock_quantity', 'in_stock', 'updated_at'])
+        product.save(update_fields=['stock_quantity', 'updated_at'])
 
 
 def checkout(request):

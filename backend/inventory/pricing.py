@@ -235,7 +235,7 @@ def _fetch_serpapi_lens_prices(image_url: str, api_key: str) -> tuple[list[Decim
 
 
 def _local_reference_prices(product: Product) -> list[Decimal]:
-    qs = Product.objects.filter(in_stock=True, price_usd__gt=0).exclude(pk=product.pk)
+    qs = Product.objects.filter(stock_quantity__gt=0, price_usd__gt=0).exclude(pk=product.pk)
     if product.category_id:
         qs = qs.filter(category_id=product.category_id)
 

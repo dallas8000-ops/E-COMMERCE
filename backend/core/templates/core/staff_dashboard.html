@@ -11,7 +11,7 @@
       {% if request.user.is_superuser %}
       <a class="btn btn-outline-secondary btn-sm" href="{% url 'admin_audit_log' %}">Admin audit log</a>
       {% endif %}
-      {% if ENABLE_ADMIN %}
+      {% if ENABLE_ADMIN and request.user.is_superuser %}
       <a class="btn btn-warning btn-sm" href="/admin/">Django admin</a>
       {% endif %}
     </div>
