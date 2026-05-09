@@ -508,10 +508,11 @@ def contact(request):
     if sent:
         return redirect('contact')
 
-    backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
+    email_backend = getattr(settings, 'EMAIL_BACKEND', '') or ''
+    contact_email_console = email_backend == 'django.core.mail.backends.console.EmailBackend'
     return render(request, 'core/contact.html', {
         'contact_form': contact_form,
-        'contact_email_console': 'console' in backend,
+        'contact_email_console': contact_email_console,
     })
 
 

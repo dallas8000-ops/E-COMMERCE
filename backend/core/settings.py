@@ -31,6 +31,12 @@ LOGIN_REDIRECT_URL = '/'
 
 
 def load_env_file(env_path):
+    """Load KEY=VALUE pairs into the process environment.
+
+    Uses assignment (not setdefault) so ``backend/.env`` wins over stale variables
+    inherited from the shell or IDE — otherwise SMTP settings in ``.env`` can be
+    ignored when ``DJANGO_EMAIL_BACKEND`` was already set to ``console``.
+    """
     if not env_path.exists():
         return
 
@@ -42,7 +48,7 @@ def load_env_file(env_path):
         key, value = line.split('=', 1)
         key = key.strip()
         value = value.strip().strip('"').strip("'")
-        os.environ.setdefault(key, value)
+        os.environ[key] = value
 
 
 load_env_file(BASE_DIR / '.env')
