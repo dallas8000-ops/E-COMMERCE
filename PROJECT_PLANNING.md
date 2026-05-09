@@ -60,13 +60,15 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Guest cart items merge into authenticated user cart after signup/login
 - Contact inquiry communication flow is implemented (admin persistence plus SMTP email delivery)
 - Checkout captures orders and shows payment-verification instructions with admin-managed payment status
-- README already contains capstone summary, tech stack, and page map
-- Phone and tablet responsive QA is already documented as completed for storefront pages
+- Payment sandbox integration is implemented end-to-end
+- Inventory quantity control is implemented via stock_quantity with checkout stock validation and decrement
+- README contains capstone summary, tech stack, page map, and local run guide
+- Phone and tablet responsive QA is completed for all storefront pages
+- Capstone presentation assets and submission packaging are complete
+- Project is submitted
 
-### Remaining For Stronger Submission
-- Optional: one real payment sandbox flow end-to-end
-- Optional: admin-specific small-screen spot check
-- Final GitHub repository link and submission assets
+### Remaining
+- None. All planned scope is delivered.
 
 ## User Types
 
@@ -146,7 +148,7 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Authentication exists for shopper accounts.
 - Documentation, Trello tracking, and final QA artifacts are complete.
 
-## Recommended Trello Updates As Of 2026-04-25
+## Recommended Trello Updates As Of 2026-05-06 — Final Submission Ready
 
 ### Move To Done
 - Shopper Authentication
@@ -155,20 +157,15 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Admin Inventory Management
 - Catalog Experience
 - Inventory Shopping Flow
-
-### Keep Active Or Ready Next
-- Payment Sandbox Integration
-- Capstone Assets And Submission Links
+- Order Capture And Manual Payment Verification
 - Responsive QA
 
-### Add Card: Order Capture And Manual Payment Verification
-Checklist:
-- Capture checkout form into Order and OrderItem records
-- Generate order reference for shopper confirmation
-- Show payment instructions on checkout success page
-- Show initial Pending payment status to shopper
-- Confirm admin can change status to Payment confirmed
-- Document manual verification workflow in README
+### Move To Done
+- Submission Packaging
+- Capstone Presentation Assets
+- README And Project Documentation
+- Release Validation Snapshot
+- Payment Sandbox Integration
 
 ### Add Card: Release Validation Snapshot
 Checklist:
@@ -254,6 +251,31 @@ Checklist:
 - Attach cart behavior to authenticated user when available
 - Test invalid login and success login flows
 
+### Card: Order Capture And Manual Payment Verification
+Checklist:
+- Capture checkout form into Order and OrderItem records
+- Generate order reference for shopper confirmation
+- Show payment instructions on checkout success page
+- Show initial Pending payment status to shopper
+- Confirm admin can change status to Payment confirmed
+- Document manual verification workflow in README
+
+### Card: Release Validation Snapshot
+Checklist:
+- Run Django system check
+- Run Django test suite
+- Build frontend production bundle
+- Note exchange-rate API fallback warning behavior
+- Record validation date in project notes
+
+### Card: Submission Packaging
+Checklist:
+- Confirm live Render URL in README
+- Confirm Trello board link in README
+- Confirm GitHub repository link in README
+- Prepare final screenshots or demo assets
+- Prepare final submission document or cover sheet if required
+
 ### Card: Payment Sandbox Integration
 Checklist:
 - Choose primary provider for sandbox demo
@@ -311,17 +333,7 @@ Checklist:
 - Confirm repository is clean enough for review
 - Prepare talking points for implemented vs planned work
 
-## Suggested Initial Trello Placement
-
-### Backlog
-- Payment Sandbox Integration
-
-### Ready Next
-- Shopper Authentication (review and demo polish)
-- Communication And Notifications (review and demo polish)
-- Responsive QA
-- README And Project Documentation
-- Capstone Presentation Assets
+## Final Trello Placement As Of 2026-05-06 — Submitted
 
 ### Done
 - Project Setup And Environment
@@ -330,14 +342,22 @@ Checklist:
 - Inventory Shopping Flow
 - Cart Calculations And Checkout Preferences
 - Admin Inventory Management
+- Shopper Authentication
+- Communication And Notifications
+- Order Capture And Manual Payment Verification
+- Payment Sandbox Integration
+- Responsive QA
+- README And Project Documentation
+- Capstone Presentation Assets
+- Release Validation Snapshot
+- Submission Packaging
 
-## Priority Order
-1. Shopper Authentication
-2. Payment Sandbox Integration
-3. Responsive QA
-4. Communication And Notifications
-5. README And Project Documentation
-6. Capstone Presentation Assets
+## Priority Order — All Delivered
+1. ✓ Submission Packaging
+2. ✓ Capstone Presentation Assets
+3. ✓ README And Project Documentation
+4. ✓ Release Validation Snapshot
+5. ✓ Payment Sandbox Integration
 
 ## Definition Of Done For Each Trello Card
 - Feature works in the local environment
@@ -376,4 +396,4 @@ Checklist:
 5. Use the Priority Order section to decide what moves from Backlog into Ready Next and In Progress.
 
 ## Short Capstone Delivery Narrative
-This capstone already demonstrates a functional ecommerce foundation: shoppers can browse real products, manage a cart, and view prices in multiple currencies while admins manage inventory through the database. The final delivery push should focus on authentication, a real payment sandbox path, communication, and formal submission polish.
+This capstone delivers a complete full-stack ecommerce platform. Shoppers can browse real products, create accounts, manage a cart, view prices in multiple currencies, and complete checkout with an order reference and manual payment verification flow. Admins manage inventory, confirm payments, and receive contact inquiries via email. Responsive QA is complete across all storefront pages. All planned cards are done. The project is submitted.
