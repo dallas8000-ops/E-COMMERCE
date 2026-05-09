@@ -123,6 +123,11 @@ class ProductAdmin(admin.ModelAdmin):
 	inlines = [ProductImageInline]
 	actions = ['generate_catalog_descriptions', 'scan_and_apply_price_suggestions']
 
+	def save_model(self, request, obj, form, change):
+		# Normalize EU sizes and derive in_stock (Product.clean) — admin sometimes skipped full_clean paths.
+		obj.full_clean()
+		super().save_model(request, obj, form, change)
+
 	@admin.action(description='Generate catalog descriptions (for blank/auto-created only)')
 	def generate_catalog_descriptions(self, request, queryset):
 		updated = 0
