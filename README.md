@@ -47,7 +47,7 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 
 ## Tech (recruiter lines)
 
-Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQLite (dev) · Gunicorn · WhiteNoise · **Render** · **GitHub Actions** · Bootstrap 5 · Pillow
+Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQLite (dev) · Gunicorn · WhiteNoise · **Render** · **GitHub Actions** · Bootstrap 5 · **Bootstrap Icons** · custom CSS (gradients + branded buttons) · Pillow
 
 ---
 

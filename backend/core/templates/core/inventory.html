@@ -45,10 +45,10 @@
           </select>
         </div>
         <div class="col-auto d-flex gap-2 align-items-center flex-wrap">
-          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
-          <a class="btn btn-sm btn-outline-light" href="{% url 'inventory' %}">Reset</a>
-          <span class="badge-count">{{ total_items }} items</span>
-          <a class="btn btn-sm btn-light" href="/">Home</a>
+          <button type="submit" class="btn btn-sm btn-brand-primary"><i class="bi bi-funnel" aria-hidden="true"></i> Apply</button>
+          <a class="btn btn-sm btn-brand-ghost" href="{% url 'inventory' %}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reset</a>
+          <span class="badge-count"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> {{ total_items }} items</span>
+          <a class="btn btn-sm btn-light fw-semibold" href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
         </div>
       </div>
     </form>
@@ -69,7 +69,23 @@
         <div class="shop-product-media d-flex align-items-center justify-content-center bg-secondary text-white shop-product-media--empty">No Image</div>
         {% endif %}
         <div class="catalog-product-body shop-card-copy">
-          <h2 class="h5 fw-semibold mb-2">{{ product.name }}</h2>
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <h2 class="h5 fw-semibold mb-0 flex-grow-1">{{ product.name }}</h2>
+            <button type="button"
+              class="btn btn-sm btn-brand-outline flex-shrink-0 quick-view-trigger"
+              data-bs-toggle="modal"
+              data-bs-target="#productQuickViewModal"
+              data-qv-name="{{ product.name|escapejs }}"
+              data-qv-desc="{{ row.description|truncatewords:70|escapejs }}"
+              data-qv-img="{{ row.detail_url|escapejs }}"
+              data-qv-price="{{ row.price_display|escapejs }}"
+              data-qv-currency="{{ currency|escapejs }}"
+              data-qv-stock="{{ product.stock_quantity }}"
+              data-qv-sizes="{{ product.sizes|default:''|escapejs }}"
+              aria-label="Quick view {{ product.name }}">
+              <i class="bi bi-arrows-fullscreen" aria-hidden="true"></i> Quick view
+            </button>
+          </div>
           <p class="catalog-description mb-2">{{ row.description }}</p>
           <p class="catalog-price mb-1">
             {{ currency }} {{ row.price_display }}
@@ -108,7 +124,7 @@
               <label class="fw-bold me-2 inventory-inline-label" for="quantity-{{ product.id }}">Quantity:</label>
               <input id="quantity-{{ product.id }}" type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control inventory-quantity-input">
             </div>
-            <button type="submit" class="btn btn-lg w-100 inventory-add-btn" {% if product.stock_quantity == 0 %}disabled{% endif %}>Add to Cart</button>
+            <button type="submit" class="btn btn-lg w-100 inventory-add-btn" {% if product.stock_quantity == 0 %}disabled{% endif %}><i class="bi bi-cart-plus" aria-hidden="true"></i> Add to Cart</button>
           </form>
         </div>
         </div>
@@ -122,12 +138,78 @@
     <p class="mb-0">No products match these filters. Try adjusting category or price, or <a href="{% url 'inventory' %}">reset</a>.</p>
   </section>
   {% endif %}
+
+  {# Bootstrap modal: product quick view (filled via data-* on .quick-view-trigger) #}
+  <div class="modal fade" id="productQuickViewModal" tabindex="-1" aria-labelledby="productQuickViewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content modal-brand">
+        <div class="modal-header">
+          <h2 class="modal-title h5 mb-0" id="productQuickViewTitle">Product</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-5">
+              <img src="" alt="" class="img-fluid rounded-3 shadow-sm w-100 quick-view-modal-img" width="480" height="640" loading="lazy">
+            </div>
+            <div class="col-md-7">
+              <p class="quick-view-modal-desc text-muted mb-3"></p>
+              <p class="mb-2"><strong class="quick-view-modal-price"></strong> <span class="text-muted quick-view-modal-cur"></span></p>
+              <p class="mb-2 quick-view-modal-stock small"></p>
+              <p class="mb-0 small"><strong>EU sizes:</strong> <span class="quick-view-modal-sizes"></span></p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer flex-wrap gap-2">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <span class="text-muted small me-auto d-none d-md-inline">Add to cart using the form on the card.</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
   (function () {
+    const modalEl = document.getElementById('productQuickViewModal');
+    if (modalEl) {
+      modalEl.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        if (!btn || !btn.classList.contains('quick-view-trigger')) return;
+        const name = btn.getAttribute('data-qv-name') || '';
+        const desc = btn.getAttribute('data-qv-desc') || '';
+        const img = btn.getAttribute('data-qv-img') || '';
+        const price = btn.getAttribute('data-qv-price') || '';
+        const cur = btn.getAttribute('data-qv-currency') || '';
+        const stock = parseInt(btn.getAttribute('data-qv-stock') || '0', 10);
+        const sizes = btn.getAttribute('data-qv-sizes') || '';
+
+        const titleEl = document.getElementById('productQuickViewTitle');
+        const imgEl = modalEl.querySelector('.quick-view-modal-img');
+        const descEl = modalEl.querySelector('.quick-view-modal-desc');
+        const priceEl = modalEl.querySelector('.quick-view-modal-price');
+        const curEl = modalEl.querySelector('.quick-view-modal-cur');
+        const stockEl = modalEl.querySelector('.quick-view-modal-stock');
+        const sizesEl = modalEl.querySelector('.quick-view-modal-sizes');
+
+        if (titleEl) titleEl.textContent = name;
+        if (imgEl) {
+          imgEl.src = img;
+          imgEl.alt = name;
+        }
+        if (descEl) descEl.textContent = desc;
+        if (priceEl) priceEl.textContent = price ? price : '';
+        if (curEl) curEl.textContent = cur ? '(' + cur + ')' : '';
+        if (stockEl) {
+          stockEl.textContent = stock > 0 ? 'In stock: ' + stock + ' units.' : 'Currently out of stock.';
+          stockEl.className = 'mb-2 quick-view-modal-stock small ' + (stock > 0 ? 'text-success' : 'text-danger');
+        }
+        if (sizesEl) sizesEl.textContent = sizes.trim() ? sizes.replace(/,/g, ', ') : 'Contact us for available EU sizes.';
+      });
+    }
+
     const form = document.getElementById('shopFiltersForm');
     const currencySelect = document.getElementById('inventoryCurrency');
     const methodSelect = document.getElementById('inventoryMethod');

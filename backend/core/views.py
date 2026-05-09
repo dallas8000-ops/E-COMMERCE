@@ -457,7 +457,14 @@ def _handle_contact_inquiry(request):
                     recipient_list=[settings.CONTACT_RECIPIENT_EMAIL],
                     fail_silently=False,
                 )
-                messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
+                backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
+                if 'console' in backend:
+                    messages.success(
+                        request,
+                        'Inquiry saved. Email preview was printed to the server console (console backend — not delivered to a real inbox).',
+                    )
+                else:
+                    messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
             except Exception:
                 logger.exception('Failed to send contact inquiry email')
                 messages.warning(
@@ -501,8 +508,10 @@ def contact(request):
     if sent:
         return redirect('contact')
 
+    backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
     return render(request, 'core/contact.html', {
         'contact_form': contact_form,
+        'contact_email_console': 'console' in backend,
     })
 
 

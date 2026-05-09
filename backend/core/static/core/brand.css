@@ -48,9 +48,25 @@ body {
 }
 
 .glass-nav {
-  background: #1c120a;
-  box-shadow: 0 4px 20px rgba(28, 18, 10, 0.4);
-  border-bottom: 1px solid rgba(201, 151, 26, 0.2);
+  background: linear-gradient(
+    105deg,
+    var(--primary) 0%,
+    color-mix(in srgb, var(--primary) 78%, var(--accent)) 52%,
+    color-mix(in srgb, var(--primary) 65%, var(--secondary)) 100%
+  );
+  box-shadow: 0 4px 24px rgba(28, 18, 10, 0.45);
+  border-bottom: 1px solid rgba(201, 151, 26, 0.28);
+}
+
+.nav-link-icon {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link-icon i {
+  opacity: 0.88;
+  font-size: 1.05rem;
 }
 
 .nav-utility-group {
@@ -390,15 +406,23 @@ body {
 }
 
 .inventory-shop-card .inventory-add-btn {
-  background: #a31252;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(145deg, #b9165e 0%, #7b1538 55%, #5c102c 100%);
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
+  box-shadow: 0 6px 18px rgba(123, 45, 59, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .inventory-shop-card .inventory-add-btn:hover:not(:disabled) {
-  background: #8a0f45;
+  background: linear-gradient(145deg, #c91d68 0%, #8a1740 50%, #6e1435 100%);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(123, 45, 59, 0.42);
 }
 
 .inventory-shop-card .inventory-add-btn:disabled {
@@ -661,6 +685,9 @@ body {
 }
 
 .badge-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   background: rgba(27, 18, 55, 0.72);
   color: #f8fbff;
   border-radius: 999px;
@@ -1016,6 +1043,12 @@ body {
 .category-tile-icon {
   font-size: 2rem;
   margin-bottom: 0.2rem;
+  line-height: 1;
+}
+
+.category-tile-icon.bi {
+  font-size: 2.35rem;
+  color: var(--accent);
 }
 
 .category-text-tile-inner h3 {
@@ -1325,5 +1358,211 @@ body {
 .hero-slab .eyebrow-pill {
   background: rgba(201, 151, 26, 0.18);
   border-color: rgba(201, 151, 26, 0.38);
+}
+
+/* --- Branded gradient buttons (CSS3) --- */
+.btn-brand-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.35rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  color: #1c120a !important;
+  background: linear-gradient(145deg, #f0d78c 0%, var(--secondary) 45%, #a67c12 100%);
+  box-shadow: 0 6px 20px rgba(201, 151, 26, 0.42);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn-brand-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(201, 151, 26, 0.5);
+}
+
+.btn-brand-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.35rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  color: #fff !important;
+  background: linear-gradient(145deg, #9c2745 0%, var(--accent) 48%, #4a1520 100%);
+  box-shadow: 0 6px 18px rgba(123, 45, 59, 0.38);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-brand-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(123, 45, 59, 0.48);
+  color: #fff !important;
+}
+
+.btn-brand-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  color: #fff !important;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(6px);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-brand-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06));
+  color: #fff !important;
+}
+
+.btn-brand-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.35rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  color: #062e14 !important;
+  background: linear-gradient(145deg, #5cef8f 0%, #25d366 48%, #128c7e 100%);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.38);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-brand-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(37, 211, 102, 0.48);
+  color: #062e14 !important;
+}
+
+.btn-brand-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--accent) 55%, var(--text));
+  color: var(--accent) !important;
+  background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--accent) 8%, var(--surface)));
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-brand-outline:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(123, 45, 59, 0.18);
+  color: var(--accent) !important;
+}
+
+body.theme-dark .btn-brand-primary {
+  color: #1c120a !important;
+}
+
+/* --- Flash messages --- */
+.flash-stack .flash-alert {
+  border: none;
+  border-radius: 14px;
+  border-left: 4px solid transparent;
+}
+
+.flash-stack .alert-success {
+  border-left-color: #198754;
+  background: linear-gradient(90deg, rgba(25, 135, 84, 0.12), var(--surface));
+}
+
+.flash-stack .alert-danger {
+  border-left-color: #dc3545;
+  background: linear-gradient(90deg, rgba(220, 53, 69, 0.12), var(--surface));
+}
+
+.flash-stack .alert-warning {
+  border-left-color: #ffc107;
+  background: linear-gradient(90deg, rgba(255, 193, 7, 0.18), var(--surface));
+}
+
+.flash-stack .alert-info {
+  border-left-color: #0dcaf0;
+  background: linear-gradient(90deg, rgba(13, 202, 240, 0.14), var(--surface));
+}
+
+.flash-alert__icon {
+  font-size: 1.25rem;
+  margin-top: 0.1rem;
+}
+
+body.theme-dark .flash-stack .alert-success {
+  background: linear-gradient(90deg, rgba(25, 135, 84, 0.22), var(--surface));
+}
+
+body.theme-dark .flash-stack .alert-danger {
+  background: linear-gradient(90deg, rgba(220, 53, 69, 0.18), var(--surface));
+}
+
+body.theme-dark .flash-stack .alert-warning {
+  background: linear-gradient(90deg, rgba(255, 193, 7, 0.12), var(--surface));
+}
+
+body.theme-dark .flash-stack .alert-info {
+  background: linear-gradient(90deg, rgba(13, 202, 240, 0.14), var(--surface));
+}
+
+/* --- Bootstrap modal polish --- */
+.modal-content.modal-brand {
+  border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--secondary);
+}
+
+.modal-brand .modal-header {
+  background: linear-gradient(105deg, color-mix(in srgb, var(--primary) 12%, var(--surface)), var(--surface-soft));
+  border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.modal-brand .modal-footer {
+  border-top: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  background: var(--surface-soft);
+}
+
+/* --- Terms: table of contents --- */
+.terms-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--surface-soft), color-mix(in srgb, var(--secondary) 12%, var(--surface)));
+  border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.terms-toc a {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.terms-toc a:hover {
+  border-color: var(--secondary);
+}
+
+.terms-section[id],
+.contact-card[id] {
+  scroll-margin-top: 5.5rem;
 }
 
