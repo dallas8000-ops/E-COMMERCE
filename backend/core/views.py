@@ -30,6 +30,7 @@ from pages.models import ContactInquiry
 
 logger = logging.getLogger(__name__)
 
+AUTH_STAFF_LOGIN_TEMPLATE = 'core/auth_staff_login.html'
 
 SUPPORTED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 DJANGO_IMAGE_SUFFIX_RE = re.compile(r'^(?P<stem>.+)_[A-Za-z0-9]{7}$')
@@ -440,43 +441,62 @@ def _payment_instructions(country, payment_method):
     )
 
 
-def _handle_contact_inquiry(request):
-    if request.method == 'POST':
-        contact_form = ContactInquiryForm(request.POST)
-        if contact_form.is_valid():
-            inquiry = ContactInquiry.objects.create(**contact_form.cleaned_data)
-            try:
-                send_mail(
-                    subject=f"New storefront inquiry: {inquiry.subject}",
-                    message=(
-                        f"Name: {inquiry.name}\n"
-                        f"Email: {inquiry.email}\n\n"
-                        f"Message:\n{inquiry.message}"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.CONTACT_RECIPIENT_EMAIL],
-                    fail_silently=False,
-                )
-                backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
-                if 'console' in backend:
-                    messages.success(
-                        request,
-                        'Inquiry saved. Email preview was printed to the server console (console backend — not delivered to a real inbox).',
-                    )
-                else:
-                    messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
-            except Exception:
-                logger.exception('Failed to send contact inquiry email')
-                messages.warning(
-                    request,
-                    'Inquiry saved, but email delivery failed. Please verify SMTP settings in production.'
-                )
-            return contact_form, True
+def _flash_contact_inquiry_success(request):
+    backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
+    if 'console' in backend:
+        messages.success(
+            request,
+            'Inquiry saved. Email preview was printed to the server console (console backend — not delivered to a real inbox).',
+        )
+    else:
+        messages.success(request, 'Message sent. We received your inquiry and will follow up soon.')
 
+
+def _flash_contact_inquiry_failure(request, exc):
+    logger.exception('Failed to send contact inquiry email')
+    if settings.DEBUG:
+        detail = str(exc).strip()
+        if len(detail) > 240:
+            detail = detail[:237] + '...'
+        suffix = f' ({detail})' if detail else ''
+        messages.warning(
+            request,
+            'Inquiry saved, but email delivery failed.'
+            f'{suffix} Check EMAIL_* in backend/.env and restart the Django server.',
+        )
+    else:
+        messages.warning(
+            request,
+            'Inquiry saved, but email delivery failed. Please verify SMTP settings in production.'
+        )
+
+
+def _handle_contact_inquiry(request):
+    if request.method != 'POST':
+        return ContactInquiryForm(), False
+
+    contact_form = ContactInquiryForm(request.POST)
+    if not contact_form.is_valid():
         messages.error(request, 'Please correct the highlighted fields and try again.')
         return contact_form, False
 
-    return ContactInquiryForm(), False
+    inquiry = ContactInquiry.objects.create(**contact_form.cleaned_data)
+    try:
+        send_mail(
+            subject=f"New storefront inquiry: {inquiry.subject}",
+            message=(
+                f"Name: {inquiry.name}\n"
+                f"Email: {inquiry.email}\n\n"
+                f"Message:\n{inquiry.message}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.CONTACT_RECIPIENT_EMAIL],
+            fail_silently=False,
+        )
+        _flash_contact_inquiry_success(request)
+    except Exception as exc:
+        _flash_contact_inquiry_failure(request, exc)
+    return contact_form, True
 
 
 def health(request):
@@ -584,6 +604,40 @@ def login_view(request):
     return render(request, 'core/auth_login.html', {'form': form})
 
 
+def _staff_login_post(request, form):
+    if _login_is_locked(request):
+        messages.error(
+            request,
+            'Too many sign-in attempts. Please try again in a few minutes.',
+        )
+        return render(request, AUTH_STAFF_LOGIN_TEMPLATE, {'form': form})
+
+    if not form.is_valid():
+        if _login_register_failure(request):
+            messages.error(
+                request,
+                'Too many failed attempts. This address is temporarily limited. Try again later.',
+            )
+        else:
+            messages.error(request, 'Invalid username or password.')
+        return None
+
+    user = form.get_user()
+    if not (user.is_superuser or user.has_perm('core.access_staff_dashboard')):
+        messages.error(
+            request,
+            'This account does not have staff dashboard access. Ask your manager for the correct staff login.',
+        )
+        return render(request, AUTH_STAFF_LOGIN_TEMPLATE, {'form': AuthenticationForm(request)})
+
+    _login_clear_attempts(request)
+    pre_login_session_key = request.session.session_key
+    login(request, user)
+    _merge_guest_cart_into_user(request, user, session_key=pre_login_session_key)
+    messages.success(request, f'Welcome, {user.username}.')
+    return redirect('staff_dashboard')
+
+
 def staff_login_view(request):
     """Dedicated entry for shop staff (permission ``access_staff_dashboard``); redirects to staff dashboard."""
     if request.user.is_authenticated:
@@ -603,38 +657,11 @@ def staff_login_view(request):
 
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == 'POST':
-        if _login_is_locked(request):
-            messages.error(
-                request,
-                'Too many sign-in attempts. Please try again in a few minutes.',
-            )
-            return render(request, 'core/auth_staff_login.html', {'form': form})
+        response = _staff_login_post(request, form)
+        if response is not None:
+            return response
 
-        if form.is_valid():
-            user = form.get_user()
-            if not (user.is_superuser or user.has_perm('core.access_staff_dashboard')):
-                messages.error(
-                    request,
-                    'This account does not have staff dashboard access. Ask your manager for the correct staff login.',
-                )
-                return render(request, 'core/auth_staff_login.html', {'form': AuthenticationForm(request)})
-
-            _login_clear_attempts(request)
-            pre_login_session_key = request.session.session_key
-            login(request, user)
-            _merge_guest_cart_into_user(request, user, session_key=pre_login_session_key)
-            messages.success(request, f'Welcome, {user.username}.')
-            return redirect('staff_dashboard')
-
-        if _login_register_failure(request):
-            messages.error(
-                request,
-                'Too many failed attempts. This address is temporarily limited. Try again later.',
-            )
-        else:
-            messages.error(request, 'Invalid username or password.')
-
-    return render(request, 'core/auth_staff_login.html', {'form': form})
+    return render(request, AUTH_STAFF_LOGIN_TEMPLATE, {'form': form})
 
 
 def logout_view(request):
@@ -1035,6 +1062,82 @@ def _create_order_items_and_reduce_stock(order, cart_items, checkout_prefs, prod
         product.save(update_fields=['stock_quantity', 'updated_at'])
 
 
+def _checkout_post(request, cart, cart_items, checkout_prefs, grand_total, context):
+    form_data = {
+        'name': (request.POST.get('name') or '').strip(),
+        'phone': (request.POST.get('phone') or '').strip(),
+        'country': (request.POST.get('country') or '').strip(),
+        'notes': (request.POST.get('notes') or '').strip(),
+    }
+    context['form_data'] = form_data
+
+    if not form_data['name'] or not form_data['phone'] or not form_data['country']:
+        messages.error(request, 'Name, phone, and country are required to place your order.')
+        return render(request, 'core/checkout.html', context)
+
+    with transaction.atomic():
+        product_map = _lock_products_for_cart(cart_items)
+        locked_stock_error = _validate_locked_stock(cart_items, product_map)
+        if locked_stock_error:
+            messages.error(request, locked_stock_error)
+            return redirect('cart')
+
+        order = Order.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            session_key=request.session.session_key,
+            customer_name=form_data['name'],
+            phone=form_data['phone'],
+            country=form_data['country'],
+            notes=form_data['notes'],
+            payment_method=checkout_prefs['payment_method'],
+            currency=checkout_prefs['currency'],
+            total_amount=grand_total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+        )
+
+        _create_order_items_and_reduce_stock(order, cart_items, checkout_prefs, product_map)
+
+        # Clear the cart after a successful order capture.
+        cart.items.all().delete()
+
+    # Pesapal: hand off to the Node payments service and redirect the user.
+    if checkout_prefs['payment_method'] == 'pesapal':
+        import urllib.request as _url_req, json as _pay_json
+        try:
+            payload = _pay_json.dumps({
+                'order_ref': order.order_ref,
+                'amount': str(order.total_amount),
+                'currency': order.currency,
+                'customer': {
+                    'name': order.customer_name,
+                    'phone': order.phone,
+                },
+            }).encode()
+            _req = _url_req.Request(
+                'http://localhost:5000/api/pay/pesapal',
+                data=payload,
+                headers={'Content-Type': 'application/json'},
+            )
+            with _url_req.urlopen(_req, timeout=10) as _resp:
+                _result = _pay_json.loads(_resp.read())
+            if _result.get('redirect_url'):
+                return redirect(_result['redirect_url'])
+        except Exception as _e:
+            logger.warning('Pesapal redirect failed: %s', _e)
+            messages.warning(
+                request,
+                f'Pesapal is temporarily unavailable ({_e}). '
+                'Your order is saved — please contact us to complete payment.',
+            )
+
+    return render(request, 'core/checkout_success.html', {
+        'order': order,
+        'currency': checkout_prefs['currency'],
+        'grand_total_display': _format_money(grand_total, checkout_prefs['currency']),
+        'payment_method': checkout_prefs['payment_method'],
+        'instructions': _payment_instructions(form_data['country'], checkout_prefs['payment_method']),
+    })
+
+
 def checkout(request):
     cart = _current_cart(request, create=False)
     if not cart or not cart.items.exists():
@@ -1065,79 +1168,7 @@ def checkout(request):
     }
 
     if request.method == 'POST':
-        form_data = {
-            'name': (request.POST.get('name') or '').strip(),
-            'phone': (request.POST.get('phone') or '').strip(),
-            'country': (request.POST.get('country') or '').strip(),
-            'notes': (request.POST.get('notes') or '').strip(),
-        }
-        context['form_data'] = form_data
-
-        if not form_data['name'] or not form_data['phone'] or not form_data['country']:
-            messages.error(request, 'Name, phone, and country are required to place your order.')
-            return render(request, 'core/checkout.html', context)
-
-        with transaction.atomic():
-            product_map = _lock_products_for_cart(cart_items)
-            locked_stock_error = _validate_locked_stock(cart_items, product_map)
-            if locked_stock_error:
-                messages.error(request, locked_stock_error)
-                return redirect('cart')
-
-            order = Order.objects.create(
-                user=request.user if request.user.is_authenticated else None,
-                session_key=request.session.session_key,
-                customer_name=form_data['name'],
-                phone=form_data['phone'],
-                country=form_data['country'],
-                notes=form_data['notes'],
-                payment_method=checkout_prefs['payment_method'],
-                currency=checkout_prefs['currency'],
-                total_amount=grand_total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            )
-
-            _create_order_items_and_reduce_stock(order, cart_items, checkout_prefs, product_map)
-
-            # Clear the cart after a successful order capture.
-            cart.items.all().delete()
-
-        # Pesapal: hand off to the Node payments service and redirect the user.
-        if checkout_prefs['payment_method'] == 'pesapal':
-            import urllib.request as _url_req, json as _pay_json, os as _os
-            try:
-                payload = _pay_json.dumps({
-                    'order_ref': order.order_ref,
-                    'amount': str(order.total_amount),
-                    'currency': order.currency,
-                    'customer': {
-                        'name': order.customer_name,
-                        'phone': order.phone,
-                    },
-                }).encode()
-                _req = _url_req.Request(
-                    'http://localhost:5000/api/pay/pesapal',
-                    data=payload,
-                    headers={'Content-Type': 'application/json'},
-                )
-                with _url_req.urlopen(_req, timeout=10) as _resp:
-                    _result = _pay_json.loads(_resp.read())
-                if _result.get('redirect_url'):
-                    return redirect(_result['redirect_url'])
-            except Exception as _e:
-                logger.warning('Pesapal redirect failed: %s', _e)
-                messages.warning(
-                    request,
-                    f'Pesapal is temporarily unavailable ({_e}). '
-                    'Your order is saved — please contact us to complete payment.',
-                )
-
-        return render(request, 'core/checkout_success.html', {
-            'order': order,
-            'currency': checkout_prefs['currency'],
-            'grand_total_display': _format_money(grand_total, checkout_prefs['currency']),
-            'payment_method': checkout_prefs['payment_method'],
-            'instructions': _payment_instructions(form_data['country'], checkout_prefs['payment_method']),
-        })
+        return _checkout_post(request, cart, cart_items, checkout_prefs, grand_total, context)
 
     return render(request, 'core/checkout.html', context)
 
