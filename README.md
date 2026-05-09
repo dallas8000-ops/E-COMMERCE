@@ -89,6 +89,25 @@ Optional: `frontend/` and `payments/` for React/Node experiments. `render.yaml` 
 
 ---
 
+## Gmail SMTP (real outbound mail)
+
+Use **`backend/.env`** locally (copy from [`backend/.env.example`](backend/.env.example)). Never commit `.env`.
+
+1. Turn on **2-Step Verification** on the Google account.
+2. Create an **App password**: Google Account → **Security** → **App passwords** → generate one for Mail.
+3. Set:
+   - `DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
+   - `EMAIL_HOST=smtp.gmail.com`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`
+   - `EMAIL_HOST_USER` / `DJANGO_DEFAULT_FROM_EMAIL` = that Gmail address
+   - `EMAIL_HOST_PASSWORD` = the **16-character app password** (not your normal Gmail password)
+   - `CONTACT_RECIPIENT_EMAIL` = inbox that should receive contact form messages
+
+On **Render**, add the same variables under **Environment** for the web service (do not paste secrets into the repo).
+
+Restart the app after changing env vars. The Contact page **console-only banner** disappears when SMTP is active.
+
+---
+
 ## Production hardening
 
 When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded-Proto`), **secure session + CSRF cookies**, **SSL redirect**, **`X-Frame-Options: DENY`**, structured **logging** to stdout (level via `DJANGO_LOG_LEVEL`). Optional **HSTS**: set `DJANGO_HSTS_SECONDS` (e.g. `31536000`), optionally `DJANGO_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD`. **Dev CORS** for Vite runs **only when `DEBUG=True`**.
