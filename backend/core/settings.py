@@ -96,10 +96,13 @@ if DEBUG:
             CSRF_TRUSTED_ORIGINS.append(_local)
 
 EMAIL_BACKEND = os.environ.get('DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost').strip()
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# Google displays app passwords as four groups; SMTP expects one continuous string.
+if EMAIL_HOST == 'smtp.gmail.com' and EMAIL_HOST_PASSWORD:
+    EMAIL_HOST_PASSWORD = ''.join(EMAIL_HOST_PASSWORD.split())
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() in ('1', 'true', 'yes', 'on')
 DEFAULT_FROM_EMAIL = os.environ.get('DJANGO_DEFAULT_FROM_EMAIL', 'noreply@eastafricafashion.local')
 CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'dallas8000@gmail.com')
