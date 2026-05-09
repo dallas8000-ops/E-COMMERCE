@@ -6,7 +6,7 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 
 | | |
 |--|--|
-| **Live** | https://kistie-store.onrender.com |
+| **Live** | **[Kistie-Store](https://kistie-store.onrender.com)** on Render — `https://kistie-store.onrender.com` |
 | **Code** | https://github.com/dallas8000-ops/Kistie-Store |
 | **Trello** | https://trello.com/b/s8Rpm9in/kistie-store |
 | **Planning** | [PROJECT_PLANNING.md](PROJECT_PLANNING.md) |
@@ -113,8 +113,6 @@ Restart the app after changing env vars. The Contact page **console-only banner*
 When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded-Proto`), **secure session + CSRF cookies**, **SSL redirect**, **`X-Frame-Options: DENY`**, structured **logging** to stdout (level via `DJANGO_LOG_LEVEL`). Optional **HSTS**: set `DJANGO_HSTS_SECONDS` (e.g. `31536000`), optionally `DJANGO_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD`. **Dev CORS** for Vite runs **only when `DEBUG=True`**.
 
 **Health checks:** `GET https://kistie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
-
-If your Render URL still uses the old misspelled slug (`kristie-store`), rename the web service (or create an alias) in the [Render Dashboard](https://dashboard.render.com/) so the hostname matches **Kistie** branding. Saved passwords / Gmail App Password labels can be renamed to **Kistie Store** in Google Account → Security → App passwords (revoke old, add new) or in your password manager’s entry title.
 
 ---
 
