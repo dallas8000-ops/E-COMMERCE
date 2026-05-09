@@ -141,7 +141,7 @@ A: The CSV import/export for inventory — parsing user-uploaded files, validati
 ---
 
 ## Submission Checklist
-- [x] Live URL in README: https://kristie-store.onrender.com
+- [x] Live URL in README: https://kistie-store.onrender.com
 - [x] GitHub repo: https://github.com/dallas8000-ops/Kistie-Store
 - [x] Trello board: https://trello.com/b/s8Rpm9in/kistie-store
 - [x] Planning doc: PROJECT_PLANNING.md
