@@ -115,6 +115,11 @@ CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'dallas8000@
 SERPAPI_API_KEY = os.environ.get('SERPAPI_API_KEY', '').strip()
 PRICE_SCAN_UGX_RATE = os.environ.get('PRICE_SCAN_UGX_RATE', '3700').strip()
 PRICE_SCAN_SITE_BASE_URL = os.environ.get('PRICE_SCAN_SITE_BASE_URL', '').strip()
+# Pesapal handoff: Node payments service URL (local dev default). Set on Render to your deployed payments base + path.
+PESAPAL_INITIATE_URL = os.environ.get(
+    'PESAPAL_INITIATE_URL',
+    'http://127.0.0.1:5000/api/pay/pesapal',
+).strip()
 
 
 # Application definition

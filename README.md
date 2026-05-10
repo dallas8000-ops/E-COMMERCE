@@ -116,6 +116,37 @@ When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded
 
 ---
 
+## Custom domain on Render
+
+Render gives **HTTPS** on your `*.onrender.com` URL automatically. To use **your own domain** (e.g. `www.yourbrand.com`):
+
+1. In Render → your **Web Service** → **Settings** → **Custom Domains** → add the domain and follow **DNS** instructions (usually CNAME to `your-service.onrender.com`).
+2. Set environment variables on the web service so Django accepts the host and CSRF POSTs:
+   - **`ALLOWED_HOSTS`** — include your hostname (comma or space separated), e.g. `kistie-store.onrender.com,yourbrand.com,www.yourbrand.com`
+   - **`CSRF_TRUSTED_ORIGINS`** — include full origins with scheme, e.g. `https://kistie-store.onrender.com,https://yourbrand.com,https://www.yourbrand.com`
+
+Render already injects **`RENDER_EXTERNAL_HOSTNAME`** for the default service URL; custom domains need the two variables above (or extend them) so checkout and forms keep working under **`DEBUG=False`**.
+
+---
+
+## Pesapal payment redirect (production)
+
+Checkout can forward **Pesapal** orders to a small **Node payments** service. Locally the app defaults to `http://127.0.0.1:5000/api/pay/pesapal`. On Render, set:
+
+`PESAPAL_INITIATE_URL=https://<your-deployed-payments-host>/api/pay/pesapal`
+
+See [`backend/.env.example`](backend/.env.example). Restart the web service after changing env vars.
+
+---
+
+## Promoting the live site (organic)
+
+- **Public HTTPS URL:** use **`https://kistie-store.onrender.com`** (or your custom domain) everywhere—Instagram bio, Linktree-style link pages, WhatsApp status, email signature.
+- **Link-in-bio tools** (e.g. Linktree): add **one button** → paste the same store URL; you do not rebuild the shop there.
+- **Paid ads:** optional; even a low daily cap works better with **one clear landing URL** and consistent messaging.
+
+---
+
 ## CI
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — `pip install -r requirements.txt` then `cd backend && python manage.py test` on **push/PR** to `main` or `master`.

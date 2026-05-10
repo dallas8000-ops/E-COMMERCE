@@ -1113,7 +1113,7 @@ def _checkout_post(request, cart, cart_items, checkout_prefs, grand_total, conte
                 },
             }).encode()
             _req = _url_req.Request(
-                'http://localhost:5000/api/pay/pesapal',
+                settings.PESAPAL_INITIATE_URL,
                 data=payload,
                 headers={'Content-Type': 'application/json'},
             )
