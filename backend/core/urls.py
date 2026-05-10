@@ -16,6 +16,7 @@ if settings.ENABLE_ADMIN:
 urlpatterns = [
     path('health/', views.health, name='health'),
     path('', views.home, name='home'),
+    path('shop/', views.shop, name='shop'),
     path('contact/', views.contact, name='contact'),
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
@@ -28,7 +29,7 @@ urlpatterns = [
     path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('staff/audit-log/', views.admin_audit_log, name='admin_audit_log'),
     path('catalog/image/<path:image_name>/', views.catalog_image, name='catalog_image'),
-    path('inventory/', views.inventory, name='inventory'),
+    path('inventory/', views.legacy_inventory_redirect),
     path('cart/', views.cart, name='cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),

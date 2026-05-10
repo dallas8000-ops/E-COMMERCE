@@ -226,8 +226,8 @@
       <p class="kicker">Live commerce · Django · Render</p>
       <h1>Kistie-Store</h1>
       <p class="lead">
-        Fashion ecommerce with a unified Shop experience, multi-currency checkout, Django admin back office, secured REST API,
-        and CI-tested deploys—built for a real retail operation.
+        One storefront: <code>/</code> redirects to <code>/shop/</code>. Multi-currency cart and checkout, Django admin, staff portal + audit log,
+        JSON API under <code>/api/inventory/</code> (REST prefix—not a second UI), CI-tested deploys—built for a real retail operation.
       </p>
     </div>
 
@@ -235,13 +235,27 @@
     <div class="slide" data-slide="1">
       <p class="kicker">Storefront</p>
       <h1>Shop</h1>
-      <p class="lead">One page at <code>/inventory/</code> — filters, EU sizing, quick-view modal, live FX at checkout. Legacy <code>/catalog/</code> redirects here.</p>
+      <p class="lead">
+        The only customer browse/buy screen — <code>/shop/</code> (<code>backend/core/templates/core/shop.html</code>). Filters, EU sizing, quick-view, add to cart.
+        <strong>No separate catalog or inventory pages</strong>; legacy <code>/catalog/</code> and <code>/inventory/</code> redirect here for old bookmarks only.
+      </p>
       <img src="../images/screenshots/shop.png" alt="Kistie-Store Shop page" onerror="this.style.display='none'" />
       <p class="caption">Screenshot from <code>images/screenshots/shop.png</code></p>
     </div>
 
     <!-- 2 -->
     <div class="slide" data-slide="2">
+      <p class="kicker">Customer journey</p>
+      <h1>Cart &amp; checkout</h1>
+      <p class="lead">
+        <code>/cart/</code> and <code>/checkout/</code> — line items, live FX (USD / EUR / KES / UGX), MTN, Airtel, Pesapal. Auth at <code>/signup/</code>, <code>/login/</code>; order history at <code>/account/orders/</code>.
+      </p>
+      <img src="../images/screenshots/cart.png" alt="Kistie-Store cart page" onerror="this.style.display='none'" />
+      <p class="caption"><code>images/screenshots/cart.png</code></p>
+    </div>
+
+    <!-- 3 -->
+    <div class="slide" data-slide="3">
       <p class="kicker">Back office</p>
       <h1>Django admin</h1>
       <p class="lead">Superuser login — products, orders, carts, reviews, contact inquiries (dashboard after sign-in).</p>
@@ -249,34 +263,34 @@
       <p class="caption"><code>images/screenshots/admin-login.png</code></p>
     </div>
 
-    <!-- 3 -->
-    <div class="slide" data-slide="3">
+    <!-- 4 -->
+    <div class="slide" data-slide="4">
       <p class="kicker">Operations</p>
       <h1>Staff portal</h1>
-      <p class="lead">Dedicated staff sign-in → dashboard with orders snapshot and low-stock alerts.</p>
+      <p class="lead">Staff sign-in → dashboard (<code>/staff/dashboard/</code>) — orders snapshot, low-stock alerts. Superusers: audit trail at <code>/staff/audit-log/</code>.</p>
       <img src="../images/screenshots/staff-login.png" alt="Kistie-Store staff login" onerror="this.style.display='none'" />
       <p class="caption"><code>images/screenshots/staff-login.png</code></p>
     </div>
 
-    <!-- 4 -->
-    <div class="slide" data-slide="4">
+    <!-- 5 -->
+    <div class="slide" data-slide="5">
       <p class="kicker">Engineering</p>
       <h1>API &amp; delivery</h1>
       <ul class="features">
-        <li>Django REST Framework — public reads; staff-only writes on inventory endpoints.</li>
-        <li>GitHub Actions CI — tests on every push to <code>main</code>.</li>
-        <li>PostgreSQL on Render; Gunicorn + WhiteNoise in production.</li>
+        <li>Django REST Framework at <code>/api/inventory/</code> — <code>products/</code>, <code>categories/</code>, payment stub; public reads, staff-only writes. Path name only—not a duplicate storefront.</li>
+        <li>GitHub Actions CI — install root <code>requirements.txt</code>, <code>python manage.py test</code> from <code>backend/</code>, on every push to <code>main</code>.</li>
+        <li>PostgreSQL on Render; Gunicorn + WhiteNoise; <code>health/</code> for uptime checks.</li>
       </ul>
     </div>
 
-    <!-- 5 -->
-    <div class="slide" data-slide="5">
+    <!-- 6 -->
+    <div class="slide" data-slide="6">
       <p class="kicker">See it live</p>
       <h1>kistie-store.onrender.com</h1>
       <p class="lead">
         Full-stack Python ecommerce—responsive UI, auth, cart, checkout, and staff workflows.
       </p>
-      <p class="caption">Use ← → or Space · Pause/resume with the button below</p>
+      <p class="caption">Also: <code>/about/</code>, <code>/contact/</code>, <code>/terms/</code>, <code>/health/</code> · Use ← → or Space · pause below</p>
     </div>
   </div>
 

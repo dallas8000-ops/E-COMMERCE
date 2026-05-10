@@ -17,10 +17,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "images" / "screenshots"
 
-# Shop lives at /inventory/ (URL name ``inventory``); /catalog/ redirects here with query preserved.
+# Canonical storefront is ``/shop/``; ``/`` redirects there; legacy ``/catalog/`` and ``/inventory/`` redirect too.
 ROUTES = [
-    ("/", "home.png"),
-    ("/inventory/", "shop.png"),
+    ("/shop/", "shop.png"),
     ("/about/", "about.png"),
     ("/contact/", "contact.png"),
     ("/terms/", "terms.png"),

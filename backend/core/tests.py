@@ -1,7 +1,25 @@
+"""Core URL and permission tests.
+
+Synthetic credentials exist only for the ephemeral test database and are not deployment secrets.
+
+When running tests, Django may print WARNING/traceback lines for expected ``403 Forbidden``
+responses (admin gate, staff dashboard). Those lines are normal; the tests still pass if the
+suite ends with OK.
+"""
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
+
+# Values used only in test POST payloads / create_user calls (not production).
+_PW_SIGNUP = 'StrongPass123!'
+_PW_PORTAL_STAFF = 'StrongPortalStaff123!'
+_PW_PORTAL_SUPER = 'StrongPortalSu123!'
+_PW_BUYER = 'StrongBuyer123!'
+_PW_GATE_BUYER = 'StrongBuyerGate123!'
+_PW_GATE_PORTAL = 'StrongPortalGate123!'
+_PW_GATE_STAFF = 'StrongStaffGate123!'
+_PW_GATE_SUPER = 'StrongSuperGate123!'
 
 
 class AuthRouteSmokeTests(TestCase):
@@ -22,8 +40,8 @@ class AuthRouteSmokeTests(TestCase):
             reverse('signup'),
             data={
                 'username': 'newuser',
-                'password1': 'StrongPass123!',
-                'password2': 'StrongPass123!',
+                'password1': _PW_SIGNUP,
+                'password2': _PW_SIGNUP,
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -38,20 +56,38 @@ class HealthEndpointTests(TestCase):
         self.assertEqual(response.json()['service'], 'kistie-store')
 
 
-class CatalogRedirectTests(TestCase):
-    def test_catalog_redirects_to_inventory(self):
+class ShopRedirectTests(TestCase):
+    def test_home_redirects_to_shop(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('shop'))
+
+    def test_catalog_redirects_to_shop(self):
         response = self.client.get(reverse('catalog'))
         self.assertEqual(response.status_code, 302)
-        location = response.headers.get('Location', '')
-        self.assertTrue(location.endswith(reverse('inventory')))
+        self.assertEqual(response.url, reverse('shop'))
+
+    def test_legacy_inventory_url_redirects_to_shop(self):
+        response = self.client.get('/inventory/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('shop'))
 
     def test_catalog_redirect_preserves_querystring(self):
         response = self.client.get(reverse('catalog'), {'category': '1', 'currency': 'EUR'})
         self.assertEqual(response.status_code, 302)
         location = response.headers.get('Location', '')
-        self.assertIn('/inventory/', location)
+        self.assertIn('/shop/', location)
         self.assertIn('category=1', location)
         self.assertIn('currency=EUR', location)
+
+
+class ShopPageTests(TestCase):
+    """Canonical storefront is ``core/shop.html`` (not a separate inventory/catalog page)."""
+
+    def test_shop_renders_with_shop_template(self):
+        response = self.client.get(reverse('shop'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'core/shop.html')
 
 
 class StaffDashboardPermissionTests(TestCase):
@@ -59,19 +95,19 @@ class StaffDashboardPermissionTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        User = get_user_model()
+        user_model = get_user_model()
         cls.perm = Permission.objects.get(
             content_type__app_label='core',
             codename='access_staff_dashboard',
         )
-        cls.shop_staff = User.objects.create_user('portal_staff', password='StrongPortalStaff123!')
+        cls.shop_staff = user_model.objects.create_user('portal_staff', password=_PW_PORTAL_STAFF)
         cls.shop_staff.user_permissions.add(cls.perm)
-        cls.superuser = User.objects.create_superuser(
+        cls.superuser = user_model.objects.create_superuser(
             'portal_super',
             'portal_super@test.example',
-            'StrongPortalSu123!',
+            _PW_PORTAL_SUPER,
         )
-        cls.regular = User.objects.create_user('portal_buyer', password='StrongBuyer123!')
+        cls.regular = user_model.objects.create_user('portal_buyer', password=_PW_BUYER)
 
     def test_staff_dashboard_redirects_when_anonymous(self):
         response = self.client.get(reverse('staff_dashboard'))
@@ -96,7 +132,7 @@ class StaffDashboardPermissionTests(TestCase):
     def test_staff_login_redirects_portal_user_to_dashboard(self):
         response = self.client.post(
             reverse('staff_login'),
-            {'username': 'portal_staff', 'password': 'StrongPortalStaff123!'},
+            {'username': 'portal_staff', 'password': _PW_PORTAL_STAFF},
         )
         self.assertRedirects(response, reverse('staff_dashboard'), fetch_redirect_response=False)
         self.assertIsNotNone(self.client.session.get('_auth_user_id'))
@@ -104,7 +140,7 @@ class StaffDashboardPermissionTests(TestCase):
     def test_staff_login_rejects_shopper_without_logging_in(self):
         response = self.client.post(
             reverse('staff_login'),
-            {'username': 'portal_buyer', 'password': 'StrongBuyer123!'},
+            {'username': 'portal_buyer', 'password': _PW_BUYER},
         )
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(self.client.session.get('_auth_user_id'))
@@ -120,23 +156,23 @@ class AdminSuperuserOnlyMiddlewareTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        User = get_user_model()
-        cls.regular = User.objects.create_user('adm_gate_buyer', password='StrongBuyerGate123!')
+        user_model = get_user_model()
+        cls.regular = user_model.objects.create_user('adm_gate_buyer', password=_PW_GATE_BUYER)
         perm = Permission.objects.get(
             content_type__app_label='core',
             codename='access_staff_dashboard',
         )
-        cls.portal_only = User.objects.create_user('adm_gate_portal', password='StrongPortalGate123!')
+        cls.portal_only = user_model.objects.create_user('adm_gate_portal', password=_PW_GATE_PORTAL)
         cls.portal_only.user_permissions.add(perm)
-        cls.django_staff = User.objects.create_user(
+        cls.django_staff = user_model.objects.create_user(
             'adm_gate_django_staff',
-            password='StrongStaffGate123!',
+            password=_PW_GATE_STAFF,
             is_staff=True,
         )
-        cls.superuser = User.objects.create_superuser(
+        cls.superuser = user_model.objects.create_superuser(
             'adm_gate_super',
             'adm_gate_super@test.example',
-            'StrongSuperGate123!',
+            _PW_GATE_SUPER,
         )
 
     def test_anonymous_admin_request_not_blocked_by_middleware(self):

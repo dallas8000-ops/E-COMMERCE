@@ -48,7 +48,7 @@ class CartFlowSmokeTests(TestCase):
 			data={'quantity': 1, 'size': 'XL'},
 		)
 		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response.url, reverse('inventory'))
+		self.assertEqual(response.url, reverse('shop'))
 		self.assertEqual(CartItem.objects.count(), 0)
 
 	def test_checkout_creates_order_and_clears_cart(self):
@@ -81,7 +81,7 @@ class CartFlowSmokeTests(TestCase):
 		)
 
 		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response.url, reverse('inventory'))
+		self.assertEqual(response.url, reverse('shop'))
 		self.assertEqual(CartItem.objects.count(), 0)
 
 	def test_update_cart_item_rejects_quantity_above_stock(self):

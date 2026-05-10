@@ -510,17 +510,8 @@ def health(request):
 
 
 def home(request):
-    hero_images = _recent_images(limit=3)
-    featured_products = _featured_products(limit=3)
-    category_count = Product.objects.values('category').distinct().count()
-    product_count = Product.objects.count()
-
-    return render(request, 'core/index.html', {
-        'hero_images': hero_images,
-        'featured_products': featured_products,
-        'product_count': product_count,
-        'category_count': category_count,
-    })
+    """Root URL opens the Shop storefront (canonical path ``/shop/``)."""
+    return HttpResponseRedirect(reverse('shop'))
 
 
 def contact(request):
@@ -780,7 +771,7 @@ def _shop_filtered_products_queryset(request):
     return products, filter_ctx
 
 
-def _shop_inventory_rows(products, checkout):
+def _shop_product_rows(products, checkout):
     rows = []
     for product in products:
         images = list(product.images.all())
@@ -813,7 +804,17 @@ def _shop_inventory_rows(products, checkout):
 
 
 def catalog(request):
-    path = reverse('inventory')
+    """Legacy ``/catalog/`` URL — redirects to Shop."""
+    path = reverse('shop')
+    qs = request.GET.urlencode()
+    if qs:
+        return HttpResponseRedirect(f'{path}?{qs}')
+    return HttpResponseRedirect(path)
+
+
+def legacy_inventory_redirect(request):
+    """Legacy ``/inventory/`` storefront URL — redirects to canonical ``/shop/``."""
+    path = reverse('shop')
     qs = request.GET.urlencode()
     if qs:
         return HttpResponseRedirect(f'{path}?{qs}')
@@ -847,14 +848,15 @@ def catalog_image(_request, image_name):
     raise Http404('Image not found.')
 
 
-def inventory(request):
+def shop(request):
+    """Single storefront (Shop page only): template ``core/shop.html``. No ``inventory.html`` / catalog HTML."""
     try:
         checkout = _checkout_preferences(request)
         products, filter_ctx = _shop_filtered_products_queryset(request)
-        inventory_items = _shop_inventory_rows(products, checkout)
+        shop_rows = _shop_product_rows(products, checkout)
 
-        return render(request, 'core/inventory.html', {
-            'inventory_items': inventory_items,
+        return render(request, 'core/shop.html', {
+            'shop_rows': shop_rows,
             'currency': checkout['currency'],
             'supported_currencies': SUPPORTED_CURRENCIES,
             'payment_method': checkout['payment_method'],
@@ -863,16 +865,16 @@ def inventory(request):
             'rates_updated': checkout['rates_updated'],
             'rate_display': _format_money(checkout['rate'], checkout['currency']),
             'categories': Category.objects.all().order_by('name'),
-            'total_items': len(inventory_items),
+            'total_items': len(shop_rows),
             **filter_ctx,
         })
     except Exception:
-        logger.exception('inventory shop failed; using fallback rates')
+        logger.exception('shop page failed; using fallback rates')
         products, filter_ctx = _shop_filtered_products_queryset(request)
         fallback_checkout = {'currency': 'USD', 'rate': Decimal('1')}
-        inventory_items = _shop_inventory_rows(products, fallback_checkout)
-        return render(request, 'core/inventory.html', {
-            'inventory_items': inventory_items,
+        shop_rows = _shop_product_rows(products, fallback_checkout)
+        return render(request, 'core/shop.html', {
+            'shop_rows': shop_rows,
             'currency': 'USD',
             'supported_currencies': SUPPORTED_CURRENCIES,
             'payment_method': (
@@ -883,7 +885,7 @@ def inventory(request):
             'rates_updated': '',
             'rate_display': '1.00',
             'categories': Category.objects.all().order_by('name'),
-            'total_items': len(inventory_items),
+            'total_items': len(shop_rows),
             **filter_ctx,
         })
 
@@ -903,18 +905,18 @@ def add_to_cart(request, product_id):
 
     if available_sizes and size not in available_sizes:
         messages.error(request, 'Please choose one of the listed EU sizes before adding this item to cart.')
-        return redirect('inventory')
+        return redirect('shop')
 
     if product.stock_quantity <= 0:
         messages.error(request, 'This item is currently out of stock.')
-        return redirect('inventory')
+        return redirect('shop')
 
     cart = _current_cart(request, create=True)
     item = CartItem.objects.filter(cart=cart, product=product, size=size, color=color).first()
     requested_quantity = quantity if item is None else item.quantity + quantity
     if requested_quantity > product.stock_quantity:
         messages.error(request, f'Only {product.stock_quantity} unit(s) available for {product.name}.')
-        return redirect('inventory')
+        return redirect('shop')
 
     if item is not None:
         item.quantity += quantity

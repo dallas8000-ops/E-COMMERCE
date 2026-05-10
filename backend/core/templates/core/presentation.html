@@ -252,24 +252,24 @@
         <!-- Table of Contents -->
         <h2>Table of Contents</h2>
         <ul style="margin-left: 20px;">
-            <li><a href="#home">Home Page</a></li>
+            <li><a href="#home">Entry point</a></li>
             <li><a href="#about">About Page</a></li>
-            <li><a href="#inventory">Inventory Page</a></li>
+            <li><a href="#shop">Shop page</a></li>
             <li><a href="#cart">Cart Page</a></li>
             <li><a href="#admin">Django Admin</a></li>
             <li><a href="#responsive">Responsive Design</a></li>
         </ul>
 
-        <!-- Home Page Section -->
-        <h2 id="home">Home Page</h2>
+        <!-- Entry / Home redirect Section -->
+        <h2 id="home">Entry point</h2>
         <div class="screen-section">
-            <h3>URL: `/`</h3>
-            <p><strong>Purpose:</strong> Welcome visitors and provide an overview of the store and its offerings.</p>
+            <h3>URL: `/` → redirects to `/shop/`</h3>
+            <p><strong>Purpose:</strong> Visitors land on Shop immediately; optional marketing content lives under About and other pages.</p>
             <h4>User Actions Available:</h4>
             <ul>
                 <li>Get an overview of the store and its product categories</li>
                 <li>Use the top navigation bar to jump to any section of the site</li>
-                <li>Click <strong>Inventory</strong> in the navbar to start browsing products</li>
+                <li>Click <strong>Shop</strong> in the navbar to start browsing products</li>
                 <li>Click <strong>About</strong> to read the brand story and mission</li>
                 <li>View the hero image showcasing the brand aesthetic</li>
             </ul>
@@ -287,20 +287,20 @@
                 <li>Learn the brand ethos and vision statement</li>
                 <li>View brand imagery and store aesthetic</li>
                 <li>Access contact information (phone, WhatsApp, location)</li>
-                <li>Use the navbar to navigate to <strong>Inventory</strong> to start shopping</li>
+                <li>Use the navbar to navigate to <strong>Shop</strong> to start shopping</li>
                 <li>Use the navbar to navigate to <strong>Cart</strong> to continue an order</li>
             </ul>
             <p style="margin-top: 15px;"><strong>Key Features:</strong> Multi-section layout with ethos, vision, and mission information; contact details; responsive image galleries.</p>
         </div>
 
-        <!-- Inventory Page Section -->
-        <h2 id="inventory">Inventory Page</h2>
+        <!-- Shop Page Section -->
+        <h2 id="shop">Shop page</h2>
         <div class="screen-section">
-            <h3>URL: `/inventory/`</h3>
-            <p><strong>Purpose:</strong> Display all available products for browsing and selection.</p>
+            <h3>URL: `/shop/`</h3>
+            <p><strong>Purpose:</strong> Single Shop screen — all browsing and buying (filters, EU sizes, currency, quick-view, add to cart).</p>
             <h4>User Actions Available:</h4>
             <ul>
-                <li>Browse the full product catalog loaded from the backend</li>
+                <li>Browse all products loaded from the backend</li>
                 <li>View product images, names, and prices on each card</li>
                 <li>See stock status for each product</li>
                 <li>Click <strong>Add to Cart</strong> on any product card to add that item to your current order</li>
@@ -332,7 +332,7 @@
         <h2 id="admin">Django Admin</h2>
         <div class="screen-section">
             <h3>URL: `http://127.0.0.1:8000/admin/`</h3>
-            <p><strong>Purpose:</strong> Secure backend for store administrators to manage inventory, orders, and customer data.</p>
+            <p><strong>Purpose:</strong> Secure backend for store administrators to manage products, orders, and customer data.</p>
             <h4>Admin Actions Available:</h4>
             <ul>
                 <li>Log in with superuser credentials for secure access</li>
@@ -400,7 +400,7 @@
                     <td>✓ Pass</td>
                 </tr>
                 <tr>
-                    <td><strong>Inventory</strong></td>
+                    <td><strong>Shop</strong></td>
                     <td>✓ Pass</td>
                     <td>✓ Pass</td>
                     <td>✓ Pass</td>

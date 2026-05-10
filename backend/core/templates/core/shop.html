@@ -46,7 +46,7 @@
         </div>
         <div class="col-auto d-flex gap-2 align-items-center flex-wrap">
           <button type="submit" class="btn btn-sm btn-brand-primary"><i class="bi bi-funnel" aria-hidden="true"></i> Apply</button>
-          <a class="btn btn-sm btn-brand-ghost" href="{% url 'inventory' %}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reset</a>
+          <a class="btn btn-sm btn-brand-ghost" href="{% url 'shop' %}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reset</a>
           <span class="badge-count"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> {{ total_items }} items</span>
           <a class="btn btn-sm btn-light fw-semibold" href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
         </div>
@@ -54,10 +54,10 @@
     </form>
   </div>
 
-  {% if inventory_items %}
+  {% if shop_rows %}
   <section class="catalog-date-section float-in delay-1">
     <div class="catalog-grid catalog-product-grid">
-      {% for row in inventory_items %}
+      {% for row in shop_rows %}
       {% with product=row.product %}
       <article class="catalog-card catalog-product-card inventory-shop-card">
         <div class="shop-card-layout">
@@ -135,7 +135,7 @@
   </section>
   {% else %}
   <section class="catalog-date-section">
-    <p class="mb-0">No products match these filters. Try adjusting category or price, or <a href="{% url 'inventory' %}">reset</a>.</p>
+    <p class="mb-0">No products match these filters. Try adjusting category or price, or <a href="{% url 'shop' %}">reset</a>.</p>
   </section>
   {% endif %}
 
