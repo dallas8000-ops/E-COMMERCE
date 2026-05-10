@@ -53,17 +53,29 @@ Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQL
 
 ## Proof — screenshots
 
-**In-repo gallery:** everything under [`images/screenshots/`](images/screenshots/) (storefront, brand shots, full **admin** set: login, dashboard, products, users, groups, carts, reviews, inquiries).
+**Gallery:** [`images/screenshots/`](images/screenshots/) — regenerated from the running app via [`scripts/capture_screenshots.py`](scripts/capture_screenshots.py) (Playwright). Start Django (`runserver`), then:
 
-**Highlights:**
+`python scripts/capture_screenshots.py`
 
-| Storefront | Admin |
-|------------|--------|
-| ![Catalog](images/screenshots/Catalog.png) | ![Admin hub](images/screenshots/admin-dashboard.png) |
+Uses **`http://127.0.0.1:8000`** by default; override with env **`SCREENSHOT_BASE_URL`** if needed.
 
-![Products in admin](images/screenshots/admin-products.png)
+**Samples:**
 
-**Auto-play slide deck** (storefront + admin + API summary): open [`docs/demo-presentation.html`](docs/demo-presentation.html) after `python -m http.server 8080` from repo root → `http://127.0.0.1:8080/docs/demo-presentation.html` (or use [ScreenToGif](https://www.screentogif.com/) to record a short GIF for LinkedIn).
+| Catalog | Inventory |
+|---------|-----------|
+| ![Catalog](images/screenshots/Catalog.png) | ![Inventory](images/screenshots/inventory.png) |
+
+| Home | Contact |
+|------|---------|
+| ![Home](images/screenshots/home.png) | ![Contact](images/screenshots/contact.png) |
+
+| Django admin login | Staff sign-in |
+|--------------------|---------------|
+| ![Admin login](images/screenshots/admin-login.png) | ![Staff login](images/screenshots/staff-login.png) |
+
+Also in folder: `about.png`, `terms.png`, `cart.png`, `login.png`, `signup.png`. Authenticated **admin dashboard / product lists** change with your data — capture those manually after signing in if you need them for a packet.
+
+**Auto-play slide deck:** [`docs/demo-presentation.html`](docs/demo-presentation.html) (serve locally with `python -m http.server 8080` from repo root).
 
 ---
 
