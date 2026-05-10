@@ -53,7 +53,7 @@ Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQL
 
 ## Proof — screenshots
 
-**In-repo gallery:** everything under [`images/screenshots/`](images/screenshots/) (storefront, brand shots, full **admin** set: login, dashboard, products, users, groups, carts, reviews, inquiries). The same images are **embedded in the capstone submission document** (PDF/report) for reviewers who use that packet.
+**In-repo gallery:** everything under [`images/screenshots/`](images/screenshots/) (storefront, brand shots, full **admin** set: login, dashboard, products, users, groups, carts, reviews, inquiries).
 
 **Highlights:**
 
@@ -67,11 +67,11 @@ Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQL
 
 ---
 
-## Reviewer / demo access (capstone)
+## Demo access
 
-- **Live site:** same URL as in the table above (`/`, `/inventory/`, `/staff/login/`, etc.).
-- **Django admin:** `/admin/` — **demo username and password** are provided in the **official submitted capstone package** (not duplicated in this public README).
-- **No packet?** Email [dallas8000@gmail.com](mailto:dallas8000@gmail.com).
+- **Live site:** URLs in the table above (`/`, `/inventory/`, `/staff/login/`, etc.).
+- **Django admin:** `/admin/` — create a superuser locally, or use credentials issued privately for reviewers.
+- **Questions:** [dallas8000@gmail.com](mailto:dallas8000@gmail.com).
 
 ---
 

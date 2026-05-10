@@ -62,10 +62,10 @@ Build a polished capstone ecommerce platform where shoppers can browse products,
 - Checkout captures orders and shows payment-verification instructions with admin-managed payment status
 - Payment sandbox integration is implemented end-to-end
 - Inventory quantity control is implemented via stock_quantity with checkout stock validation and decrement
-- README contains capstone summary, tech stack, page map, and local run guide
+- README contains project summary, tech stack, page map, and local run guide
 - Phone and tablet responsive QA is completed for all storefront pages
-- Capstone presentation assets and submission packaging are complete
-- Project is submitted
+- Screenshots in `images/screenshots/`; interactive demo deck at `docs/demo-presentation.html`
+- Initial delivery complete (ongoing improvements via Git)
 
 ### Remaining
 - None. All planned scope is delivered.
