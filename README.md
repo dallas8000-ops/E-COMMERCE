@@ -1,174 +1,176 @@
-# Kistie-Store
-
-[![CI](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml/badge.svg)](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml)
-
-Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **Kampala**, serving customers online worldwide. Production **Django** storefront + staff tooling + **DRF** API on **Render** / **PostgreSQL**, **tests + CI** on every push to `main`.
-
-| | |
-|--|--|
-| **Live** | **[Kistie-Store](https://kistie-store.onrender.com)** on Render — `https://kistie-store.onrender.com` |
-| **Code** | https://github.com/dallas8000-ops/Kistie-Store |
-| **Trello** | https://trello.com/b/s8Rpm9in/kistie-store |
-| **Planning** | [PROJECT_PLANNING.md](PROJECT_PLANNING.md) |
-
----
-
-## What it does (short)
-
-**Shoppers:** catalog (filters, reviews), inventory (EU sizes, multi-currency), cart, checkout with live FX, auth, contact. **Payments** are confirmed by staff in the real world, then order status is updated in **Django admin** (typical for boutique + East Africa payment mix).
-
-**Operations:** custom-theme **Django admin**, **staff dashboard** (`/staff/dashboard/`), **audit log** for superusers, CSRF + login throttling, **public read / staff-only write** on inventory API.
-
-**Why this stack:** Django **SSR** for the live path (SEO, sessions, security); **React + Vite** in `frontend/` for future pages; DRF already exposes JSON for that migration.
-
----
-
-## Pages & Features
-
-| Page | URL | What it does |
-|------|-----|--------------|
-| Home | `/` | Brand landing, hero section |
-| About | `/about/` | Brand story and market context |
-| Catalog | `/catalog/` | Database-backed product grid with detail modal |
-| Inventory | `/inventory/` | EU sizes, quantity, currency & payment method selectors |
-| Cart | `/cart/` | Line items, server-side totals, currency conversion |
-| Checkout | `/checkout/` | Order capture, payment instructions, order reference |
-| Auth | `/signup/` `/login/` `/logout/` | Shopper accounts; guest cart merges on login |
-| Staff sign in | `/staff/login/` | Dedicated entry for portal staff → redirects to staff dashboard |
-| Contact | `/contact/` | Inquiry form → admin persistence + SMTP email |
-| Terms | `/terms/` | Terms of Service |
-| Staff Dashboard | `/staff/dashboard/` | Orders snapshot, low-stock alerts, recent inquiries (permission-gated) |
-| Order history | `/account/orders/` | Signed-in shopper order list |
-| Admin | `/admin/` | Full Django admin: products, images, orders, users (superusers) |
-| Health | `/health/` | Uptime monitor endpoint → `{"status":"ok"}` |
-| API | `/api/` | DRF JSON API (public read / staff write) |
-
----
-
-## Tech (recruiter lines)
-
-Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQLite (dev) · Gunicorn · WhiteNoise · **Render** · **GitHub Actions** · Bootstrap 5 · **Bootstrap Icons** · custom CSS (gradients + branded buttons) · Pillow
-
----
-
-## Proof — screenshots
-
-**Gallery:** [`images/screenshots/`](images/screenshots/) — regenerated from the running app via [`scripts/capture_screenshots.py`](scripts/capture_screenshots.py) (Playwright). Start Django (`runserver`), then:
-
-`python scripts/capture_screenshots.py`
-
-Uses **`http://127.0.0.1:8000`** by default; override with env **`SCREENSHOT_BASE_URL`** if needed.
-
-**Samples:**
-
-| Catalog | Inventory |
-|---------|-----------|
-| ![Catalog](images/screenshots/Catalog.png) | ![Inventory](images/screenshots/inventory.png) |
-
-| Home | Contact |
-|------|---------|
-| ![Home](images/screenshots/home.png) | ![Contact](images/screenshots/contact.png) |
-
-| Django admin login | Staff sign-in |
-|--------------------|---------------|
-| ![Admin login](images/screenshots/admin-login.png) | ![Staff login](images/screenshots/staff-login.png) |
-
-Also in folder: `about.png`, `terms.png`, `cart.png`, `login.png`, `signup.png`. Authenticated **admin dashboard / product lists** change with your data — capture those manually after signing in if you need them for a packet.
-
-**Auto-play slide deck:** [`docs/demo-presentation.html`](docs/demo-presentation.html) (serve locally with `python -m http.server 8080` from repo root).
-
----
-
-## Demo access
-
-- **Live site:** URLs in the table above (`/`, `/inventory/`, `/staff/login/`, etc.).
-- **Django admin:** `/admin/` — create a superuser locally, or use credentials issued privately for reviewers.
-- **Questions:** [dallas8000@gmail.com](mailto:dallas8000@gmail.com).
-
----
-
-## Run locally
-
-```bash
-cd backend
-cp .env.example .env   # set DJANGO_SECRET_KEY
-python manage.py migrate
-python manage.py runserver
-# http://127.0.0.1:8000/  —  createsuperuser for /admin/
-```
-
-Optional: `frontend/` and `payments/` for React/Node experiments. `render.yaml` documents production service shape.
-
----
-
-## Gmail SMTP (real outbound mail)
-
-Use **`backend/.env`** locally (copy from [`backend/.env.example`](backend/.env.example)). Never commit `.env`.
-
-1. Turn on **2-Step Verification** on the Google account.
-2. Create an **App password**: Google Account → **Security** → **App passwords** → generate one for Mail.
-3. Set:
-   - `DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
-   - `EMAIL_HOST=smtp.gmail.com`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`
-   - `EMAIL_HOST_USER` / `DJANGO_DEFAULT_FROM_EMAIL` = that Gmail address
-   - `EMAIL_HOST_PASSWORD` = the **16-character app password** (not your normal Gmail password)
-   - `CONTACT_RECIPIENT_EMAIL` = inbox that should receive contact form messages
-
-On **Render**, add the same variables under **Environment** for the web service (do not paste secrets into the repo).
-
-Restart the app after changing env vars. The Contact page **console-only banner** disappears when SMTP is active.
-
----
-
-## Production hardening
-
-When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded-Proto`), **secure session + CSRF cookies**, **SSL redirect**, **`X-Frame-Options: DENY`**, structured **logging** to stdout (level via `DJANGO_LOG_LEVEL`). Optional **HSTS**: set `DJANGO_HSTS_SECONDS` (e.g. `31536000`), optionally `DJANGO_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD`. **Dev CORS** for Vite runs **only when `DEBUG=True`**.
-
-**Health checks:** `GET https://kistie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
-
----
-
-## Custom domain on Render
-
-Render gives **HTTPS** on your `*.onrender.com` URL automatically. To use **your own domain** (e.g. `www.yourbrand.com`):
-
-1. In Render → your **Web Service** → **Settings** → **Custom Domains** → add the domain and follow **DNS** instructions (usually CNAME to `your-service.onrender.com`).
-2. Set environment variables on the web service so Django accepts the host and CSRF POSTs:
-   - **`ALLOWED_HOSTS`** — include your hostname (comma or space separated), e.g. `kistie-store.onrender.com,yourbrand.com,www.yourbrand.com`
-   - **`CSRF_TRUSTED_ORIGINS`** — include full origins with scheme, e.g. `https://kistie-store.onrender.com,https://yourbrand.com,https://www.yourbrand.com`
-
-Render already injects **`RENDER_EXTERNAL_HOSTNAME`** for the default service URL; custom domains need the two variables above (or extend them) so checkout and forms keep working under **`DEBUG=False`**.
-
----
-
-## Pesapal payment redirect (production)
-
-Checkout can forward **Pesapal** orders to a small **Node payments** service. Locally the app defaults to `http://127.0.0.1:5000/api/pay/pesapal`. On Render, set:
-
-`PESAPAL_INITIATE_URL=https://<your-deployed-payments-host>/api/pay/pesapal`
-
-See [`backend/.env.example`](backend/.env.example). Restart the web service after changing env vars.
-
----
-
-## Promoting the live site (organic)
-
-- **Public HTTPS URL:** use **`https://kistie-store.onrender.com`** (or your custom domain) everywhere—Instagram bio, Linktree-style link pages, WhatsApp status, email signature.
-- **Link-in-bio tools** (e.g. Linktree): add **one button** → paste the same store URL; you do not rebuild the shop there.
-- **Paid ads:** optional; even a low daily cap works better with **one clear landing URL** and consistent messaging.
-
----
-
-## CI
-
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) — `pip install -r requirements.txt` then `cd backend && python manage.py test` on **push/PR** to `main` or `master`.
-
----
-
-## Contact
-
-**Barney R. Gilliom** — built and runs this stack for **Kistie-Store** as a live retail business.
-
-dallas8000@gmail.com · [LinkedIn](https://www.linkedin.com/in/barney-gilliom-959981337) · [GitHub](https://github.com/dallas8000-ops) · [Portfolio](https://jnalumansi.onrender.com)
-
-Business questions: use the **live site** contact or the email above.
+# Kistie-Store
+
+[![CI](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml/badge.svg)](https://github.com/dallas8000-ops/Kistie-Store/actions/workflows/ci.yml)
+
+Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **Kampala**, serving customers online worldwide. Production **Django** storefront + staff tooling + **DRF** API on **Render** / **PostgreSQL**, **tests + CI** on every push to `main`.
+
+| | |
+|--|--|
+| **Live** | **[Kistie-Store](https://kistie-store.onrender.com)** on Render — `https://kistie-store.onrender.com` |
+| **Code** | https://github.com/dallas8000-ops/Kistie-Store |
+| **Trello** | https://trello.com/b/s8Rpm9in/kistie-store |
+| **Planning** | [PROJECT_PLANNING.md](PROJECT_PLANNING.md) |
+
+---
+
+## What it does (short)
+
+**Shoppers:** browse and buy on the **Shop** page — filters (category, price), EU sizing, multi-currency checkout preferences, payment-method selection, product quick-view modal, add to cart; then cart, checkout with live FX, auth, and contact. **`/catalog/`** is kept only as a **redirect** to Shop (`/inventory/`) so old links still work.
+
+**Payments** are confirmed by staff in the real world; order status is updated in **Django admin** (typical for boutique + East Africa payment mix).
+
+**Operations:** custom-theme **Django admin**, **staff dashboard** (`/staff/dashboard/`), **audit log** for superusers, CSRF + login throttling, **public read / staff-only write** on the inventory JSON API.
+
+**Why this stack:** Django **SSR** for the live path (SEO, sessions, security); **React + Vite** in `frontend/` for experiments/future pages; DRF exposes JSON for integrations.
+
+---
+
+## Pages & features
+
+| Page | URL | What it does |
+|------|-----|--------------|
+| Home | `/` | Brand landing, hero, featured products |
+| Shop | `/inventory/` | Single storefront: browse products, filters, EU sizes, currency & payment prefs, quick-view modal, add to cart |
+| Redirect | `/catalog/` | **301-style redirect** to `/inventory/` (query string preserved) |
+| About | `/about/` | Brand story |
+| Cart | `/cart/` | Line items, server-side totals, currency conversion |
+| Checkout | `/checkout/` | Order capture, payment instructions, order reference |
+| Auth | `/signup/` `/login/` `/logout/` | Shopper accounts; guest cart merges on login |
+| Staff sign in | `/staff/login/` | Staff portal entry → staff dashboard |
+| Contact | `/contact/` | Inquiry form → DB + SMTP email |
+| Terms | `/terms/` | Terms of Service |
+| Staff dashboard | `/staff/dashboard/` | Orders snapshot, low-stock alerts, recent inquiries (permission-gated) |
+| Order history | `/account/orders/` | Signed-in shopper orders |
+| Admin | `/admin/` | Django admin (superusers): products, images, orders, users |
+| Health | `/health/` | Uptime JSON → `{"status":"ok","service":"kistie-store"}` |
+| API | `/api/inventory/` … | DRF JSON API (public read / staff write on mutations) |
+
+---
+
+## Tech (recruiter lines)
+
+Python · **Django** · **Django REST Framework** · **PostgreSQL** (prod) / SQLite (dev) · Gunicorn · WhiteNoise · **Render** · **GitHub Actions** · Bootstrap 5 · **Bootstrap Icons** · custom CSS (gradients + branded buttons) · Pillow
+
+---
+
+## Proof — screenshots
+
+**Gallery:** [`images/screenshots/`](images/screenshots/) — regenerate via [`scripts/capture_screenshots.py`](scripts/capture_screenshots.py) (Playwright). Start Django (`runserver`), then:
+
+`python scripts/capture_screenshots.py`
+
+Uses **`http://127.0.0.1:8000`** by default; override with **`SCREENSHOT_BASE_URL`** if needed.
+
+**Samples:**
+
+| Shop (`/inventory/`) | Home |
+|----------------------|------|
+| ![Shop](images/screenshots/shop.png) | ![Home](images/screenshots/home.png) |
+
+| Contact | Terms |
+|---------|-------|
+| ![Contact](images/screenshots/contact.png) | ![Terms](images/screenshots/terms.png) |
+
+| Django admin login | Staff sign-in |
+|--------------------|---------------|
+| ![Admin login](images/screenshots/admin-login.png) | ![Staff login](images/screenshots/staff-login.png) |
+
+Also in folder: `about.png`, `cart.png`, `login.png`, `signup.png`. Signed-in **admin product grids** depend on your data — capture manually after login if needed.
+
+**Slide deck:** [`docs/demo-presentation.html`](docs/demo-presentation.html) (serve locally with `python -m http.server 8080` from repo root).
+
+---
+
+## Demo access
+
+- **Live site:** Home `/`, **Shop** `/inventory/`, `/staff/login/`, etc.
+- **Django admin:** `/admin/` — create a superuser locally, or use credentials issued privately for reviewers.
+- **Questions:** [dallas8000@gmail.com](mailto:dallas8000@gmail.com).
+
+---
+
+## Run locally
+
+```bash
+cd backend
+cp .env.example .env   # set DJANGO_SECRET_KEY
+python manage.py migrate
+python manage.py runserver
+# http://127.0.0.1:8000/  —  Shop at /inventory/  —  createsuperuser for /admin/
+```
+
+Optional: `frontend/` and `payments/` for React/Node experiments. `render.yaml` documents production service shape.
+
+---
+
+## Gmail SMTP (real outbound mail)
+
+Use **`backend/.env`** locally (copy from [`backend/.env.example`](backend/.env.example)). Never commit `.env`.
+
+1. Turn on **2-Step Verification** on the Google account.
+2. Create an **App password**: Google Account → **Security** → **App passwords** → generate one for Mail.
+3. Set:
+   - `DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
+   - `EMAIL_HOST=smtp.gmail.com`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`
+   - `EMAIL_HOST_USER` / `DJANGO_DEFAULT_FROM_EMAIL` = that Gmail address
+   - `EMAIL_HOST_PASSWORD` = the **16-character app password** (not your normal Gmail password)
+   - `CONTACT_RECIPIENT_EMAIL` = inbox that should receive contact form messages
+
+On **Render**, add the same variables under **Environment** for the web service (do not paste secrets into the repo).
+
+Restart the app after changing env vars. The Contact page **console-only banner** disappears when SMTP is active.
+
+---
+
+## Production hardening
+
+When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded-Proto`), **secure session + CSRF cookies**, **SSL redirect**, **`X-Frame-Options: DENY`**, structured **logging** to stdout (level via `DJANGO_LOG_LEVEL`). Optional **HSTS**: set `DJANGO_HSTS_SECONDS` (e.g. `31536000`), optionally `DJANGO_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD`. **Dev CORS** for Vite runs **only when `DEBUG=True`**.
+
+**Health checks:** `GET https://kistie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
+
+---
+
+## Custom domain on Render
+
+Render gives **HTTPS** on your `*.onrender.com` URL automatically. To use **your own domain** (e.g. `www.yourbrand.com`):
+
+1. In Render → your **Web Service** → **Settings** → **Custom Domains** → add the domain and follow **DNS** instructions (usually CNAME to `your-service.onrender.com`).
+2. Set environment variables on the web service so Django accepts the host and CSRF POSTs:
+   - **`ALLOWED_HOSTS`** — include your hostname (comma or space separated), e.g. `kistie-store.onrender.com,yourbrand.com,www.yourbrand.com`
+   - **`CSRF_TRUSTED_ORIGINS`** — include full origins with scheme, e.g. `https://kistie-store.onrender.com,https://yourbrand.com,https://www.yourbrand.com`
+
+Render already injects **`RENDER_EXTERNAL_HOSTNAME`** for the default service URL; custom domains need the two variables above (or extend them) so checkout and forms keep working under **`DEBUG=False`**.
+
+---
+
+## Pesapal payment redirect (production)
+
+Checkout can forward **Pesapal** orders to a small **Node payments** service. Locally the app defaults to `http://127.0.0.1:5000/api/pay/pesapal`. On Render, set:
+
+`PESAPAL_INITIATE_URL=https://<your-deployed-payments-host>/api/pay/pesapal`
+
+See [`backend/.env.example`](backend/.env.example). Restart the web service after changing env vars.
+
+---
+
+## Promoting the live site (organic)
+
+- **Public HTTPS URL:** use **`https://kistie-store.onrender.com`** (or your custom domain) everywhere—Instagram bio, Linktree-style link pages, WhatsApp status, email signature.
+- **Link-in-bio tools** (e.g. Linktree): add **one button** → paste the same store URL; you do not rebuild the shop there.
+- **Paid ads:** optional; even a low daily cap works better with **one clear landing URL** and consistent messaging.
+
+---
+
+## CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) — `pip install -r requirements.txt` then `cd backend && python manage.py test` on **push/PR** to `main` or `master`.
+
+---
+
+## Contact
+
+**Barney R. Gilliom** — built and runs this stack for **Kistie-Store** as a live retail business.
+
+dallas8000@gmail.com · [LinkedIn](https://www.linkedin.com/in/barney-gilliom-959981337) · [GitHub](https://github.com/dallas8000-ops) · [Portfolio](https://jnalumansi.onrender.com)
+
+Business questions: use the **live site** contact or the email above.

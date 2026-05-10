@@ -17,11 +17,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "images" / "screenshots"
 
-# (path, filename) — filename keeps README-critical names where noted
+# Shop lives at /inventory/ (URL name ``inventory``); /catalog/ redirects here with query preserved.
 ROUTES = [
     ("/", "home.png"),
-    ("/catalog/", "Catalog.png"),
-    ("/inventory/", "inventory.png"),
+    ("/inventory/", "shop.png"),
     ("/about/", "about.png"),
     ("/contact/", "contact.png"),
     ("/terms/", "terms.png"),
