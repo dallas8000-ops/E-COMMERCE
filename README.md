@@ -14,7 +14,7 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 
 |--|--|
 
-| **Live** | **[Kistie-Store](https://kistie-store.onrender.com)** on Render — `https://kistie-store.onrender.com` |
+| **Live** | **[Kistie-Store](https://kristie-store.onrender.com)** on Render — `https://kristie-store.onrender.com` |
 
 | **Code** | https://github.com/dallas8000-ops/Kistie-Store |
 
@@ -278,7 +278,7 @@ When **`DEBUG=False`** (Render): **HTTPS proxy headers** respected (`X-Forwarded
 
 
 
-**Health checks:** `GET https://kistie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
+**Health checks:** `GET https://kristie-store.onrender.com/health/?format=json` → `{"status":"ok","service":"kistie-store"}` for uptime monitors.
 
 
 
@@ -298,9 +298,9 @@ Render gives **HTTPS** on your `*.onrender.com` URL automatically. To use **your
 
 2. Set environment variables on the web service so Django accepts the host and CSRF POSTs:
 
-   - **`ALLOWED_HOSTS`** — include your hostname (comma or space separated), e.g. `kistie-store.onrender.com,yourbrand.com,www.yourbrand.com`
+   - **`ALLOWED_HOSTS`** — include your hostname (comma or space separated), e.g. `kristie-store.onrender.com,yourbrand.com,www.yourbrand.com`
 
-   - **`CSRF_TRUSTED_ORIGINS`** — include full origins with scheme, e.g. `https://kistie-store.onrender.com,https://yourbrand.com,https://www.yourbrand.com`
+   - **`CSRF_TRUSTED_ORIGINS`** — include full origins with scheme, e.g. `https://kristie-store.onrender.com,https://yourbrand.com,https://www.yourbrand.com`
 
 
 
@@ -336,7 +336,7 @@ See [`backend/.env.example`](backend/.env.example). Restart the web service afte
 
 
 
-- **Public HTTPS URL:** use **`https://kistie-store.onrender.com`** (or your custom domain) everywhere—Instagram bio, Linktree-style link pages, WhatsApp status, email signature.
+- **Public HTTPS URL:** use **`https://kristie-store.onrender.com`** (or your custom domain) everywhere—Instagram bio, Linktree-style link pages, WhatsApp status, email signature.
 
 - **Link-in-bio tools** (e.g. Linktree): add **one button** → paste the same store URL; you do not rebuild the shop there.
 
