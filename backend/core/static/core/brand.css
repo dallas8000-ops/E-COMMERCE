@@ -1566,3 +1566,121 @@ body.theme-dark .flash-stack .alert-info {
   scroll-margin-top: 5.5rem;
 }
 
+/* --- Mobile readability: phones (Bootstrap xs) --- */
+@media (max-width: 575.98px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .site-shell {
+    margin: 0.85rem auto 1.75rem;
+    padding: 0 1rem;
+  }
+
+  .page-panel,
+  .catalog-shell {
+    padding: 1.15rem 1rem;
+  }
+
+  .page-title,
+  .shop-shell .shop-page-title {
+    line-height: 1.25;
+  }
+
+  .navbar-nav .nav-link {
+    font-size: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .nav-utility-group {
+    gap: 0.5rem 0.55rem;
+  }
+
+  .nav-utility-group .btn {
+    min-height: 44px;
+    font-size: 0.9375rem;
+    padding-inline: 0.75rem;
+  }
+
+  .nav-utility-group .small {
+    font-size: 0.8125rem;
+  }
+
+  .catalog-description,
+  .shop-shell .shop-card-copy .catalog-description {
+    font-size: 1rem;
+    line-height: 1.55;
+    max-height: 11rem;
+  }
+
+  .shop-shell .shop-card-copy .catalog-price {
+    font-size: 1.45rem;
+    line-height: 1.2;
+  }
+
+  .shop-shell .shop-card-copy h2.h5,
+  .shop-shell .shop-card-copy .h5 {
+    font-size: 1.1rem;
+    line-height: 1.35;
+  }
+
+  .catalog-filters label.small,
+  .shop-shell .catalog-filters .small,
+  .catalog-filters .text-light-emphasis {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .catalog-filters .form-select-sm,
+  .catalog-filters .form-control-sm {
+    font-size: 0.9375rem;
+    min-height: 2.25rem;
+  }
+
+  .badge-count {
+    font-size: 0.875rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  .inventory-shop-card .inventory-add-btn {
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .flash-stack .flash-alert {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .cart-table {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .terms-toc a {
+    font-size: 0.875rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .modal-brand .modal-body {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .modal-brand .modal-title {
+    font-size: 1.05rem;
+  }
+
+  .section-kicker {
+    font-size: 0.8125rem;
+    letter-spacing: 0.45px;
+  }
+}
+

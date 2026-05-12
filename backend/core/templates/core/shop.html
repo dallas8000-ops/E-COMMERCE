@@ -48,7 +48,7 @@
           <button type="submit" class="btn btn-sm btn-brand-primary"><i class="bi bi-funnel" aria-hidden="true"></i> Apply</button>
           <a class="btn btn-sm btn-brand-ghost" href="{% url 'shop' %}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reset</a>
           <span class="badge-count"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> {{ total_items }} items</span>
-          <a class="btn btn-sm btn-light fw-semibold" href="/"><i class="bi bi-house-door" aria-hidden="true"></i> Home</a>
+          <a class="btn btn-sm btn-light fw-semibold" href="{% url 'shop' %}"><i class="bi bi-house-door" aria-hidden="true"></i> Shop home</a>
         </div>
       </div>
     </form>
@@ -150,7 +150,8 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-5">
-              <img src="" alt="" class="img-fluid rounded-3 shadow-sm w-100 quick-view-modal-img" width="480" height="640" loading="lazy">
+              {# Transparent SVG placeholder avoids empty-src flash; JS sets src/alt on open. #}
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="" class="img-fluid rounded-3 shadow-sm w-100 quick-view-modal-img" width="480" height="640" decoding="async" loading="eager">
             </div>
             <div class="col-md-7">
               <p class="quick-view-modal-desc text-muted mb-3"></p>
@@ -175,6 +176,13 @@
   (function () {
     const modalEl = document.getElementById('productQuickViewModal');
     if (modalEl) {
+      modalEl.addEventListener('hidden.bs.modal', function () {
+        const imgEl = modalEl.querySelector('.quick-view-modal-img');
+        if (imgEl) {
+          imgEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+          imgEl.alt = '';
+        }
+      });
       modalEl.addEventListener('show.bs.modal', function (event) {
         const btn = event.relatedTarget;
         if (!btn || !btn.classList.contains('quick-view-trigger')) return;
