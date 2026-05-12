@@ -6,8 +6,8 @@
   <div class="catalog-header shop-catalog-header">
     <h1 class="h3 fw-bold mb-0 shop-page-title">Shop</h1>
     <form method="get" id="shopFiltersForm" class="catalog-filters w-100">
-      <div class="row g-2 align-items-end justify-content-end">
-        <div class="col-auto">
+      <div class="row g-2 align-items-end justify-content-end shop-filter-grid">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="catalogCategory" class="small text-light-emphasis mb-0 d-block">Category</label>
           <select id="catalogCategory" name="category" class="form-select form-select-sm">
             <option value="">All</option>
@@ -16,19 +16,19 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="priceMin" class="small text-light-emphasis mb-0 d-block">Min price (USD)</label>
           <input id="priceMin" type="text" name="price_min" class="form-control form-control-sm" placeholder="e.g. 50 or 1,500" value="{{ filter_price_min }}" inputmode="decimal" title="USD amounts only — commas are OK">
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="priceMax" class="small text-light-emphasis mb-0 d-block">Max price (USD)</label>
           <input id="priceMax" type="text" name="price_max" class="form-control form-control-sm" placeholder="e.g. 300 — blank or ∞ = no limit" value="{{ filter_price_max }}" inputmode="decimal" title="USD amounts only — commas OK — leave blank for no upper limit">
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="sizeFilter" class="small text-light-emphasis mb-0 d-block">EU size</label>
           <input id="sizeFilter" type="text" name="size" class="form-control form-control-sm" placeholder="e.g. 38" value="{{ filter_size }}" maxlength="10">
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="inventoryCurrency" class="small text-light-emphasis mb-0 d-block">Currency</label>
           <select id="inventoryCurrency" name="currency" class="form-select form-select-sm">
             {% for code in supported_currencies %}
@@ -36,7 +36,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-auto">
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label for="inventoryMethod" class="small text-light-emphasis mb-0 d-block">Payment</label>
           <select id="inventoryMethod" name="payment_method" class="form-select form-select-sm">
             {% for method in payment_methods %}
@@ -44,7 +44,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-auto d-flex gap-2 align-items-center flex-wrap">
+        <div class="col-12 d-flex gap-2 align-items-center flex-wrap shop-filter-actions">
           <button type="submit" class="btn btn-sm btn-brand-primary"><i class="bi bi-funnel" aria-hidden="true"></i> Apply</button>
           <a class="btn btn-sm btn-brand-ghost" href="{% url 'shop' %}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reset</a>
           <span class="badge-count"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> {{ total_items }} items</span>
@@ -69,7 +69,7 @@
         <div class="shop-product-media d-flex align-items-center justify-content-center bg-secondary text-white shop-product-media--empty">No Image</div>
         {% endif %}
         <div class="catalog-product-body shop-card-copy">
-          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2 shop-card-head">
             <h2 class="h5 fw-semibold mb-0 flex-grow-1">{{ product.name }}</h2>
             <button type="button"
               class="btn btn-sm btn-brand-outline flex-shrink-0 quick-view-trigger"
