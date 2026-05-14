@@ -82,12 +82,9 @@ class Command(BaseCommand):
 
     @staticmethod
     def _apply_price(product: Product, usd_price: Decimal, ugx_price: Decimal) -> None:
-        if product.price_usd and product.price_usd > 0 and product.price_usd != usd_price:
-            product.old_price = product.price_usd
-
         product.price_usd = usd_price
         product.price_ugx = ugx_price
-        product.save(update_fields=['price_usd', 'price_ugx', 'old_price', 'updated_at'])
+        product.save(update_fields=['price_usd', 'price_ugx', 'updated_at'])
 
     @staticmethod
     def _count_unmatched_groups(by_product_name: dict[str, list[Decimal]], products) -> int:

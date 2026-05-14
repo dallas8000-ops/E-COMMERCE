@@ -89,7 +89,7 @@
           <p class="catalog-description mb-2">{{ row.description }}</p>
           <p class="catalog-price mb-1">
             {{ currency }} {{ row.price_display }}
-            {% if product.old_price %}
+            {% if product.old_price and product.old_price > product.price_usd %}
             <span class="text-muted text-decoration-line-through ms-2 small">USD {{ product.old_price }}</span>
             {% endif %}
           </p>
@@ -138,37 +138,38 @@
     <p class="mb-0">No products match these filters. Try adjusting category or price, or <a href="{% url 'shop' %}">reset</a>.</p>
   </section>
   {% endif %}
+</div>
 
-  {# Bootstrap modal: product quick view (filled via data-* on .quick-view-trigger) #}
-  <div class="modal fade" id="productQuickViewModal" tabindex="-1" aria-labelledby="productQuickViewTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-      <div class="modal-content modal-brand">
-        <div class="modal-header">
-          <h2 class="modal-title h5 mb-0" id="productQuickViewTitle">Product</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-5">
-              {# Transparent SVG placeholder avoids empty-src flash; JS sets src/alt on open. #}
-              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="" class="img-fluid rounded-3 shadow-sm w-100 quick-view-modal-img" width="480" height="640" decoding="async" loading="eager">
-            </div>
-            <div class="col-md-7">
-              <p class="quick-view-modal-desc text-muted mb-3"></p>
-              <p class="mb-2"><strong class="quick-view-modal-price"></strong> <span class="text-muted quick-view-modal-cur"></span></p>
-              <p class="mb-2 quick-view-modal-stock small"></p>
-              <p class="mb-0 small"><strong>EU sizes:</strong> <span class="quick-view-modal-sizes"></span></p>
-            </div>
+{# Bootstrap modal: product quick view (filled via data-* on .quick-view-trigger) - positioned at body level to avoid clipping #}
+<div class="modal fade" id="productQuickViewModal" tabindex="-1" aria-labelledby="productQuickViewTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content modal-brand">
+      <div class="modal-header">
+        <h2 class="modal-title h5 mb-0" id="productQuickViewTitle">Product</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-5">
+            {# Transparent SVG placeholder avoids empty-src flash; JS sets src/alt on open. #}
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="" class="img-fluid rounded-3 shadow-sm w-100 quick-view-modal-img" width="480" height="640" decoding="async" loading="eager">
+          </div>
+          <div class="col-md-7">
+            <p class="quick-view-modal-desc text-muted mb-3"></p>
+            <p class="mb-2"><strong class="quick-view-modal-price"></strong> <span class="text-muted quick-view-modal-cur"></span></p>
+            <p class="mb-2 quick-view-modal-stock small"></p>
+            <p class="mb-0 small"><strong>EU sizes:</strong> <span class="quick-view-modal-sizes"></span></p>
           </div>
         </div>
-        <div class="modal-footer flex-wrap gap-2">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-          <span class="text-muted small me-auto d-none d-md-inline">Add to cart using the form on the card.</span>
-        </div>
+      </div>
+      <div class="modal-footer flex-wrap gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <span class="text-muted small me-auto d-none d-md-inline">Add to cart using the form on the card.</span>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
@@ -177,44 +178,61 @@
     const modalEl = document.getElementById('productQuickViewModal');
     if (modalEl) {
       modalEl.addEventListener('hidden.bs.modal', function () {
-        const imgEl = modalEl.querySelector('.quick-view-modal-img');
-        if (imgEl) {
-          imgEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
-          imgEl.alt = '';
+        try {
+          const imgEl = modalEl.querySelector('.quick-view-modal-img');
+          if (imgEl) {
+            imgEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+            imgEl.alt = '';
+          }
+        } catch (e) {
+          console.error('Error resetting modal image:', e);
         }
       });
+      
       modalEl.addEventListener('show.bs.modal', function (event) {
-        const btn = event.relatedTarget;
-        if (!btn || !btn.classList.contains('quick-view-trigger')) return;
-        const name = btn.getAttribute('data-qv-name') || '';
-        const desc = btn.getAttribute('data-qv-desc') || '';
-        const img = btn.getAttribute('data-qv-img') || '';
-        const price = btn.getAttribute('data-qv-price') || '';
-        const cur = btn.getAttribute('data-qv-currency') || '';
-        const stock = parseInt(btn.getAttribute('data-qv-stock') || '0', 10);
-        const sizes = btn.getAttribute('data-qv-sizes') || '';
+        try {
+          const btn = event.relatedTarget;
+          if (!btn || !btn.classList.contains('quick-view-trigger')) {
+            return;
+          }
 
-        const titleEl = document.getElementById('productQuickViewTitle');
-        const imgEl = modalEl.querySelector('.quick-view-modal-img');
-        const descEl = modalEl.querySelector('.quick-view-modal-desc');
-        const priceEl = modalEl.querySelector('.quick-view-modal-price');
-        const curEl = modalEl.querySelector('.quick-view-modal-cur');
-        const stockEl = modalEl.querySelector('.quick-view-modal-stock');
-        const sizesEl = modalEl.querySelector('.quick-view-modal-sizes');
+          const name = btn.getAttribute('data-qv-name') || '';
+          const desc = btn.getAttribute('data-qv-desc') || '';
+          const img = btn.getAttribute('data-qv-img') || '';
+          const price = btn.getAttribute('data-qv-price') || '';
+          const cur = btn.getAttribute('data-qv-currency') || '';
+          const stock = parseInt(btn.getAttribute('data-qv-stock') || '0', 10);
+          const sizes = (btn.getAttribute('data-qv-sizes') || '').trim();
 
-        if (titleEl) titleEl.textContent = name;
-        if (imgEl) {
+          const titleEl = document.getElementById('productQuickViewTitle');
+          const imgEl = modalEl.querySelector('.quick-view-modal-img');
+          const descEl = modalEl.querySelector('.quick-view-modal-desc');
+          const priceEl = modalEl.querySelector('.quick-view-modal-price');
+          const curEl = modalEl.querySelector('.quick-view-modal-cur');
+          const stockEl = modalEl.querySelector('.quick-view-modal-stock');
+          const sizesEl = modalEl.querySelector('.quick-view-modal-sizes');
+
+          if (!titleEl || !imgEl || !descEl || !priceEl || !curEl || !stockEl || !sizesEl) {
+            console.error('Quick view modal elements not found');
+            return;
+          }
+
+          titleEl.textContent = name || 'Product';
           imgEl.src = img;
           imgEl.alt = name;
-        }
-        if (descEl) descEl.textContent = desc;
-        if (priceEl) priceEl.textContent = price ? price : '';
-        if (curEl) curEl.textContent = cur ? '(' + cur + ')' : '';
-        if (stockEl) {
-          stockEl.textContent = stock > 0 ? 'In stock: ' + stock + ' units.' : 'Currently out of stock.';
+          descEl.textContent = desc;
+          priceEl.textContent = price || '';
+          curEl.textContent = cur ? '(' + cur + ')' : '';
+          
+          const stockText = stock > 0 ? 'In stock: ' + stock + ' units.' : 'Currently out of stock.';
+          stockEl.textContent = stockText;
           stockEl.className = 'mb-2 quick-view-modal-stock small ' + (stock > 0 ? 'text-success' : 'text-danger');
+          
+          const sizeText = sizes && sizes.length > 0 ? sizes.split(',').map(s => s.trim()).join(', ') : 'Contact us for available EU sizes.';
+          sizesEl.textContent = sizeText;
+        } catch (e) {
+          console.error('Error populating quick view modal:', e);
         }
-        if (sizesEl) sizesEl.textContent = sizes.trim() ? sizes.replace(/,/g, ', ') : 'Contact us for available EU sizes.';
       });
     }
 

@@ -19,11 +19,12 @@ class Command(BaseCommand):
                 name=name,
                 defaults={
                     'description': '',
-                    'price': 20.00,
-                    'old_price': 30.00,
+                    'price_usd': 20.00,
+                    'price_ugx': 74000.00,
+                    'old_price': None,
                     'category': cat,
                     'color': 'Multicolor',
-                    'sizes': 'One Size',
+                    'sizes': '36,38,40',
                 }
             )
         self.stdout.write(self.style.SUCCESS('Products created for all static images.'))

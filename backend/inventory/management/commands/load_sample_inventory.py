@@ -23,10 +23,6 @@ def _price_from_name(name):
     cents = Decimal(seed % 4) * Decimal('0.25')
     return (base + cents).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-
-def _old_price_from_price(price):
-    return (price * Decimal('1.22')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-
 class Command(BaseCommand):
     help = 'Load inventory products from files in the workspace images folder.'
 
@@ -51,14 +47,14 @@ class Command(BaseCommand):
         for image_file in sorted(image_files, key=lambda p: p.name.lower()):
             product_name = _display_name_from_stem(image_file.stem)
             price = _price_from_name(product_name)
-            old_price = _old_price_from_price(price)
 
             _, created = Product.objects.update_or_create(
                 name=product_name,
                 defaults={
                     'description': '',
                     'price': price,
-                    'old_price': old_price,
+                    # Keep compare-at price manual-only; do not auto-generate discounts.
+                    'old_price': None,
                     'category': cat,
                     'color': '',
                     'sizes': DEFAULT_SIZE_RANGE,

@@ -298,11 +298,6 @@ def apply_price_suggestion(product: Product, suggestion: PriceSuggestion) -> boo
         return False
 
     update_fields = ['price_usd', 'price_ugx', 'updated_at']
-    current_price = product.price_usd
-
-    if current_price and current_price > 0 and current_price != suggestion.price_usd:
-        product.old_price = current_price
-        update_fields.append('old_price')
 
     product.price_usd = suggestion.price_usd
     product.price_ugx = suggestion.price_ugx

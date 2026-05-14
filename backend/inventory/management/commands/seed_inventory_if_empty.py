@@ -36,8 +36,6 @@ class Command(BaseCommand):
     def _product_defaults_from_legacy_fields(self, fields):
         usd_price = self._to_decimal(fields.get('price_usd') or fields.get('price') or '0')
         ugx_price = (usd_price * DEFAULT_UGX_RATE).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        old_price_raw = fields.get('old_price')
-        old_price = self._to_decimal(old_price_raw) if old_price_raw not in (None, '') else None
         in_stock = bool(fields.get('in_stock', True))
         stock_quantity = max(0, int(fields.get('stock_quantity') or 1))
         if not in_stock:
@@ -48,7 +46,8 @@ class Command(BaseCommand):
             'description': fields.get('description') or '',
             'price_usd': usd_price,
             'price_ugx': ugx_price,
-            'old_price': old_price,
+            # Keep compare-at price manual-only; do not auto-seed discounts.
+            'old_price': None,
             'category_id': fields.get('category'),
             'color': fields.get('color') or '',
             'sizes': DEFAULT_SIZE_RANGE,

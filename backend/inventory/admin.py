@@ -1,5 +1,7 @@
 
 
+from decimal import Decimal, ROUND_HALF_UP
+
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -121,7 +123,14 @@ class ProductAdmin(admin.ModelAdmin):
 		}),
 	)
 	inlines = [ProductImageInline]
-	actions = ['generate_catalog_descriptions', 'scan_and_apply_price_suggestions']
+	actions = [
+		'generate_catalog_descriptions',
+		'scan_and_apply_price_suggestions',
+		'apply_discount_10',
+		'apply_discount_20',
+		'apply_discount_30',
+		'clear_discount',
+	]
 
 	def save_model(self, request, obj, form, change):
 		# Normalize EU sizes and derive in_stock (Product.clean) — admin sometimes skipped full_clean paths.
@@ -173,6 +182,88 @@ class ProductAdmin(admin.ModelAdmin):
 				request,
 				f'Updated prices for {updated} product(s). Skipped {skipped} product(s).'
 			)
+
+	def _apply_discount_percent(self, request, queryset, percent):
+		multiplier = Decimal('1') - (Decimal(percent) / Decimal('100'))
+		updated = 0
+		skipped = 0
+
+		for product in queryset:
+			current_usd = Decimal(product.price_usd or 0)
+			current_ugx = Decimal(product.price_ugx or 0)
+			previous_usd = Decimal(product.old_price or 0)
+
+			if current_usd <= 0 or current_ugx <= 0:
+				skipped += 1
+				continue
+
+			if previous_usd > current_usd:
+				base_usd = previous_usd
+				if current_usd > 0:
+					base_ugx = (current_ugx * (previous_usd / current_usd)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+				else:
+					base_ugx = current_ugx
+			else:
+				base_usd = current_usd
+				base_ugx = current_ugx
+
+			new_usd = (base_usd * multiplier).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+			new_ugx = (base_ugx * multiplier).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+			if new_usd <= 0 or new_ugx <= 0:
+				skipped += 1
+				continue
+
+			product.old_price = base_usd
+			product.price_usd = new_usd
+			product.price_ugx = new_ugx
+			product.save(update_fields=['old_price', 'price_usd', 'price_ugx'])
+			updated += 1
+
+		self.message_user(
+			request,
+			f'Applied {percent}% discount to {updated} product(s). Skipped {skipped} product(s).'
+		)
+
+	@admin.action(description='Apply 10 percent discount')
+	def apply_discount_10(self, request, queryset):
+		self._apply_discount_percent(request, queryset, 10)
+
+	@admin.action(description='Apply 20 percent discount')
+	def apply_discount_20(self, request, queryset):
+		self._apply_discount_percent(request, queryset, 20)
+
+	@admin.action(description='Apply 30 percent discount')
+	def apply_discount_30(self, request, queryset):
+		self._apply_discount_percent(request, queryset, 30)
+
+	@admin.action(description='Clear discount (restore original price)')
+	def clear_discount(self, request, queryset):
+		restored = 0
+		skipped = 0
+
+		for product in queryset:
+			current_usd = Decimal(product.price_usd or 0)
+			current_ugx = Decimal(product.price_ugx or 0)
+			previous_usd = Decimal(product.old_price or 0)
+
+			if previous_usd <= 0 or current_usd <= 0 or current_ugx <= 0:
+				skipped += 1
+				continue
+
+			factor = (previous_usd / current_usd)
+			restored_ugx = (current_ugx * factor).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+			product.price_usd = previous_usd
+			product.price_ugx = restored_ugx
+			product.old_price = None
+			product.save(update_fields=['price_usd', 'price_ugx', 'old_price'])
+			restored += 1
+
+		self.message_user(
+			request,
+			f'Cleared discount for {restored} product(s). Skipped {skipped} product(s).'
+		)
 
 
 @admin.register(Category)
