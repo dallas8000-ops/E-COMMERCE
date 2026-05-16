@@ -1916,3 +1916,16 @@ body.theme-dark .admin-link {
   }
 }
 
+/* --- Permanent clearance: keep floating WhatsApp from covering footer admin links --- */
+@media (min-width: 576px) {
+  .admin-links {
+    padding-right: 4.8rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .admin-footer {
+    padding-bottom: 4rem !important;
+  }
+}
+
