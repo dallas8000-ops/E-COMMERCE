@@ -158,7 +158,24 @@
             <p class="quick-view-modal-desc text-muted mb-3"></p>
             <p class="mb-2"><strong class="quick-view-modal-price"></strong> <span class="text-muted quick-view-modal-cur"></span></p>
             <p class="mb-2 quick-view-modal-stock small"></p>
-            <p class="mb-0 small"><strong>EU sizes:</strong> <span class="quick-view-modal-sizes"></span></p>
+            <p class="mb-2 small"><strong>EU sizes:</strong> <span class="quick-view-modal-sizes"></span></p>
+            {# Size Recommendation Tool #}
+            <div class="border-top pt-3 mt-2">
+              <p class="small fw-semibold mb-2"><i class="bi bi-rulers" aria-hidden="true"></i> Find your EU size <small class="text-muted fw-normal">(Noonya Saizi yo)</small></p>
+              <div class="row g-1 mb-2">
+                <div class="col-4">
+                  <input type="number" id="qvBust" class="form-control form-control-sm" placeholder="Bust cm" min="60" max="200" aria-label="Bust in cm">
+                </div>
+                <div class="col-4">
+                  <input type="number" id="qvWaist" class="form-control form-control-sm" placeholder="Waist cm" min="40" max="180" aria-label="Waist in cm">
+                </div>
+                <div class="col-4">
+                  <input type="number" id="qvHips" class="form-control form-control-sm" placeholder="Hips cm" min="60" max="220" aria-label="Hips in cm">
+                </div>
+              </div>
+              <button type="button" id="qvSizeBtn" class="btn btn-sm btn-brand-outline">Get my size</button>
+              <p id="qvSizeResult" class="small mt-2 mb-0 text-success fw-semibold d-none"></p>
+            </div>
           </div>
         </div>
       </div>
@@ -252,6 +269,160 @@
     if (methodSelect) {
       methodSelect.addEventListener('change', submitFilters);
     }
+
+    /* ── Size Recommendation ── */
+    const sizeBtn = document.getElementById('qvSizeBtn');
+    if (sizeBtn) {
+      sizeBtn.addEventListener('click', async function () {
+        const bust  = parseFloat(document.getElementById('qvBust').value);
+        const waist = parseFloat(document.getElementById('qvWaist').value);
+        const hips  = parseFloat(document.getElementById('qvHips').value);
+        const resultEl = document.getElementById('qvSizeResult');
+        if (!bust || !waist || !hips) {
+          resultEl.textContent = 'Please enter bust, waist and hips (cm).';
+          resultEl.className = 'small mt-2 mb-0 text-danger fw-semibold';
+          resultEl.classList.remove('d-none');
+          return;
+        }
+        sizeBtn.disabled = true;
+        sizeBtn.textContent = 'Checking…';
+        try {
+          const res = await fetch('/api/size-recommend/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({bust, waist, hips}),
+          });
+          const data = await res.json();
+          if (data.size) {
+            resultEl.textContent = '✓ Recommended: EU ' + data.size + ' — ' + data.note;
+            resultEl.className = 'small mt-2 mb-0 text-success fw-semibold';
+          } else {
+            resultEl.textContent = data.error || 'Could not determine size.';
+            resultEl.className = 'small mt-2 mb-0 text-danger fw-semibold';
+          }
+        } catch (e) {
+          resultEl.textContent = 'Network error. Please try again.';
+          resultEl.className = 'small mt-2 mb-0 text-danger fw-semibold';
+        }
+        resultEl.classList.remove('d-none');
+        sizeBtn.disabled = false;
+        sizeBtn.textContent = 'Get my size';
+      });
+    }
+
+    /* reset size tool when modal closes */
+    const qvModal = document.getElementById('productQuickViewModal');
+    if (qvModal) {
+      qvModal.addEventListener('hidden.bs.modal', function () {
+        ['qvBust','qvWaist','qvHips'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        const r = document.getElementById('qvSizeResult');
+        if (r) { r.textContent = ''; r.classList.add('d-none'); }
+      });
+    }
   })();
+</script>
+
+{# ── AI Chat Bubble ── #}
+<style>
+  #kistie-chat-bubble { position:fixed; bottom:1.5rem; right:1.5rem; z-index:1060; }
+  #kistie-chat-toggle { width:56px; height:56px; border-radius:50%; background:var(--brand-primary,#7c3aed); color:#fff; border:none; font-size:1.5rem; box-shadow:0 4px 16px rgba(0,0,0,.25); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  #kistie-chat-window { display:none; position:fixed; bottom:5rem; right:1.5rem; width:340px; max-width:calc(100vw - 2rem); background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.18); z-index:1060; flex-direction:column; overflow:hidden; }
+  #kistie-chat-window.open { display:flex; }
+  #kistie-chat-header { background:var(--brand-primary,#7c3aed); color:#fff; padding:.75rem 1rem; font-weight:600; font-size:.95rem; display:flex; justify-content:space-between; align-items:center; }
+  #kistie-chat-header button { background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer; line-height:1; }
+  #kistie-chat-messages { flex:1; overflow-y:auto; padding:.75rem; min-height:220px; max-height:320px; display:flex; flex-direction:column; gap:.5rem; }
+  .kc-msg { max-width:82%; padding:.5rem .75rem; border-radius:12px; font-size:.875rem; line-height:1.4; word-break:break-word; }
+  .kc-msg.bot { background:#f3f0ff; color:#3b0764; align-self:flex-start; border-bottom-left-radius:4px; }
+  .kc-msg.user { background:var(--brand-primary,#7c3aed); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+  .kc-msg.typing { color:#888; font-style:italic; }
+  #kistie-chat-form { display:flex; border-top:1px solid #e9ecef; }
+  #kistie-chat-input { flex:1; border:none; padding:.6rem .75rem; font-size:.875rem; outline:none; }
+  #kistie-chat-send { background:var(--brand-primary,#7c3aed); color:#fff; border:none; padding:.6rem .9rem; cursor:pointer; font-size:1rem; }
+</style>
+
+<div id="kistie-chat-bubble">
+  <div id="kistie-chat-window" role="dialog" aria-label="Kistie shopping assistant">
+    <div id="kistie-chat-header">
+      <span>🛍 Kistie Assistant <small style="opacity:.8;font-weight:400;">(AI)</small></span>
+      <button id="kistie-chat-close" aria-label="Close chat">×</button>
+    </div>
+    <div id="kistie-chat-messages" aria-live="polite"></div>
+    <form id="kistie-chat-form" autocomplete="off">
+      <input id="kistie-chat-input" type="text" placeholder="Ask about sizes, prices… (English or Luganda)" maxlength="400" aria-label="Chat message">
+      <button id="kistie-chat-send" type="submit" aria-label="Send">➤</button>
+    </form>
+  </div>
+  <button id="kistie-chat-toggle" aria-label="Open chat assistant" title="Chat with Kistie AI">
+    <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
+  </button>
+</div>
+
+<script>
+(function () {
+  const toggle   = document.getElementById('kistie-chat-toggle');
+  const chatWin  = document.getElementById('kistie-chat-window');
+  const closeBtn = document.getElementById('kistie-chat-close');
+  const form     = document.getElementById('kistie-chat-form');
+  const input    = document.getElementById('kistie-chat-input');
+  const msgs     = document.getElementById('kistie-chat-messages');
+  if (!toggle || !chatWin || !msgs) return;
+
+  let history = [];
+  let opened  = false;
+
+  function addMsg(text, role) {
+    const div = document.createElement('div');
+    div.className = 'kc-msg ' + role;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+
+  function openChat() {
+    chatWin.classList.add('open');
+    toggle.style.display = 'none';
+    if (!opened) {
+      addMsg('Hi! I\'m Kistie, your AI shopping assistant. Ask me about sizes, prices, stock or payment methods — in English or Luganda! 👗', 'bot');
+      opened = true;
+    }
+    input.focus();
+  }
+
+  function closeChat() {
+    chatWin.classList.remove('open');
+    toggle.style.display = '';
+  }
+
+  toggle.addEventListener('click', openChat);
+  closeBtn.addEventListener('click', closeChat);
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addMsg(text, 'user');
+    history.push({role: 'user', content: text});
+    const typing = addMsg('…', 'bot typing');
+    try {
+      const res = await fetch('/api/chat/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text, history: history.slice(-6)}),
+      });
+      const data = await res.json();
+      const reply = data.reply || 'Sorry, I could not get a response right now.';
+      typing.textContent = reply;
+      typing.className = 'kc-msg bot';
+      history.push({role: 'assistant', content: reply});
+      if (history.length > 20) history = history.slice(-20);
+    } catch (err) {
+      typing.textContent = 'Network error. Please try again.';
+      typing.className = 'kc-msg bot';
+    }
+    msgs.scrollTop = msgs.scrollHeight;
+  });
+})();
 </script>
 {% endblock %}

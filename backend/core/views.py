@@ -698,6 +698,8 @@ def staff_dashboard(request):
         .order_by('stock_quantity', 'name')[:20]
     )
     recent_inquiries = ContactInquiry.objects.all()[:10]
+    all_products = Product.objects.select_related('category').order_by('name')
+    demand_forecasts = _compute_demand_forecasts()
 
     return render(request, 'core/staff_dashboard.html', {
         'order_counts': order_counts,
@@ -705,7 +707,46 @@ def staff_dashboard(request):
         'low_stock_products': low_stock_products,
         'low_stock_threshold': low_stock_threshold,
         'recent_inquiries': recent_inquiries,
+        'all_products': all_products,
+        'demand_forecasts': demand_forecasts,
     })
+
+
+def _compute_demand_forecasts():
+    """
+    Lightweight demand forecast: compute average daily sales per product
+    from confirmed OrderItems, then estimate days until stock runs out.
+    Returns a list of dicts sorted by urgency (fewest days first).
+    """
+    from datetime import timedelta
+    from django.db.models import F
+
+    # Look back 90 days of confirmed orders
+    cutoff = timezone.now() - timedelta(days=90)
+    rows = (
+        OrderItem.objects
+        .filter(order__status=Order.STATUS_CONFIRMED, order__created_at__gte=cutoff)
+        .values('product_name')
+        .annotate(total_sold=Sum('quantity'))
+    )
+    sold_map = {r['product_name']: r['total_sold'] for r in rows}
+
+    forecasts = []
+    for product in Product.objects.filter(stock_quantity__gt=0).select_related('category'):
+        total_sold = sold_map.get(product.name, 0)
+        if total_sold == 0:
+            continue
+        daily_rate = total_sold / 90.0
+        days_left = int(product.stock_quantity / daily_rate)
+        forecasts.append({
+            'product': product,
+            'daily_rate': round(daily_rate, 2),
+            'days_left': days_left,
+            'urgent': days_left <= 14,
+        })
+
+    forecasts.sort(key=lambda x: x['days_left'])
+    return forecasts[:20]
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -1253,3 +1294,132 @@ def pesapal_callback(request):
         'payment_method': order.payment_method,
         'instructions': 'Your Pesapal payment is being verified. Your order status will update shortly.',
     })
+
+
+# ---------------------------------------------------------------------------
+# AI endpoints
+# ---------------------------------------------------------------------------
+
+from django.views.decorators.csrf import csrf_exempt  # noqa: E402 (already imported above via require_POST)
+
+
+@csrf_exempt
+@require_POST
+def api_chat(request):
+    """
+    POST /api/chat/
+    Body: {"message": "...", "history": [{"role": "user"|"assistant", "content": "..."}]}
+    Returns: {"reply": "..."}
+    """
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    user_message = (body.get('message') or '').strip()
+    if not user_message:
+        return JsonResponse({'error': 'message is required'}, status=400)
+
+    history = body.get('history') or []
+    if not isinstance(history, list):
+        history = []
+
+    # Build product catalog context (limit to 60 products to stay within token budget)
+    catalog_lines = []
+    for p in Product.objects.select_related('category').filter(in_stock=True).order_by('name')[:60]:
+        sizes = p.sizes or 'various sizes'
+        catalog_lines.append(
+            f'- {p.name} | {p.category.name} | USD {p.price_usd} / UGX {p.price_ugx} '
+            f'| Sizes: {sizes} | Stock: {p.stock_quantity} | Color: {p.color or "N/A"}'
+        )
+
+    catalog_text = '\n'.join(catalog_lines) if catalog_lines else 'No products currently in stock.'
+
+    system_prompt = (
+        "You are Kistie, a friendly AI shopping assistant for Kistie Store — a women's fashion boutique "
+        "in Kampala, Uganda. You help customers find the right outfit, sizes, and prices. "
+        "You can respond in English or Luganda depending on what the customer uses. "
+        "Keep answers short and helpful. Payment methods accepted: MTN Mobile Money, Airtel Money, "
+        "WorldRemit, and Pesapal. All sizes are EU standard (32–54).\n\n"
+        "LIVE PRODUCT CATALOG:\n" + catalog_text
+    )
+
+    messages_payload = [{'role': 'system', 'content': system_prompt}]
+    # Append last 6 turns of history to stay within token limits
+    for turn in history[-6:]:
+        role = turn.get('role', 'user')
+        content = (turn.get('content') or '').strip()
+        if role in ('user', 'assistant') and content:
+            messages_payload.append({'role': role, 'content': content})
+    messages_payload.append({'role': 'user', 'content': user_message})
+
+    from core.ai_utils import chat_complete
+    reply = chat_complete(messages_payload, max_tokens=300)
+
+    if reply is None:
+        return JsonResponse(
+            {'reply': 'Sorry, the AI assistant is temporarily unavailable. Please contact us on WhatsApp.'},
+        )
+    return JsonResponse({'reply': reply})
+
+
+@require_POST
+@permission_required('core.access_staff_dashboard', raise_exception=True)
+def api_ai_describe(request):
+    """
+    POST /api/ai/describe/
+    Staff-only. Body: {"name": "...", "category": "...", "color": "...", "product_id": 5}
+    Returns: {"description_en": "...", "description_lg": "..."}
+    Optionally PATCHes the product's description field when product_id is supplied.
+    """
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    name = (body.get('name') or '').strip()
+    category = (body.get('category') or '').strip()
+    color = (body.get('color') or '').strip()
+    product_id = body.get('product_id')
+
+    if not name:
+        return JsonResponse({'error': 'name is required'}, status=400)
+
+    from core.ai_utils import generate_product_description
+    result = generate_product_description(name, category, color)
+
+    if product_id and result.get('description_en'):
+        try:
+            pid = int(product_id)
+            Product.objects.filter(pk=pid).update(description=result['description_en'])
+        except (TypeError, ValueError, Product.DoesNotExist):
+            pass
+
+    return JsonResponse(result)
+
+
+@csrf_exempt
+@require_POST
+def api_size_recommend(request):
+    """
+    POST /api/size-recommend/
+    Body: {"bust": 90, "waist": 70, "hips": 95}  (all in cm)
+    Returns: {"size": "38", "note": "..."}
+    """
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    try:
+        bust = float(body.get('bust', 0))
+        waist = float(body.get('waist', 0))
+        hips = float(body.get('hips', 0))
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'bust, waist, hips must be numbers (cm)'}, status=400)
+
+    if not (50 <= bust <= 200 and 40 <= waist <= 180 and 60 <= hips <= 220):
+        return JsonResponse({'error': 'Measurements out of plausible range (cm)'}, status=400)
+
+    from core.ai_utils import recommend_size
+    return JsonResponse(recommend_size(bust, waist, hips))

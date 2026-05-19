@@ -117,9 +117,21 @@ class ProductReview(models.Model):
 	)
 	title = models.CharField(max_length=120, blank=True)
 	comment = models.TextField(blank=True)
+	SENTIMENT_CHOICES = [
+		('positive', 'Positive'),
+		('negative', 'Negative'),
+		('neutral', 'Neutral'),
+	]
+
 	is_approved = models.BooleanField(
 		default=False,
 		help_text='Only approved reviews count toward catalog averages.',
+	)
+	sentiment = models.CharField(
+		max_length=10,
+		blank=True,
+		choices=SENTIMENT_CHOICES,
+		help_text='Auto-detected by AI when the review is approved.',
 	)
 	created_at = models.DateTimeField(auto_now_add=True)
 

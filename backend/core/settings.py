@@ -115,6 +115,13 @@ CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'dallas8000@
 SERPAPI_API_KEY = os.environ.get('SERPAPI_API_KEY', '').strip()
 PRICE_SCAN_UGX_RATE = os.environ.get('PRICE_SCAN_UGX_RATE', '3700').strip()
 PRICE_SCAN_SITE_BASE_URL = os.environ.get('PRICE_SCAN_SITE_BASE_URL', '').strip()
+
+# AI features — set either key (or both) to enable. AI_PROVIDER controls which is used first.
+AI_PROVIDER = os.environ.get('AI_PROVIDER', 'openai').strip().lower()  # 'openai' or 'gemini'
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '').strip()
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '').strip()
+OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini').strip()
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash').strip()
 # Pesapal handoff: Node payments service URL (local dev default). Set on Render to your deployed payments base + path.
 PESAPAL_INITIATE_URL = os.environ.get(
     'PESAPAL_INITIATE_URL',

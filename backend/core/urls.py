@@ -37,6 +37,9 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.remove_cart_item, name='remove_cart_item'),
     path('api/internal/order-status/', views.pesapal_ipn_callback, name='pesapal_ipn_callback'),
     path('order/pesapal/callback/', views.pesapal_callback, name='pesapal_callback'),
+    path('api/chat/', views.api_chat, name='api_chat'),
+    path('api/size-recommend/', views.api_size_recommend, name='api_size_recommend'),
+    path('api/ai/describe/', views.api_ai_describe, name='api_ai_describe'),
     path('api/inventory/', include('inventory.urls')),
     path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

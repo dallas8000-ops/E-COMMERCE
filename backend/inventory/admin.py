@@ -301,9 +301,26 @@ class ProductReviewAdmin(admin.ModelAdmin):
 		}),
 	)
 
+	list_display = (
+		'product', 'user', 'rating_stars', 'sentiment_badge', 'is_approved', 'title', 'created_at',
+	)
+
 	@admin.display(description='Rating')
 	def rating_stars(self, obj):
 		return format_html('{} <span class="text-muted">/ 5</span>', obj.rating)
+
+	@admin.display(description='Sentiment')
+	def sentiment_badge(self, obj):
+		colours = {'positive': '#198754', 'negative': '#dc3545', 'neutral': '#6c757d'}
+		labels = {'positive': '😊 Positive', 'negative': '😞 Negative', 'neutral': '😐 Neutral'}
+		if not obj.sentiment:
+			return format_html('<span style="color:#aaa;">—</span>')
+		colour = colours.get(obj.sentiment, '#6c757d')
+		label = labels.get(obj.sentiment, obj.sentiment)
+		return format_html(
+			'<span style="color:{};font-weight:600;">{}</span>',
+			colour, label,
+		)
 
 
 admin.site.register(Product, ProductAdmin)

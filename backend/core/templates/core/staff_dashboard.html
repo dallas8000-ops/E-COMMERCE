@@ -110,14 +110,26 @@
               <th>When</th>
               <th>Name</th>
               <th>Subject</th>
+              <th>Tag</th>
             </tr>
           </thead>
           <tbody>
             {% for q in recent_inquiries %}
             <tr>
-              <td class="text-nowrap small">{{ q.created_at }}</td>
+              <td class="text-nowrap small">{{ q.created_at|date:"d M H:i" }}</td>
               <td>{{ q.name }}</td>
               <td>{{ q.subject }}</td>
+              <td>
+                {% if q.inquiry_tag %}
+                <span class="badge
+                  {% if q.inquiry_tag == 'bulk_order' %}text-bg-primary
+                  {% elif q.inquiry_tag == 'complaint' %}text-bg-danger
+                  {% elif q.inquiry_tag == 'delivery' %}text-bg-warning
+                  {% else %}text-bg-secondary{% endif %}">
+                  {{ q.get_inquiry_tag_display }}
+                </span>
+                {% else %}<span class="text-muted small">—</span>{% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -128,5 +140,189 @@
       {% endif %}
     </div>
   </div>
+
+  {# ── Demand Forecast ── #}
+  <div class="card shadow-sm border-0 mt-4" style="border-radius: 14px;">
+    <div class="card-header bg-transparent border-0 pt-3 pb-0">
+      <h2 class="h5 fw-semibold mb-0">Demand forecast <span class="badge text-bg-info ms-2 fs-6">AI</span></h2>
+      <p class="small text-muted mb-0">Based on confirmed orders in the last 90 days. Products with no recent sales are omitted.</p>
+    </div>
+    <div class="card-body">
+      {% if demand_forecasts %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="text-end">Stock</th>
+              <th class="text-end">Sales/day</th>
+              <th class="text-end">Est. days left</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in demand_forecasts %}
+            <tr {% if f.urgent %}class="table-danger"{% endif %}>
+              <td>{{ f.product.name }} <span class="text-muted small">({{ f.product.category.name }})</span></td>
+              <td class="text-end">{{ f.product.stock_quantity }}</td>
+              <td class="text-end">{{ f.daily_rate }}</td>
+              <td class="text-end fw-semibold">
+                {% if f.urgent %}<span class="text-danger">⚠ {% endif %}{{ f.days_left }}{% if f.urgent %}</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No sales data yet — forecasts will appear once confirmed orders exist.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── AI Product Description Generator ── #}
+  <div class="card shadow-sm border-0 mt-4" style="border-radius: 14px;">
+    <div class="card-header bg-transparent border-0 pt-3 pb-0">
+      <h2 class="h5 fw-semibold mb-0">AI description generator <span class="badge text-bg-info ms-2 fs-6">AI</span></h2>
+      <p class="small text-muted mb-0">Generate an English description + Luganda translation for any product.</p>
+    </div>
+    <div class="card-body">
+      <div class="row g-3 align-items-end mb-3">
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold mb-1">Product</label>
+          <select id="aiDescProduct" class="form-select form-select-sm">
+            <option value="">— pick a product —</option>
+            {% for p in all_products %}
+            <option value="{{ p.id }}" data-name="{{ p.name|escapejs }}" data-category="{{ p.category.name|escapejs }}" data-color="{{ p.color|escapejs }}">{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold mb-1">Category</label>
+          <input id="aiDescCategory" type="text" class="form-control form-control-sm" placeholder="e.g. Dress">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold mb-1">Color / material</label>
+          <input id="aiDescColor" type="text" class="form-control form-control-sm" placeholder="e.g. Blue satin">
+        </div>
+        <div class="col-md-2">
+          <button id="aiDescGenBtn" class="btn btn-sm btn-primary w-100">Generate</button>
+        </div>
+        <div class="col-md-2">
+          <button id="aiDescSaveBtn" class="btn btn-sm btn-success w-100 d-none">Save to product</button>
+        </div>
+      </div>
+      <div id="aiDescResult" class="d-none">
+        <div class="mb-2">
+          <span class="small fw-semibold text-muted text-uppercase">English</span>
+          <p id="aiDescEN" class="mb-1 border rounded p-2 bg-light small"></p>
+        </div>
+        <div>
+          <span class="small fw-semibold text-muted text-uppercase">Luganda</span>
+          <p id="aiDescLG" class="mb-0 border rounded p-2 bg-light small"></p>
+        </div>
+        <p id="aiDescStatus" class="small mt-2 mb-0"></p>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+{% block extra_scripts %}
+<script>
+(function () {
+  /* Auto-fill category/color when a product is picked */
+  const productSel = document.getElementById('aiDescProduct');
+  const catInput   = document.getElementById('aiDescCategory');
+  const colInput   = document.getElementById('aiDescColor');
+  const genBtn     = document.getElementById('aiDescGenBtn');
+  const saveBtn    = document.getElementById('aiDescSaveBtn');
+  const resultBox  = document.getElementById('aiDescResult');
+  const enEl       = document.getElementById('aiDescEN');
+  const lgEl       = document.getElementById('aiDescLG');
+  const statusEl   = document.getElementById('aiDescStatus');
+
+  let currentProductId = null;
+  let lastDescEN = '';
+
+  if (productSel) {
+    productSel.addEventListener('change', function () {
+      const opt = productSel.selectedOptions[0];
+      if (!opt) return;
+      catInput.value = opt.dataset.category || '';
+      colInput.value = opt.dataset.color || '';
+      currentProductId = opt.value || null;
+      resultBox.classList.add('d-none');
+      saveBtn.classList.add('d-none');
+    });
+  }
+
+  if (genBtn) {
+    genBtn.addEventListener('click', async function () {
+      const opt = productSel && productSel.selectedOptions[0];
+      const name = opt ? opt.dataset.name : '';
+      if (!name) { alert('Please pick a product first.'); return; }
+      genBtn.disabled = true;
+      genBtn.textContent = 'Generating…';
+      statusEl.textContent = '';
+      try {
+        const res = await fetch('/api/ai/describe/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+          body: JSON.stringify({
+            name: name,
+            category: catInput.value,
+            color: colInput.value,
+            product_id: currentProductId,
+          }),
+        });
+        const data = await res.json();
+        if (data.description_en) {
+          enEl.textContent = data.description_en;
+          lgEl.textContent = data.description_lg || '(no Luganda translation returned)';
+          lastDescEN = data.description_en;
+          resultBox.classList.remove('d-none');
+          saveBtn.classList.remove('d-none');
+          statusEl.textContent = currentProductId ? '✓ Description also saved to product.' : '';
+          statusEl.className = 'small mt-2 mb-0 text-success';
+        } else {
+          statusEl.textContent = data.error || 'AI unavailable — check your API key in .env.';
+          statusEl.className = 'small mt-2 mb-0 text-danger';
+          resultBox.classList.remove('d-none');
+        }
+      } catch (e) {
+        statusEl.textContent = 'Network error.';
+        statusEl.className = 'small mt-2 mb-0 text-danger';
+        resultBox.classList.remove('d-none');
+      }
+      genBtn.disabled = false;
+      genBtn.textContent = 'Generate';
+    });
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async function () {
+      if (!currentProductId || !lastDescEN) return;
+      saveBtn.disabled = true;
+      try {
+        await fetch('/api/ai/describe/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+          body: JSON.stringify({name: enEl.textContent, product_id: currentProductId}),
+        });
+        statusEl.textContent = '✓ Saved to product.';
+        statusEl.className = 'small mt-2 mb-0 text-success';
+      } catch (e) {}
+      saveBtn.disabled = false;
+    });
+  }
+
+  function getCookie(name) {
+    const val = `; ${document.cookie}`;
+    const parts = val.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+  }
+})();
+</script>
 {% endblock %}
+
