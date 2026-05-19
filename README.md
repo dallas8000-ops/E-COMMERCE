@@ -28,6 +28,18 @@ Live **fashion ecommerce** (women’s apparel & accessories)—shipping from **K
 
 
 
+## Latest update (May 18, 2026)
+
+- Added the AI shopping assistant end-to-end: `/api/chat/` backend route and shop-page chatbot UI.
+- Added size assistance in two paths: quick-view modal size tool (`/api/size-recommend/`) and chatbot measurement parsing (bust/waist/hips in cm -> EU size 32-54 guidance).
+- Added contact inquiry auto-classification on save (`bulk_order`, `delivery`, `complaint`, `general`) and displayed tags in the staff dashboard table.
+- Added review sentiment analysis on approval (`positive`, `negative`, `neutral`) and a sentiment badge in product review admin.
+- Added staff dashboard demand forecasting and updated forecast logic to use non-failed order history so pending/confirmed activity is reflected.
+- Added staff AI description generator flow (`/api/ai/describe/`) for English + Luganda product copy.
+- Improved chatbot resilience and UX: common fallback answers (delivery, payment, currency, size), Boda delivery mention, and reset-on-close behavior.
+- Related commits: `5c046a5`, `79b5549`, `bc75dab`, `432299d`, `78352a6`.
+
+
 ## What it does (short)
 
 
