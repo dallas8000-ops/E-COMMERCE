@@ -117,7 +117,13 @@ PRICE_SCAN_UGX_RATE = os.environ.get('PRICE_SCAN_UGX_RATE', '3700').strip()
 PRICE_SCAN_SITE_BASE_URL = os.environ.get('PRICE_SCAN_SITE_BASE_URL', '').strip()
 
 # AI features — set either key (or both) to enable. AI_PROVIDER controls which is used first.
-AI_PROVIDER = os.environ.get('AI_PROVIDER', 'openai').strip().lower()  # 'openai' or 'gemini'
+_raw_ai_provider = os.environ.get('AI_PROVIDER', 'openai').strip().lower()
+if _raw_ai_provider.startswith('gemini'):
+    AI_PROVIDER = 'gemini'
+elif _raw_ai_provider.startswith('openai'):
+    AI_PROVIDER = 'openai'
+else:
+    AI_PROVIDER = _raw_ai_provider
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '').strip()
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '').strip()
 OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini').strip()

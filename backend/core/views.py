@@ -281,6 +281,36 @@ def _catalog_fallback_description(product):
     return f'A {item_type} {vibe}'
 
 
+def _fallback_ai_description(name, category, color):
+    category_label = (category or '').strip()
+    color_label = (color or '').strip()
+
+    details = []
+    if color_label:
+        details.append(color_label)
+    if category_label and category_label.lower() != 'default':
+        details.append(category_label)
+
+    detail_text = ' '.join(details).strip()
+    if detail_text:
+        detail_text = f' in {detail_text}'
+
+    description_en = (
+        f'{name} is a polished Kistie Store piece{detail_text}, designed for confident everyday styling. '
+        'It delivers a clean, elegant look that works well for both special occasions and refined day wear.'
+    )
+    description_lg = (
+        f'{name} kye kintu kya misono okuva e Kistie Store{detail_text}, '
+        'ekisaanira okwambalibwa buli lunaku n’endabika ennongoofu era ey’omulembe. '
+        'Kisobola okwambalibwa ku mikolo oba ku mirimu egyetaaga okulabika obulungi.'
+    )
+    return {
+        'description_en': description_en,
+        'description_lg': description_lg,
+        'source': 'fallback',
+    }
+
+
 def _recent_images(limit=3):
     """
     Images for home hero + About strip.
@@ -1505,6 +1535,9 @@ def api_ai_describe(request):
 
     from core.ai_utils import generate_product_description
     result = generate_product_description(name, category, color)
+
+    if not result.get('description_en'):
+        result = _fallback_ai_description(name, category, color)
 
     if product_id and result.get('description_en'):
         try:
