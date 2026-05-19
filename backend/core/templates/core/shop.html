@@ -393,6 +393,11 @@
   function closeChat() {
     chatWin.classList.remove('open');
     toggle.style.display = '';
+    // Reset session so each reopen starts fresh.
+    history = [];
+    opened = false;
+    msgs.innerHTML = '';
+    input.value = '';
   }
 
   toggle.addEventListener('click', openChat);
