@@ -324,9 +324,9 @@
 
 {# ── AI Chat Bubble ── #}
 <style>
-  #kistie-chat-bubble { position:fixed; bottom:1.5rem; right:1.5rem; z-index:1060; }
+  #kistie-chat-bubble { position:fixed; bottom:1.5rem; right:1.5rem; z-index:2000; }
   #kistie-chat-toggle { width:56px; height:56px; border-radius:50%; background:var(--brand-primary,#7c3aed); color:#fff; border:none; font-size:1.5rem; box-shadow:0 4px 16px rgba(0,0,0,.25); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  #kistie-chat-window { display:none; position:fixed; bottom:5rem; right:1.5rem; width:340px; max-width:calc(100vw - 2rem); background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.18); z-index:1060; flex-direction:column; overflow:hidden; }
+  #kistie-chat-window { display:none; position:fixed; bottom:5rem; right:1.5rem; width:340px; max-width:calc(100vw - 2rem); background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.18); z-index:2001; flex-direction:column; overflow:hidden; pointer-events:auto; }
   #kistie-chat-window.open { display:flex; }
   #kistie-chat-header { background:var(--brand-primary,#7c3aed); color:#fff; padding:.75rem 1rem; font-weight:600; font-size:.95rem; display:flex; justify-content:space-between; align-items:center; }
   #kistie-chat-header button { background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer; line-height:1; }
@@ -335,8 +335,9 @@
   .kc-msg.bot { background:#f3f0ff; color:#3b0764; align-self:flex-start; border-bottom-left-radius:4px; }
   .kc-msg.user { background:var(--brand-primary,#7c3aed); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
   .kc-msg.typing { color:#888; font-style:italic; }
-  #kistie-chat-form { display:flex; border-top:1px solid #e9ecef; }
-  #kistie-chat-input { flex:1; border:none; padding:.6rem .75rem; font-size:.875rem; outline:none; }
+  #kistie-chat-form { display:flex; border-top:1px solid #e9ecef; background:#fff; }
+  #kistie-chat-input { flex:1; border:none; padding:.6rem .75rem; font-size:.875rem; outline:none; background:#fff; color:#212529; caret-color:#212529; }
+  #kistie-chat-input::placeholder { color:#6c757d; }
   #kistie-chat-send { background:var(--brand-primary,#7c3aed); color:#fff; border:none; padding:.6rem .9rem; cursor:pointer; font-size:1rem; }
 </style>
 
@@ -411,14 +412,23 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({message: text, history: history.slice(-6)}),
       });
-      const data = await res.json();
-      const reply = data.reply || 'Sorry, I could not get a response right now.';
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        data = null;
+      }
+      const reply = (data && data.reply)
+        ? data.reply
+        : (!res.ok
+            ? 'Sorry, chat is temporarily busy. Please try again in a moment.'
+            : 'Sorry, I could not get a response right now.');
       typing.textContent = reply;
       typing.className = 'kc-msg bot';
       history.push({role: 'assistant', content: reply});
       if (history.length > 20) history = history.slice(-20);
     } catch (err) {
-      typing.textContent = 'Network error. Please try again.';
+      typing.textContent = 'Connection issue. Please check internet and try again.';
       typing.className = 'kc-msg bot';
     }
     msgs.scrollTop = msgs.scrollHeight;

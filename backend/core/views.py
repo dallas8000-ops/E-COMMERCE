@@ -721,11 +721,13 @@ def _compute_demand_forecasts():
     from datetime import timedelta
     from django.db.models import F
 
-    # Look back 90 days of confirmed orders
+    # Look back 90 days of non-failed orders.
+    # This keeps the dashboard useful when most orders are still pending payment.
     cutoff = timezone.now() - timedelta(days=90)
     rows = (
         OrderItem.objects
-        .filter(order__status=Order.STATUS_CONFIRMED, order__created_at__gte=cutoff)
+        .filter(order__created_at__gte=cutoff)
+        .exclude(order__status=Order.STATUS_FAILED)
         .values('product_name')
         .annotate(total_sold=Sum('quantity'))
     )
@@ -1303,6 +1305,80 @@ def pesapal_callback(request):
 from django.views.decorators.csrf import csrf_exempt  # noqa: E402 (already imported above via require_POST)
 
 
+def _extract_measurements_cm(text):
+    """Extract bust/waist/hips values in cm from free text."""
+    raw = (text or '').lower()
+    if not raw:
+        return None
+
+    patterns = {
+        'bust': [r'\bbust\b\s*[:=,-]?\s*(\d{2,3}(?:\.\d+)?)', r'\bchest\b\s*[:=,-]?\s*(\d{2,3}(?:\.\d+)?)'],
+        'waist': [r'\bwaist\b\s*[:=,-]?\s*(\d{2,3}(?:\.\d+)?)'],
+        'hips': [r'\bhips?\b\s*[:=,-]?\s*(\d{2,3}(?:\.\d+)?)', r'\bhip\b\s*[:=,-]?\s*(\d{2,3}(?:\.\d+)?)'],
+    }
+
+    found = {}
+    for key, key_patterns in patterns.items():
+        for pat in key_patterns:
+            m = re.search(pat, raw)
+            if m:
+                try:
+                    found[key] = float(m.group(1))
+                    break
+                except (TypeError, ValueError):
+                    continue
+
+    if all(k in found for k in ('bust', 'waist', 'hips')):
+        return found
+
+    # Fallback: allow compact numeric format like "90 70 98" or "90/70/98".
+    nums = re.findall(r'(\d{2,3}(?:\.\d+)?)', raw)
+    if len(nums) >= 3:
+        try:
+            return {
+                'bust': float(nums[0]),
+                'waist': float(nums[1]),
+                'hips': float(nums[2]),
+            }
+        except (TypeError, ValueError):
+            return None
+
+    return None
+
+
+def _quick_chat_fallback(user_message):
+    """Deterministic responses for common support queries when AI is unavailable."""
+    msg = (user_message or '').strip().lower()
+    if not msg:
+        return ''
+
+    # Numeric size query (e.g. "size 35")
+    size_match = re.search(r'\b(?:size|saizi)\s*(\d{2})\b', msg)
+    if size_match:
+        try:
+            requested = int(size_match.group(1))
+            if requested < 32 or requested > 54:
+                return 'Our EU sizes run from 32 to 54. Share bust, waist, and hips in cm for an exact fit recommendation.'
+            if requested % 2 == 1:
+                lower_even = requested - 1
+                upper_even = requested + 1
+                return (
+                    f'EU {requested} is between sizes. We stock even EU sizes (32–54), so try EU {lower_even} '
+                    f'for a snug fit or EU {upper_even} for a relaxed fit.'
+                )
+            return f'EU {requested} is available in our standard range. For best accuracy, share bust, waist, and hips in cm.'
+        except (TypeError, ValueError):
+            pass
+
+    if any(token in msg for token in ('payment', 'pay', 'mtn', 'airtel', 'worldremit', 'pesapal')):
+        return 'We accept MTN Mobile Money, Airtel Money, WorldRemit, and Pesapal.'
+
+    if any(token in msg for token in ('size', 'saizi', 'measure', 'measurement', 'bust', 'waist', 'hips', 'cm')):
+        return 'Please share your bust, waist, and hips in cm, for example: bust 90, waist 70, hips 98.'
+
+    return ''
+
+
 @csrf_exempt
 @require_POST
 def api_chat(request):
@@ -1319,6 +1395,31 @@ def api_chat(request):
     user_message = (body.get('message') or '').strip()
     if not user_message:
         return JsonResponse({'error': 'message is required'}, status=400)
+
+    # Deterministic size-assistance path: when measurements are present, return
+    # an immediate size recommendation from the EU mapping table.
+    measurement_intent = any(
+        token in user_message.lower()
+        for token in ('size', 'saizi', 'bust', 'waist', 'hips', 'measure', 'measurement', 'cm')
+    )
+    extracted = _extract_measurements_cm(user_message)
+    if measurement_intent and extracted:
+        bust = extracted['bust']
+        waist = extracted['waist']
+        hips = extracted['hips']
+        if not (50 <= bust <= 200 and 40 <= waist <= 180 and 60 <= hips <= 220):
+            return JsonResponse({
+                'reply': 'Please send realistic measurements in centimeters, for example: bust 90, waist 70, hips 98.'
+            })
+
+        from core.ai_utils import recommend_size
+        rec = recommend_size(bust, waist, hips)
+        return JsonResponse({
+            'reply': (
+                f"Recommended EU size: {rec['size']}. {rec['note']} "
+                'If you are between sizes, choose one size up for a relaxed fit.'
+            )
+        })
 
     history = body.get('history') or []
     if not isinstance(history, list):
@@ -1352,6 +1453,10 @@ def api_chat(request):
         if role in ('user', 'assistant') and content:
             messages_payload.append({'role': role, 'content': content})
     messages_payload.append({'role': 'user', 'content': user_message})
+
+    quick_reply = _quick_chat_fallback(user_message)
+    if quick_reply:
+        return JsonResponse({'reply': quick_reply})
 
     from core.ai_utils import chat_complete
     reply = chat_complete(messages_payload, max_tokens=300)
