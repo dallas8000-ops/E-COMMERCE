@@ -121,7 +121,7 @@ AI_PROVIDER = os.environ.get('AI_PROVIDER', 'openai').strip().lower()  # 'openai
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '').strip()
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '').strip()
 OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini').strip()
-GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash').strip()
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash').strip()
 # Pesapal handoff: Node payments service URL (local dev default). Set on Render to your deployed payments base + path.
 PESAPAL_INITIATE_URL = os.environ.get(
     'PESAPAL_INITIATE_URL',

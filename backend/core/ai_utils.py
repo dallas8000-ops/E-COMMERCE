@@ -15,6 +15,7 @@ _OPENAI_URL = 'https://api.openai.com/v1/chat/completions'
 _GEMINI_URL_TPL = (
     'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}'
 )
+_GEMINI_DEFAULT_MODEL = 'gemini-2.0-flash'
 
 # Hard cap per call to keep latency + cost low.
 _MAX_TOKENS = 512
@@ -45,7 +46,7 @@ def _call_gemini(messages: list[dict], max_tokens: int = _MAX_TOKENS) -> Optiona
     key = getattr(settings, 'GEMINI_API_KEY', '')
     if not key:
         return None
-    model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-flash')
+    model = getattr(settings, 'GEMINI_MODEL', _GEMINI_DEFAULT_MODEL)
     url = _GEMINI_URL_TPL.format(model=model, key=key)
 
     # Convert OpenAI-style messages to Gemini contents format.
