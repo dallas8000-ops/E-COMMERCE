@@ -31,3 +31,7 @@ payments/dist/
 
 # VSCode
 .vscode/
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/

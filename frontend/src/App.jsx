@@ -18,16 +18,16 @@ function App() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/">Home</Link>
+                <Link className="nav-link lh-1" to="/">Home<br /><small style={{fontSize: '0.65rem', opacity: 0.75}}>Eka</small></Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/about">About</Link>
+                <Link className="nav-link lh-1" to="/about">About<br /><small style={{fontSize: '0.65rem', opacity: 0.75}}>Ku Ffe</small></Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/inventory">Inventory</Link>
+                <Link className="nav-link lh-1" to="/inventory">Inventory<br /><small style={{fontSize: '0.65rem', opacity: 0.75}}>Ebyatundibwa</small></Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/cart">Cart</Link>
+                <Link className="nav-link lh-1" to="/cart">Cart<br /><small style={{fontSize: '0.65rem', opacity: 0.75}}>Ekikapu</small></Link>
               </li>
             </ul>
           </div>

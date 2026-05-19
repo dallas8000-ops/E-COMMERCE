@@ -58,6 +58,46 @@ function readCartFromStorage() {
   }
 }
 
+async function loadExchangeRates() {
+  try {
+    const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,KES,UGX');
+    if (!response.ok) throw new Error('Failed to fetch rates');
+    const data = await response.json();
+    return {
+      rates: {
+        USD: 1,
+        EUR: data.rates?.EUR ?? FALLBACK_RATES.EUR,
+        KES: data.rates?.KES ?? FALLBACK_RATES.KES,
+        UGX: data.rates?.UGX ?? FALLBACK_RATES.UGX,
+      },
+      source: 'live',
+      updatedAt: data.date || new Date().toISOString().slice(0, 10),
+    };
+  } catch {
+    return {
+      rates: FALLBACK_RATES,
+      source: 'fallback',
+      updatedAt: new Date().toISOString().slice(0, 10),
+    };
+  }
+}
+
+async function loadCartItems() {
+  try {
+    const response = await fetch(`${API_BASE}/cart/`, { credentials: 'include' });
+    if (!response.ok) throw new Error('Cart endpoint unavailable');
+    const data = await response.json();
+    return { items: normalizeCartPayload(data?.items), source: 'api', error: '' };
+  } catch {
+    const storedItems = readCartFromStorage();
+    return {
+      items: storedItems,
+      source: 'local',
+      error: storedItems.length === 0 ? 'No synced cart API yet. Showing local cart if available.' : '',
+    };
+  }
+}
+
 function Cart() {
   const [currency, setCurrency] = useState('KES');
   const [paymentMethod, setPaymentMethod] = useState('mtn');
@@ -73,86 +113,29 @@ function Cart() {
 
   useEffect(() => {
     let cancelled = false;
-
-    async function fetchRates() {
-      try {
-        const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,KES,UGX');
-        if (!response.ok) {
-          throw new Error('Failed to fetch rates');
-        }
-
-        const data = await response.json();
-        if (cancelled) {
-          return;
-        }
-
-        setRates({
-          USD: 1,
-          EUR: data.rates?.EUR ?? FALLBACK_RATES.EUR,
-          KES: data.rates?.KES ?? FALLBACK_RATES.KES,
-          UGX: data.rates?.UGX ?? FALLBACK_RATES.UGX,
-        });
-        setRatesSource('live');
-        setRatesUpdatedAt(data.date || new Date().toISOString().slice(0, 10));
-      } catch {
-        if (!cancelled) {
-          setRates(FALLBACK_RATES);
-          setRatesSource('fallback');
-          setRatesUpdatedAt(new Date().toISOString().slice(0, 10));
-        }
+    loadExchangeRates().then((data) => {
+      if (!cancelled) {
+        setRates(data.rates);
+        setRatesSource(data.source);
+        setRatesUpdatedAt(data.updatedAt);
       }
-    }
-
-    fetchRates();
-    return () => {
-      cancelled = true;
-    };
+    });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function fetchCart() {
-      setLoadingCart(true);
-      setCartError('');
-      try {
-        const response = await fetch(`${API_BASE}/cart/`, {
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Cart endpoint unavailable');
-        }
-
-        const data = await response.json();
-        if (cancelled) {
-          return;
-        }
-
-        const normalized = normalizeCartPayload(data?.items);
-        setCartItems(normalized);
-        setCartSource('api');
-      } catch {
-        if (cancelled) {
-          return;
-        }
-
-        const storedItems = readCartFromStorage();
-        setCartItems(storedItems);
-        setCartSource('local');
-        if (storedItems.length === 0) {
-          setCartError('No synced cart API yet. Showing local cart if available.');
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingCart(false);
-        }
+    setLoadingCart(true);
+    setCartError('');
+    loadCartItems().then((data) => {
+      if (!cancelled) {
+        setCartItems(data.items);
+        setCartSource(data.source);
+        setCartError(data.error);
+        setLoadingCart(false);
       }
-    }
-
-    fetchCart();
-    return () => {
-      cancelled = true;
-    };
+    });
+    return () => { cancelled = true; };
   }, []);
 
   const cartTotal = useMemo(
@@ -217,71 +200,79 @@ function Cart() {
     setPaying(false);
   };
 
+  let cartContent;
+  if (loadingCart) {
+    cartContent = <p>Loading your cart...<br /><small className="text-muted">Tukutegeerera ekikapu kyo...</small></p>;
+  } else if (cartItems.length === 0) {
+    cartContent = <p>Your cart is empty. Start shopping!<br /><small className="text-muted">Ekikapu kyo kirina wangu. Tangira okugula!</small></p>;
+  } else {
+    cartContent = (
+      <>
+        <div className="card p-3 mb-3 text-start shadow-sm">
+          <h5 className="mb-1">Order Information</h5>
+          <small className="text-muted d-block mb-3">Ebirowoozo by'Omutendera</small>
+          <div className="row g-3 align-items-end">
+            <div className="col-md-4">
+              <label className="form-label mb-1" htmlFor="currencySelect">Currency <small className="text-muted">(Ssente)</small></label>
+              <select id="currencySelect" className="form-select" value={currency} onChange={(event) => setCurrency(event.target.value)}>
+                {SUPPORTED_CURRENCIES.map((code) => (
+                  <option key={code} value={code}>{code}</option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-4">
+              <label className="form-label mb-1" htmlFor="paymentMethodSelect">Payment Method <small className="text-muted">(Enkola y'Okuliipira)</small></label>
+              <select id="paymentMethodSelect" className="form-select" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
+                {PAYMENT_METHODS.map((method) => (
+                  <option key={method.value} value={method.value}>{method.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-4">
+              <small className="text-muted d-block">Rate Source: {ratesSource === 'live' ? 'Live API' : 'Fallback'}</small>
+              <small className="text-muted d-block">Updated: {ratesUpdatedAt || 'loading...'}</small>
+              <small className="text-muted d-block">1 USD = {rates[currency]?.toFixed(currency === 'UGX' ? 0 : 4)} {currency}</small>
+              <small className="text-muted d-block">Cart Source: {cartSource === 'api' ? 'API' : 'Local Storage'}</small>
+            </div>
+          </div>
+        </div>
+
+        <ul className="list-group mb-3">
+          {convertedItems.map(item => (
+            <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
+              <span>{item.name} <span className="text-muted">x{item.quantity}</span></span>
+              <span>{formatAmount(item.convertedLineTotal, currency)}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="card p-3 mb-3 text-start shadow-sm">
+          <h5 className="mb-1">Order Summary</h5>
+          <small className="text-muted d-block mb-2">Ekifuufu ky'Omutendera</small>
+          <div className="d-flex justify-content-between"><span>Items <small className="text-muted">(Ebintu)</small></span><span>{cartItems.length}</span></div>
+          <div className="d-flex justify-content-between"><span>Quantity <small className="text-muted">(Omuwendo)</small></span><span>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span></div>
+          <div className="d-flex justify-content-between"><span>Method <small className="text-muted">(Enkola)</small></span><span>{selectedMethodLabel}</span></div>
+          <hr className="my-2" />
+          <h4 className="mb-0">Total: {formatAmount(convertedTotal, currency)}<br /><small className="text-muted fw-normal" style={{fontSize: '0.65rem'}}>Enteeresa Yonna</small></h4>
+        </div>
+
+        <button className="btn btn-success mt-3" onClick={handlePay} disabled={paying}>
+          {paying ? <>Processing...<br /><small style={{fontWeight: 'normal', opacity: 0.85}}>Tukola...</small></> : <>{`Pay (${selectedMethodLabel})`}<br /><small style={{fontWeight: 'normal', opacity: 0.85}}>Liipira</small></>}
+        </button>
+        {result && (
+          <div className="mt-3 alert alert-info">
+            {result.error ? result.error : (result.uiSummary || result.message)}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="text-center">
       <h2>Your Cart</h2>
-      {loadingCart ? (
-        <p>Loading your cart...</p>
-      ) : cartItems.length === 0 ? (
-        <p>Your cart is empty. Start shopping!</p>
-      ) : (
-        <>
-          <div className="card p-3 mb-3 text-start shadow-sm">
-            <h5 className="mb-3">Order Information</h5>
-            <div className="row g-3 align-items-end">
-              <div className="col-md-4">
-                <label className="form-label mb-1" htmlFor="currencySelect">Currency</label>
-                <select id="currencySelect" className="form-select" value={currency} onChange={(event) => setCurrency(event.target.value)}>
-                  {SUPPORTED_CURRENCIES.map((code) => (
-                    <option key={code} value={code}>{code}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-4">
-                <label className="form-label mb-1" htmlFor="paymentMethodSelect">Payment Method</label>
-                <select id="paymentMethodSelect" className="form-select" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
-                  {PAYMENT_METHODS.map((method) => (
-                    <option key={method.value} value={method.value}>{method.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-4">
-                <small className="text-muted d-block">Rate Source: {ratesSource === 'live' ? 'Live API' : 'Fallback'}</small>
-                <small className="text-muted d-block">Updated: {ratesUpdatedAt || 'loading...'}</small>
-                <small className="text-muted d-block">1 USD = {rates[currency]?.toFixed(currency === 'UGX' ? 0 : 4)} {currency}</small>
-                <small className="text-muted d-block">Cart Source: {cartSource === 'api' ? 'API' : 'Local Storage'}</small>
-              </div>
-            </div>
-          </div>
-
-          <ul className="list-group mb-3">
-            {convertedItems.map(item => (
-              <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
-                <span>{item.name} <span className="text-muted">x{item.quantity}</span></span>
-                <span>{formatAmount(item.convertedLineTotal, currency)}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="card p-3 mb-3 text-start shadow-sm">
-            <h5 className="mb-2">Order Summary</h5>
-            <div className="d-flex justify-content-between"><span>Items</span><span>{cartItems.length}</span></div>
-            <div className="d-flex justify-content-between"><span>Quantity</span><span>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span></div>
-            <div className="d-flex justify-content-between"><span>Method</span><span>{selectedMethodLabel}</span></div>
-            <hr className="my-2" />
-            <h4 className="mb-0">Total: {formatAmount(convertedTotal, currency)}</h4>
-          </div>
-
-          <button className="btn btn-success mt-3" onClick={handlePay} disabled={paying}>
-            {paying ? 'Processing...' : `Pay (${selectedMethodLabel})`}
-          </button>
-          {result && (
-            <div className="mt-3 alert alert-info">
-              {result.error ? result.error : (result.uiSummary || result.message)}
-            </div>
-          )}
-        </>
-      )}
+      <small className="text-muted d-block mb-2">Ekikapu Kyo</small>
+      {cartContent}
       {!loadingCart && cartError && (
         <div className="mt-3 alert alert-warning">
           {cartError}

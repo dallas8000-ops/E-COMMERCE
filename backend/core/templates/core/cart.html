@@ -2,10 +2,11 @@
 {% block title %}Cart{% endblock %}
 {% block content %}
 <div class="container py-4">
-	<h1 class="mb-4 text-center">Your Cart</h1>
+	<h1 class="mb-1 text-center">Your Cart</h1>
+	<small class="text-muted d-block text-center mb-4">Ekikapu Kyo</small>
 	<form method="get" class="row g-2 align-items-end mb-4">
 		<div class="col-md-4">
-			<label for="cartCurrency" class="form-label">Currency</label>
+			<label for="cartCurrency" class="form-label">Currency <small class="text-muted">(Ssente)</small></label>
 			<select id="cartCurrency" name="currency" class="form-select">
 				{% for code in supported_currencies %}
 					<option value="{{ code }}" {% if code == currency %}selected{% endif %}>{{ code }}</option>
@@ -13,7 +14,7 @@
 			</select>
 		</div>
 		<div class="col-md-4">
-			<label for="cartMethod" class="form-label">Payment Method</label>
+			<label for="cartMethod" class="form-label">Payment Method <small class="text-muted">(Enkola y'Okuliipira)</small></label>
 			<select id="cartMethod" name="payment_method" class="form-select">
 				{% for method in payment_methods %}
 					<option value="{{ method }}" {% if method == payment_method %}selected{% endif %}>{{ method|upper }}</option>
@@ -21,7 +22,7 @@
 			</select>
 		</div>
 		<div class="col-md-4">
-			<button type="submit" class="btn btn-brand-primary w-100"><i class="bi bi-sliders" aria-hidden="true"></i> Apply Checkout Settings</button>
+			<button type="submit" class="btn btn-brand-primary w-100"><i class="bi bi-sliders" aria-hidden="true"></i> Apply Checkout Settings<br><small style="font-weight:normal;opacity:0.85;">Tereka Ebyo</small></button>
 		</div>
 		<div class="col-12 text-muted small">
 			Rate source: {{ rates_source }} {% if rates_updated %}| Updated: {{ rates_updated }}{% endif %}
@@ -33,13 +34,13 @@
 		<table class="table table-bordered align-middle bg-white cart-table">
 			<thead>
 				<tr>
-					<th scope="col">Product</th>
-					<th scope="col">Size</th>
-					<th scope="col">Color</th>
-					<th scope="col">Quantity</th>
-					<th scope="col">Price</th>
-					<th scope="col">Total</th>
-					<th scope="col">Actions</th>
+					<th scope="col">Product <small class="text-muted d-block" style="font-size:0.65rem;">Ekintu</small></th>
+					<th scope="col">Size <small class="text-muted d-block" style="font-size:0.65rem;">Saizi</small></th>
+					<th scope="col">Color <small class="text-muted d-block" style="font-size:0.65rem;">Langi</small></th>
+					<th scope="col">Quantity <small class="text-muted d-block" style="font-size:0.65rem;">Omuwendo</small></th>
+					<th scope="col">Price <small class="text-muted d-block" style="font-size:0.65rem;">Omuwendo w'Ensimbi</small></th>
+					<th scope="col">Total <small class="text-muted d-block" style="font-size:0.65rem;">Enteeresa</small></th>
+					<th scope="col">Actions <small class="text-muted d-block" style="font-size:0.65rem;">Ebikolwa</small></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -53,7 +54,7 @@
 						<form method="post" action="{% url 'update_cart_item' item.id %}" class="cart-quantity-form">
 							{% csrf_token %}
 							<input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control cart-quantity-input">
-							<button type="submit" class="btn btn-sm btn-brand-secondary ms-2"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Update</button>
+							<button type="submit" class="btn btn-sm btn-brand-secondary ms-2"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Update <small style="opacity:0.85;">(Ddaawo)</small></button>
 						</form>
 					</td>
 					<td data-label="Price">{{ currency }} {{ row.price_display }}</td>
@@ -61,7 +62,7 @@
 					<td data-label="Actions">
 						<form method="post" action="{% url 'remove_cart_item' item.id %}" class="d-inline">
 							{% csrf_token %}
-							<button type="submit" class="btn btn-sm btn-danger">Remove</button>
+							<button type="submit" class="btn btn-sm btn-danger">Remove <small style="opacity:0.85;">(Ggyako)</small></button>
 						</form>
 					</td>
 				</tr>
@@ -70,7 +71,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="5" class="text-end fw-semibold">Grand Total</td>
+					<td colspan="5" class="text-end fw-semibold">Grand Total <small class="text-muted">(Enteeresa Yonna)</small></td>
 					<td class="fw-semibold">{{ currency }} {{ grand_total_display }}</td>
 					<td></td>
 				</tr>
@@ -81,10 +82,10 @@
 			<strong>Order Info:</strong> Payment method selected: {{ payment_method|upper }}.
 		</div>
 		<div class="d-grid d-md-flex justify-content-md-end">
-			<a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+			<a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout<br><small style="font-weight:normal;opacity:0.85;">Nkola Omutendera</small></a>
 		</div>
 	{% else %}
-		<div class="alert alert-info text-center">Your cart is empty.</div>
+		<div class="alert alert-info text-center">Your cart is empty.<br><small class="text-muted">Ekikapu kyo kirina wangu.</small></div>
 	{% endif %}
 </div>
 {% endblock %}
