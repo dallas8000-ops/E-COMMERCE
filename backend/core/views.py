@@ -1376,6 +1376,7 @@ def _quick_chat_fallback(user_message):
     if any(token in msg for token in ('delivery', 'deliver', 'shipping', 'ship', 'dispatch', 'pickup')):
         return (
             'Delivery is arranged after checkout confirmation. '
+            'For local Kampala/nearby orders, we can use Boda (local motorcycle delivery). '
             'Add your country and notes at checkout, then we confirm dispatch details with you directly.'
         )
 
