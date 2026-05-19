@@ -1373,6 +1373,18 @@ def _quick_chat_fallback(user_message):
     if any(token in msg for token in ('payment', 'pay', 'mtn', 'airtel', 'worldremit', 'pesapal')):
         return 'We accept MTN Mobile Money, Airtel Money, WorldRemit, and Pesapal.'
 
+    if any(token in msg for token in ('delivery', 'deliver', 'shipping', 'ship', 'dispatch', 'pickup')):
+        return (
+            'Delivery is arranged after checkout confirmation. '
+            'Add your country and notes at checkout, then we confirm dispatch details with you directly.'
+        )
+
+    if any(token in msg for token in ('currency', 'usd', 'eur', 'ugx', 'kes', 'mixed')):
+        return (
+            'You can browse prices in USD, EUR, KES, or UGX, but one order should use a single currency at checkout '
+            'for accurate totals and payment confirmation.'
+        )
+
     if any(token in msg for token in ('size', 'saizi', 'measure', 'measurement', 'bust', 'waist', 'hips', 'cm')):
         return 'Please share your bust, waist, and hips in cm, for example: bust 90, waist 70, hips 98.'
 
